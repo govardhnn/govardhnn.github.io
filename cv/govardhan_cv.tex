@@ -1,0 +1,40 @@
+\documentclass[margin,line,courier]{res}
+
+\textheight=9.0in
+
+\usepackage{hyperref}
+
+\newenvironment{list1}{
+  \begin{list}{\ding{113}}{%
+      \setlength{\itemsep}{0in}
+      \setlength{\parsep}{0in} \setlength{\parskip}{0in}
+      \setlength{\topsep}{0in} \setlength{\partopsep}{0in}
+      \setlength{\leftmargin}{0.17in}}}{\end{list}}
+
+
+\begin{document}
+
+\name{Sai Govardhan \vspace*{.1in}}
+\title{sai_govardhan_cv}
+\begin{resume}
+
+
+  \input{research_interests.tex}
+  \section{\sc Contact Information}
+  \vspace{.05in}
+  \begin{tabular}{@{}p{2.75in}p{2in}}
+    \href{saigov14@gmail.com}{saigov14@gmail.com} &  \href{https://linkedin.com/in/saigovardhan}{linkedin.com/in/saigovardhan} \\
+    \href{https://govardhnn.github.io/}{govardhnn.github.io} & \href{https://github.com/govardhnn}{github.com/govardhnn} \\
+  \end{tabular}
+
+  \input{education.tex}
+  \input{experience.tex}
+  \input{teaching.tex}
+  \input{publications.tex}
+  \input{skills.tex}
+  \input{projects.tex}
+  \input{certifications.tex}
+  \input{awards.tex}
+
+\end{resume}
+\end{document}
