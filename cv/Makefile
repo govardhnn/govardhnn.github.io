@@ -6,7 +6,7 @@ TARGET = govardhan_cv.pdf
 all: $(TARGET)
 
 cv: $(SOURCE)
-	pdflatex $(SOURCE) > log
+	pdflatex $(SOURCE) 
 
 # Clean up temporary files
 clean:
