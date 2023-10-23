@@ -1,15 +1,21 @@
-# Define the source and target files
-SOURCE = govardhan_cv.tex
-TARGET = govardhan_cv.pdf
+TEX = govardhan_cv.tex
+PDF = govardhan_cv.pdf
 
-# Build the PDF
-all: $(TARGET)
+.PHONY: all 
+all: clean cv
 
-cv: $(SOURCE)
-	pdflatex $(SOURCE) 
+.PHONY: cv
+cv: $(TEX)
+	pdflatex $(TEX)
 
-# Clean up temporary files
+.PHONY: all_view
+view: 
+	if [ -f $(PDF) ]; then
+		evince $(PDF) &
+	fi	
+
+.PHONY: clean
 clean:
-	rm -f log *.out
+	rm -rf log *.out
 
-.PHONY: all clean
+
