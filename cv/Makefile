@@ -10,9 +10,7 @@ cv: $(TEX)
 
 .PHONY: all_view
 view: 
-	if [ -f $(PDF) ]; then
-		evince $(PDF) &
-	fi	
+	evince $(PDF) &
 
 .PHONY: clean
 clean:
