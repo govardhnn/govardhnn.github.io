@@ -14,4 +14,4 @@ view:
 
 .PHONY: clean
 clean:
-	rm -rf log *.out
+	rm -rf log *.out *.aux *.fdb* *.fls 
