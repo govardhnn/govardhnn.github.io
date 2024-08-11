@@ -1,0 +1,149 @@
+name: Sai Govardhan
+google_site_verification: LJiUXyRtAboUlddV7HHBhCtY3SGDcwlcaiIdPH_IYFc
+intro: >
+  Hi, I'm a CPU Design Engineer at <a href="https://incoresemi.com/">InCore Semiconductors</a>. <br>
+  I graduated in Electronics and Communication (B.Tech) from <a href="https://pes.edu">PES University</a>, with Teaching Assistant experience for three core subjects, eight Cadence Digital Badges for the 'Digital Design and Signoff' track, and a VLSI Specialization. I have earlier interned at IIITB, IISC (OrbitAID Aerospace) and PESU (CIE, CIOT).
+profile_image: ./img/govardhan-profile.jpg
+links:
+  - name: CV
+    url: cv/govardhan_cv.pdf
+  - name: Work Email
+    url: mailto:sai.govardhan@incoresemi.com
+  - name: Personal Email
+    url: mailto:saigov14@gmail.com
+  - name: GitHub
+    url: https://github.com/govardhnn
+  - name: LinkedIn
+    url: https://www.linkedin.com/in/saigovardhan/
+  - name: Goodreads
+    url: https://www.goodreads.com/user/show/45335591-govardhan
+
+experiences:
+  - title: CPU Design Engineer
+    company: InCore Semiconductors
+    company_url: https://incoresemi.com/
+    location: Chennai
+    period: November 2023 - present
+    logo: ./img/InCore_Logo.jpeg
+
+  - title: CPU Design Intern
+    company: InCore Semiconductors
+    company_url: https://incoresemi.com/
+    location: Chennai
+    period: July 2023 - October 2023
+    logo: ./img/InCore_Logo.jpeg
+
+  - title: VLSI Design Intern
+    company: International Institute of Information Technology
+    company_url: https://www.iiitb.ac.in/
+    location: Bangalore
+    period: January 2023 - June 2023
+    advisor: Dr. G N Srinivasa Prasanna
+    advisor_url: https://www.iiitb.ac.in/Ganaka/people/prasanna.html
+    logo: ./img/iiitb-logo.jpg
+
+  - title: Hardware Accelerator Research Intern
+    company: Centre for Innovation and Entrepreneurship, 
+    company_url: https://cie.pes.edu/
+    location: PES University, Bangalore
+    period: January 2023 - June 2023
+    advisor: Prof. Sathya Prasad
+    advisor_url: https://in.linkedin.com/in/sathya-prasad
+    logo: ./img/cie-logo.jpg
+
+  - title: Electronics Research Intern
+    company: OrbitAID Aerospace, Indian Institute of Science
+    company_url: https://orbitaid.com/
+    location: Bangalore
+    period: September 2022 - December 2022
+    advisor: Sakthikumar R
+    advisor_url: https://in.linkedin.com/in/sakthikumar-r-b830a132
+    logo: ./img/iisc-logo.jpg
+
+  - title: Project Intern - Farmbot
+    company: Center for Internet of Things,
+    company_url: https://www.iot.pes.edu/
+    location:  PES University, Bangalore
+    period: June 2021 - October 2021
+    logo: ./img/pesu-iot.jpg
+
+teaching_experience:
+  - course: Embedded Firmware Development with UEFI
+    code: UE19EC400R
+    role: Student Teaching Assistant
+    instructor: Dr. Sudeendra Kumar K
+    instructor_url: https://staff.pes.edu/nm1283
+
+  - course: Synthesis, Physical Design and Timing Analysis of Digital Circuits
+    code: UE20EC335
+    role: Student Teaching Assistant
+    instructor: Dr. Sudeendra Kumar K
+    instructor_url: https://staff.pes.edu/nm1283
+
+  - course: Digital System Design
+    code: UE20EC313
+    role: Student Teaching Assistant
+    instructor: Dr. Rashmi Seethur
+    instructor_url: https://staff.pes.edu/nm1469
+
+publications:
+  - title: Low Power Multidimensional Sorters using Clock Gating and Index Sorting
+    link: https://ieeexplore.ieee.org/document/10234758
+    advisor: Dr. Sudeendra Kumar K
+    advisor_url: https://staff.pes.edu/nm1283
+    image: ./img/mdsa-sorter.jpg
+
+awards:
+  - title: Certificate of Appreciation
+    description: (Graduating Batch of B.Tech ECE) PESU, 2023
+    image: img/pes-certificate-of-appreciation.png
+
+  - title: 2nd Place at the Hackezee Hackathon
+    description: by ECE Department PESU, 2021
+    image: img/hackezee.jpeg
+
+  - title: 3rd Place at the Gutsy Entrepreneur 2.0 Contest
+    description: by CIE PESU, 2020
+    image: img/gutsy-entrepreneur.png
+
+  - title: 2nd Place at Pioneer (Business Modelling Contest)
+    description: by CIE PESU, 2020
+    image: img/pioneer.png
+
+  - title: Most Disciplined Outgoing Student Award
+    description: at Presidency School, Nandini Layout, 2017
+    image: img/presidency-most-disciplined.jpeg
+
+certifications:
+  nptel:
+    name: NPTEL Online Certification
+    courses:
+      - name: Advanced Computer Architecture
+        link: https://archive.nptel.ac.in/content/noc/NOC23/SEM1/Ecertificates/106/noc23-cs07/Course/NPTEL23CS07S5323401304248775.jpg
+
+  cadence:
+    name: Cadence Digital Badge Program
+    link: https://www.credly.com/users/sai-govardhan
+    badges:
+      - ./img/genus.png
+      - ./img/genus-lp.png
+      - ./img/lec.png
+      - ./img/rtl-gdsii.png
+      - ./img/tempus-basic-sta.png
+      - ./img/tempus.png
+      - ./img/ieee1801.png
+      - ./img/joules.png
+
+education_history:
+  - institution: PES University 
+    location: Bangalore
+    degree: B.Tech in Electronics and Communication (VLSI specialization)
+    period: 2019 - 2023
+    logo: ./img/pesu-logo.jpg
+
+  - institution: Presidency School
+    location: Bangalore
+    degree: Indian Certificate of Secondary Education
+    period: 2017
+    logo: ./img/presidency-logo.png
+
