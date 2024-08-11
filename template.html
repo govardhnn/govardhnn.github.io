@@ -49,7 +49,7 @@
                                     <table>
                                         <tbody>
                                             <tr>
-                                                <td width="80%">
+                                                <td width="85%">
                                                     <b>{{ experience.title }}</b><br>
                                                     <a href="{{ experience.company_url }}" target="_blank">{{ experience.company }}</a>, {{ experience.location }} <br>
                                                     {{ experience.period }} <br>
@@ -57,7 +57,7 @@
                                                     Advisor: <a href="{{ experience.advisor_url }}" target="_blank">{{ experience.advisor }}</a>
                                                     {% endif %}
                                                 </td>
-                                                <td width="20%">
+                                                <td width="15%">
                                                     <img src="{{ experience.logo }}" width="40%" style="display: block; margin-left: auto; margin-right: auto;">
                                                 </td>
                                             </tr>
@@ -68,7 +68,7 @@
                             {% endfor %}
                         </tbody>
                     </table>
-
+                    <br>
                     <heading>Teaching Experience</heading>
                     <table width="100%" align="center" border="0" cellspacing="0" cellpadding="10">
                         <tbody>
@@ -91,6 +91,7 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                    <br>
 
                     <heading>Publications</heading>
                     <table width="100%" align="center" border="0" cellspacing="0" cellpadding="10">
@@ -119,6 +120,29 @@
                             {% endfor %}
                         </tbody>
                     </table>
+
+
+                    <heading>Projects</heading>
+                    <table width="100%" align="middle" border="0" cellspacing="0" cellpadding="10">
+                        <tbody>
+                            <tr>
+                                <td width="100%" valign="middle">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                {% for project in projects %}
+                                                <!-- <td width="50%"> -->
+                                                    <b><a href="{{ project.link }}">[{{ project.title }}]</a></b> &nbsp;&nbsp;   
+                                                <!-- </td> -->
+                                                {% endfor %}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
 
                     <heading>Awards</heading>
                     <table width="100%" align="middle" border="0" cellspacing="0" cellpadding="10">

@@ -93,6 +93,12 @@ publications:
     advisor_url: https://staff.pes.edu/nm1283
     image: ./img/mdsa-sorter.jpg
 
+projects:
+  - title: Low_Power_Multidimensional_Sorters
+    link: https://github.com/govardhnn/Low_Power_Multidimensional_Sorters
+  - title: Bluespexamples
+    link: https://github.com/govardhnn/Bluespexamples
+
 awards:
   - title: Certificate of Appreciation
     description: (Graduating Batch of B.Tech ECE) PESU, 2023
