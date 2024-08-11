@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="icon" type="image/jpg" href="./img/icon.jpg">
+    <title>{{ name }}</title>
+    <meta name="author" content="{{ name }}">
+    <meta name="description" content="{{ name }}'s Personal Website.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="google-site-verification" content="{{ google_site_verification }}" />
+    <link rel="stylesheet" type="text/css" href="./img/stylesheet.css">
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1097.0" data-gr-ext-installed="">
+    <table style="width:100%;max-width:800px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+        <tbody>
+            <tr style="padding:0px">
+                <td style="padding:0px">
+                    <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+                        <tbody>
+                            <tr style="padding:0px">
+                                <td style="padding:2.5%;width:70%;vertical-align:middle">
+                                    <p style="text-align:center">
+                                        <name>{{ name }}</name>
+                                    </p>
+                                    <p style="text-align:center">
+                                        {{ intro | safe }}
+                                    </p>
+                                    <p style="text-align:center">
+                                        {% for link in links %}
+                                            <a href="{{ link.url }}" target="_blank">{{ link.name }}</a>{% if not loop.last %} &nbsp;|&nbsp;{% endif %}
+                                        {% endfor %}
+                                    </p>
+                                </td>
+                                <td style="padding:2.5%;width:150%;max-width:150%">
+                                    <a href="{{ profile_image }}"><img style="width:110%;max-width:110%" alt="profile photo" src="{{ profile_image }}" class="hoverZoomLink"></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <br>
+                    
+                    <heading>Experiences</heading>
+                    <table width="100%" align="center" border="0" cellspacing="0" cellpadding="10">
+                        <tbody>
+                            {% for experience in experiences %}
+                            <tr>
+                                <td width="100%" valign="middle">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td width="90%">
+                                                    <b>{{ experience.title }}</b><br>
+                                                    <a href="{{ experience.company_url }}" target="_blank">{{ experience.company }}</a>, {{ experience.location }} <br>
+                                                    {{ experience.period }} <br>
+                                                    {% if experience.advisor %}
+                                                    Advisor: <a href="{{ experience.advisor_url }}" target="_blank">{{ experience.advisor }}</a>
+                                                    {% endif %}
+                                                </td>
+                                                <td width="10%">
+                                                    <img src="{{ experience.logo }}" width="90%" style="display: block; margin-left: auto; margin-right: auto;">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <br>
+
+                    <heading>Teaching Experience</heading>
+                    <table width="100%" align="center" border="0" cellspacing="0" cellpadding="10">
+                        <tbody>
+                            {% for teaching in teaching_experience %}
+                            <tr>
+                                <td width="100%" valign="middle">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td width="90%">
+                                                    <b>{{ teaching.course }}</b> ({{ teaching.code }}) <br>
+                                                    {{ teaching.role }}<br>
+                                                    Course Instructor: <a href="{{ teaching.instructor_url }}" target="_blank">{{ teaching.instructor }}</a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <br>
+
+                    <heading>Publications</heading>
+                    <table width="100%" align="center" border="0" cellspacing="0" cellpadding="10">
+                        <tbody>
+                            {% for publication in publications %}
+                            <tr>
+                                <td width="100%" valign="middle">
+                                    <table>
+                                        <tbody>
+                                            <tr class="spaceUnder">
+                                                <td width="35%" style="padding-right: 120px">
+                                                    <img src="{{ publication.image }}" width="150%" style="display: block; margin-left: auto; margin-right: auto;">
+                                                </td>
+                                                <td style="width:65%">
+                                                    <b>{{ publication.title }}</b> <br>
+                                                    <a href="{{ publication.link }}">[Paper Link]</a>
+                                                    <br>
+                                                    Advisor: <a href="{{ publication.advisor_url }}" target="_blank">{{ publication.advisor }}</a>
+                                                    <br>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <br>
+
+                    <heading>Awards</heading>
+                    <table width="100%" align="middle" border="0" cellspacing="0" cellpadding="10">
+                        <tbody>
+                            <tr>
+                                <td width="100%" valign="middle">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td width="90%">
+                                                    {% for award in awards %}
+                                                    <b><a href="{{ award.image }}">{{ award.title }}</a></b> {{ award.description }} <br><br>
+                                                    {% endfor %}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+
+                    <heading>Certifications</heading>
+                    <table width="100%" align="middle" border="0" cellspacing="0" cellpadding="10">
+                        <tbody>
+                            <tr>
+                                <td width="100%" valign="middle">
+                                    <b>{{ certifications.nptel.name }} <br>
+                                        <ul>
+                                            {% for course in certifications.nptel.courses %}
+                                            <li>
+                                                <a href="{{ course.link }}" target="_blank">{{ course.name }}</a>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </b>
+                                    <table>
+                                        <tbody>
+                                            <b>{{ certifications.cadence.name }} - <a href="{{ certifications.cadence.link }}" target="_blank">Link to all badges</a></b>
+                                            {% for row in certifications.cadence.badges | batch(4) %}
+                                            <tr>
+                                                {% for badge in row %}
+                                                <td width="25%">
+                                                    <img src="{{ badge }}" width="80%" style="display: block; margin-left: auto; margin-right: auto;">
+                                                </td>
+                                                {% endfor %}
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+
+                    <heading>Education</heading>
+                    <table width="100%" align="middle" border="0" cellspacing="0" cellpadding="10">
+                        <tbody>
+                            {% for education in education_history %}
+                            <tr>
+                                <td width="100%" valign="middle">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td width="85%">
+                                                    <b>{{ education.institution }}</b>, {{ education.location }}<br>
+                                                    {{ education.degree }} <br>{{ education.period }}
+                                                </td>
+                                                <td width="10%">
+                                                    <img src="{{ education.logo }}" width="100%" style="display: flex; justify-content: center;">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
