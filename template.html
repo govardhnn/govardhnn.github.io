@@ -93,6 +93,29 @@
                     </table>
                     <br>
 
+                    <heading>Projects</heading>
+                    <table width="100%" align="middle" border="0" cellspacing="0" cellpadding="10">
+                        <tbody>
+                            <tr>
+                                <td width="100%" valign="middle">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                {% for project in projects %}
+                                                <!-- <td width="50%"> -->
+                                                    <b><a href="{{ project.link }}">[{{ project.title }}]</a></b>;   
+                                                <!-- </td> -->
+                                                {% endfor %}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+
+
                     <heading>Publications</heading>
                     <table width="100%" align="center" border="0" cellspacing="0" cellpadding="10">
                         <tbody>
@@ -120,29 +143,6 @@
                             {% endfor %}
                         </tbody>
                     </table>
-
-
-                    <heading>Projects</heading>
-                    <table width="100%" align="middle" border="0" cellspacing="0" cellpadding="10">
-                        <tbody>
-                            <tr>
-                                <td width="100%" valign="middle">
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                {% for project in projects %}
-                                                <!-- <td width="50%"> -->
-                                                    <b><a href="{{ project.link }}">[{{ project.title }}]</a></b> &nbsp;&nbsp;   
-                                                <!-- </td> -->
-                                                {% endfor %}
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <br>
 
                     <heading>Awards</heading>
                     <table width="100%" align="middle" border="0" cellspacing="0" cellpadding="10">
