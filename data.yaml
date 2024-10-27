@@ -24,11 +24,11 @@ experiences:
   - title: CPU uArch Design Engineer
     company: InCore Semiconductors
     company_url: https://incoresemi.com/
-    location: Chennai
+    location: Bangalore
     period: November 2023 - present
     logo: ./img/InCore_Logo.jpeg
 
-  - title: CPU Design Intern
+  - title: RTL Design Intern
     company: InCore Semiconductors
     company_url: https://incoresemi.com/
     location: Chennai
@@ -45,7 +45,7 @@ experiences:
     logo: ./img/iiitb-logo.jpg
 
   - title: Hardware Accelerator Research Intern
-    company: Centre for Innovation and Entrepreneurship, 
+    company: Centre for Innovation and Entrepreneurship
     company_url: https://cie.pes.edu/
     location: PES University, Bangalore
     period: January 2023 - June 2023
@@ -63,7 +63,7 @@ experiences:
     logo: ./img/iisc-logo.jpg
 
   - title: Project Intern - Farmbot
-    company: Center for Internet of Things,
+    company: Center for Internet of Things
     company_url: https://www.iot.pes.edu/
     location:  PES University, Bangalore
     period: June 2021 - October 2021
