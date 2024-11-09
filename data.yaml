@@ -9,19 +9,20 @@ links:
     url: cv.html
   - name: Personal Blog
     url: blog.html
-  - name: Calendar
-    url: calendar.html
+  # - name: Calendar
+  #   url: calendar.html
   # - name: Personal Email
   #   url: mailto:saigov14@gmail.com
   - name: GitHub
     url: https://github.com/govardhnn
+  - name: Personal Email
+    url: mailto:saigov14@gmail.com
+  - name: Work Email
+    url: mailto:sai.govardhan@incoresemi.com
   - name: LinkedIn
     url: https://www.linkedin.com/in/saigovardhan/
   - name: Goodreads
     url: https://www.goodreads.com/user/show/45335591-govardhan
-  - name: Work Email
-    url: mailto:sai.govardhan@incoresemi.com
-
 experiences:
   - title: CPU uArch Design Engineer
     company: InCore Semiconductors
