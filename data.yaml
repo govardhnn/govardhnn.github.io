@@ -9,8 +9,8 @@ links:
     url: cv.html
   - name: Personal Blog
     url: blog.html
-  - name: Work Email
-    url: mailto:sai.govardhan@incoresemi.com
+  - name: Calendar
+    url: calendar.html
   # - name: Personal Email
   #   url: mailto:saigov14@gmail.com
   - name: GitHub
@@ -19,8 +19,8 @@ links:
     url: https://www.linkedin.com/in/saigovardhan/
   - name: Goodreads
     url: https://www.goodreads.com/user/show/45335591-govardhan
-  - name: Calendar
-    url: calendar.html
+  - name: Work Email
+    url: mailto:sai.govardhan@incoresemi.com
 
 experiences:
   - title: CPU uArch Design Engineer
@@ -161,3 +161,8 @@ education_history:
     period: 2017
     logo: ./img/presidency-logo.png
 
+# blogs:
+#   - title:
+#     link: 
+#     description: >
+      

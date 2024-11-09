@@ -27,8 +27,14 @@
                                         {{ intro | safe }}
                                     </p>
                                     <p style="text-align:center">
+                                        <!-- If the link is blog.html, then highlight the page name-->
                                         {% for link in links %}
-                                            <a href="{{ link.url }}" target="_self">{{ link.name }}</a>{% if not loop.last %} &nbsp;|&nbsp;{% endif %}
+                                            {% if link.url == "blog.html" %}
+                                                <a href="{{ link.url }}" target="_self" ><b>{{ link.name }}</b></a>
+                                            {% else %}
+                                                <a href="{{ link.url }}" target="_self">{{ link.name }}</a>
+                                            {% endif %}
+                                            {% if not loop.last %} &nbsp;|&nbsp;{% endif %}
                                         {% endfor %}
                                     </p>
                                 </td>
@@ -43,13 +49,13 @@
 
  <body>
 
+     <h2> Blog Homepage</h2>
 <hr>
 
-    <a href="comp_arch_resources.html">Computer Architecture Resources</a> <br> 
-    
-    <i> Books, papers and projects that help dive into the world of CPU micro-architectures
-        , design philosophies, and performance evaluation. </i> 
-    </i>
+{% for blog in blogs %}
+    <a href="{{ blog.link }}">{{ blog.title }}</a>
+    <br><i>{{ blog.description }}</i>
+{% endfor %}
 
 <hr>
   

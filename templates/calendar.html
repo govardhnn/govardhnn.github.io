@@ -28,7 +28,12 @@
                                     </p>
                                     <p style="text-align:center">
                                         {% for link in links %}
-                                            <a href="{{ link.url }}" target="_self">{{ link.name }}</a>{% if not loop.last %} &nbsp;|&nbsp;{% endif %}
+                                            {% if link.url == "calendar.html" %}
+                                                <a href="{{ link.url }}" target="_self" ><b>{{ link.name }}</b></a>
+                                            {% else %}
+                                                <a href="{{ link.url }}" target="_self">{{ link.name }}</a>
+                                            {% endif %}
+                                            {% if not loop.last %} &nbsp;|&nbsp;{% endif %}
                                         {% endfor %}
                                     </p>
                                 </td>

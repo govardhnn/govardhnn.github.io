@@ -28,8 +28,10 @@ for page in pages:
 
 # Generate all the blogs
 
-# Get all the blogs
 blogs = [file for file in os.listdir('blog') if file.endswith('.html')]
+
+
+# Get all the blogs
 
 for blog in blogs:
     # Load the data
