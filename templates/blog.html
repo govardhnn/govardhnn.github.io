@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="icon" type="image/jpg" href="./img/icon.jpg">
+    <title>{{ name }}</title>
+    <meta name="author" content="{{ name }}">
+    <meta name="description" content="{{ name }}'s Personal Website.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="google-site-verification" content="{{ google_site_verification }}" />
+    <link rel="stylesheet" type="text/css" href="./img/stylesheet.css">
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1097.0" data-gr-ext-installed="">
+    <table style="width:100%;max-width:800px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+        <tbody>
+            <tr style="padding:0px">
+                <td style="padding:0px">
+                    <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+                        <tbody>
+                            <tr style="padding:0px">
+                                <td style="padding:2.5%;width:70%;vertical-align:middle">
+                                    <p style="text-align:center">
+                                        <a href="index.html" ><name>{{ name }}</name></a>
+                                    </p>
+                                    <p style="text-align:center">
+                                        {{ intro | safe }}
+                                    </p>
+                                    <p style="text-align:center">
+                                        {% for link in links %}
+                                            <a href="{{ link.url }}" target="_self">{{ link.name }}</a>{% if not loop.last %} &nbsp;|&nbsp;{% endif %}
+                                        {% endfor %}
+                                    </p>
+                                </td>
+                                <td style="padding:2.5%;width:150%;max-width:150%">
+                                    <a href="{{ profile_image }}"><img style="width:110%;max-width:110%" alt="profile photo" src="{{ profile_image }}" class="hoverZoomLink"></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+
+
+ <body>
+
+<hr>
+
+    <a href="comp_arch_resources.html">Computer Architecture Resources</a> <br> 
+    
+    <i> Books, papers and projects that help dive into the world of CPU micro-architectures
+        , design philosophies, and performance evaluation. </i> 
+    </i>
+
+<hr>
+  
+</tbody>
+</table>
+
+</body></html>

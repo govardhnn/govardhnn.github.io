@@ -21,14 +21,14 @@
                             <tr style="padding:0px">
                                 <td style="padding:2.5%;width:70%;vertical-align:middle">
                                     <p style="text-align:center">
-                                        <name>{{ name }}</name>
+                                        <a href="index.html" ><name>{{ name }}</name></a>
                                     </p>
                                     <p style="text-align:center">
                                         {{ intro | safe }}
                                     </p>
                                     <p style="text-align:center">
                                         {% for link in links %}
-                                            <a href="{{ link.url }}" target="_blank">{{ link.name }}</a>{% if not loop.last %} &nbsp;|&nbsp;{% endif %}
+                                            <a href="{{ link.url }}" target="_self">{{ link.name }}</a>{% if not loop.last %} &nbsp;|&nbsp;{% endif %}
                                         {% endfor %}
                                     </p>
                                 </td>
@@ -51,11 +51,14 @@
                                             <tr>
                                                 <td width="85%">
                                                     <b>{{ experience.title }}</b><br>
-                                                    <a href="{{ experience.company_url }}" target="_blank">{{ experience.company }}</a>, {{ experience.location }} <br>
-                                                    {{ experience.period }} <br>
-                                                    {% if experience.advisor %}
-                                                    Advisor: <a href="{{ experience.advisor_url }}" target="_blank">{{ experience.advisor }}</a>
-                                                    {% endif %}
+                                                    <i>
+
+                                                        <a href="{{ experience.company_url }}" target="_self">{{ experience.company }}</a>, {{ experience.location }} <br>
+                                                        {{ experience.period }} <br>
+                                                        {% if experience.advisor %}
+                                                        Advisor: <a href="{{ experience.advisor_url }}" target="_self">{{ experience.advisor }}</a>
+                                                        {% endif %}
+                                                    </i>
                                                 </td>
                                                 <td width="15%">
                                                     <img src="{{ experience.logo }}" width="40%" style="display: block; margin-left: auto; margin-right: auto;">
@@ -80,8 +83,10 @@
                                             <tr>
                                                 <td width="90%">
                                                     <b>{{ teaching.course }}</b> ({{ teaching.code }}) <br>
-                                                    {{ teaching.role }}<br>
-                                                    Course Instructor: <a href="{{ teaching.instructor_url }}" target="_blank">{{ teaching.instructor }}</a>
+                                                    <i>
+                                                        {{ teaching.role }}<br>
+                                                        Course Instructor: <a href="{{ teaching.instructor_url }}" target="_self">{{ teaching.instructor }}</a>
+                                                    </i>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -103,7 +108,9 @@
                                             <tr>
                                                 {% for project in projects %}
                                                 <!-- <td width="50%"> -->
-                                                    <b><a href="{{ project.link }}">[{{ project.title }}]</a></b>;   
+                                                <b><a href="{{ project.link }}">[{{ project.title }}]</a></b><br>
+                                                <i>{{ project.description }} </i>   
+                                                <br>
                                                 <!-- </td> -->
                                                 {% endfor %}
                                             </tr>
@@ -132,7 +139,9 @@
                                                     <b>{{ publication.title }}</b> <br>
                                                     <a href="{{ publication.link }}">[Paper Link]</a>
                                                     <br>
-                                                    Advisor: <a href="{{ publication.advisor_url }}" target="_blank">{{ publication.advisor }}</a>
+                                                    <i>
+                                                        Advisor: <a href="{{ publication.advisor_url }}" target="_self">{{ publication.advisor }}</a>
+                                                    </i>
                                                     <br>
                                                 </td>
                                             </tr>
@@ -154,7 +163,11 @@
                                             <tr>
                                                 <td width="90%">
                                                     {% for award in awards %}
-                                                    <b><a href="{{ award.image }}">{{ award.title }}</a></b> {{ award.description }} <br><br>
+                                                    <b><a href="{{ award.image }}">{{ award.title }}</a></b>
+                                                    <i>
+                                                        {{ award.description }} 
+                                                    </i>
+                                                        <br><br>
                                                     {% endfor %}
                                                 </td>
                                             </tr>
@@ -174,14 +187,14 @@
                                         <ul>
                                             {% for course in certifications.nptel.courses %}
                                             <li>
-                                                <a href="{{ course.link }}" target="_blank">{{ course.name }}</a>
+                                                <a href="{{ course.link }}" target="_self">{{ course.name }}</a>
                                             </li>
                                             {% endfor %}
                                         </ul>
                                     </b>
                                     <table>
                                         <tbody>
-                                            <b>{{ certifications.cadence.name }} - <a href="{{ certifications.cadence.link }}" target="_blank">Link to all badges</a></b>
+                                            <b>{{ certifications.cadence.name }} - <a href="{{ certifications.cadence.link }}" target="_self">Link to all badges</a></b>
                                             {% for row in certifications.cadence.badges | batch(4) %}
                                             <tr>
                                                 {% for badge in row %}
@@ -209,7 +222,9 @@
                                             <tr>
                                                 <td width="85%">
                                                     <b>{{ education.institution }}</b>, {{ education.location }}<br>
+                                                    <i>
                                                     {{ education.degree }} <br>{{ education.period }}
+                                                    </i>
                                                 </td>
                                                 <td width="15%">
                                                     <img src="{{ education.logo }}" width="60%" style="display: flex; justify-content: center;">

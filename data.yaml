@@ -6,11 +6,13 @@ intro: >
 profile_image: ./img/govardhan-profile.jpg
 links:
   - name: CV
-    url: cv/govardhan_cv.pdf
+    url: cv.html
+  - name: Personal Blog
+    url: blog.html
   - name: Work Email
     url: mailto:sai.govardhan@incoresemi.com
-  - name: Personal Email
-    url: mailto:saigov14@gmail.com
+  # - name: Personal Email
+  #   url: mailto:saigov14@gmail.com
   - name: GitHub
     url: https://github.com/govardhnn
   - name: LinkedIn
@@ -18,7 +20,7 @@ links:
   - name: Goodreads
     url: https://www.goodreads.com/user/show/45335591-govardhan
   - name: Calendar
-    url: https://calendar.google.com/calendar/embed?src=saigov14%40gmail.com&ctz=Asia%2FKolkata
+    url: calendar.html
 
 experiences:
   - title: CPU uArch Design Engineer
@@ -98,8 +100,12 @@ publications:
 projects:
   - title: Low_Power_Multidimensional_Sorters
     link: https://github.com/govardhnn/Low_Power_Multidimensional_Sorters
+    description: >
+      BTech ECE Capstone Project (Team: N-08, Batch of ECE 2023) at PES University, Bangalore
   - title: Bluespexamples
     link: https://github.com/govardhnn/Bluespexamples
+    description: >
+      A collection of Bluespec System Verilog design examples
 
 awards:
   - title: Certificate of Appreciation
