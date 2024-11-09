@@ -7,7 +7,7 @@ profile_image: ./img/govardhan-profile.jpg
 links:
   - name: CV
     url: cv.html
-  - name: Personal Blog
+  - name: Blog
     url: blog.html
   # - name: Calendar
   #   url: calendar.html
