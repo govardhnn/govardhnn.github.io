@@ -28,25 +28,25 @@ for page in pages:
 
 # Generate all the blogs
 
-blogs = [file for file in os.listdir('blog') if file.endswith('.html')]
+# blogs = [file for file in os.listdir('blog') if file.endswith('.html')]
 
 
-# Get all the blogs
+# # Get all the blogs
 
-for blog in blogs:
-    # Load the data
-    with open('data.yaml', 'r') as file:
-        data = yaml.safe_load(file)
+# for blog in blogs:
+#     # Load the data
+#     with open('data.yaml', 'r') as file:
+#         data = yaml.safe_load(file)
 
-    # Load the template
-    template_path = os.path.join('blog', blog)
-    template = env.get_template(template_path)
+#     # Load the template
+#     template_path = os.path.join('blog', blog)
+#     template = env.get_template(template_path)
 
-    # Render the template
-    output = template.render(data)
+#     # Render the template
+#     output = template.render(data)
 
-    # Write the output to a file
-    with open(blog, 'w') as file:
-        file.write(output)
+#     # Write the output to a file
+#     with open(blog, 'w') as file:
+#         file.write(output)
 
-    print("INFO: Generated", blog)
+#     print("INFO: Generated", blog)
