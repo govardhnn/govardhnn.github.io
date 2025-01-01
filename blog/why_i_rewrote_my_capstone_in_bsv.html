@@ -447,11 +447,14 @@ Email: <a href="mailto:sai.govardhan@incoresemi.com">sai.govardhan@incoresemi.co
 Date: (Tentative)4th January, 2025</p>
 </div>
 <style>
-h1, h2, h3, h4, h5, h6, .title, div.title, .imageblock .title, .literalblock .title {
+h1, h2, h3, h4, h5, h6, .title, div.title {
     color: blue;
     font-weight: bold;
 }
 
+ .imageblock .title, .literalblock .title {
+    color: blue;
+ }
 /* Control overall font size */
 body {
     font-size: 14px;
@@ -459,6 +462,7 @@ body {
 }
 
 /* Adjust heading sizes */
+title { font-size: 2em; }
 h1 { font-size: 2em; }
 h2 { font-size: 1.5em; }
 h3 { font-size: 1.2em; }
@@ -474,6 +478,13 @@ pre, code {
 p, ul, ol, dl {
     font-size: 14px;
     line-height: 1.5;
+}
+
+/* Make figure captions smaller */
+div.title, .imageblock .title, .literalblock .title {
+    font-size: 1em;  /* Same as body text */
+    margin-top: 0.5em;
+    margin-bottom: 1em;
 }
 </style>
 </div>
@@ -1268,7 +1279,7 @@ Number of cells:              90410</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-01 18:25:42 +0530
+Last updated 2025-01-01 18:39:34 +0530
 </div>
 </div>
 </body>
