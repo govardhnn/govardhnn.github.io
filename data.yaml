@@ -162,8 +162,8 @@ education_history:
     period: 2017
     logo: ./img/presidency-logo.png
 
-# blogs:
-#   - title:
-#     link: 
-#     description: >
+blogs:
+  - title: Why I rewrote my Capstone Project in Bluespec SystemVerilog
+    link: ./blog/capstone_bsv.html
+    description: A descriptive guide on the BSV implemenation of the MDSA sorter, acheiving a 25% reduction in gate-count compared to the legacy Verilog codebase.   
       
