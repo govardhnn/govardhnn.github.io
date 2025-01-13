@@ -2,7 +2,6 @@ name: Sai Govardhan
 google_site_verification: LJiUXyRtAboUlddV7HHBhCtY3SGDcwlcaiIdPH_IYFc
 intro: >
   CPU uArch Design Engineer at <a href="https://incoresemi.com/">InCore Semiconductors</a>. <br>
-
 profile_image: ./img/govardhan-profile.jpg
 links:
   - name: CV
@@ -163,7 +162,7 @@ education_history:
     logo: ./img/presidency-logo.png
 
 blogs:
-  - title: Why I rewrote my Capstone Project in Bluespec SystemVerilog
-    link: ./blog/capstone_bsv.html
-    description: A descriptive guide on the BSV redesign of the MDSA sorter, acheiving a 25% reduction in gate-count compared to the legacy Verilog implementation, with one simple optimization.   
+  - title: A Compelling Case for Using Bluespec SystemVerilog in Academia
+    link: https://todo.incore
+    description: <br> <a href="todo">[Link to the HackerNews Discussion]</a><br>A descriptive guide on the BSV redesign of the MDSA sorter, achieving a 25% reduction in gate-count compared to the legacy Verilog implementation, with one simple optimization.
       
