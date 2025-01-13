@@ -162,7 +162,8 @@ education_history:
     logo: ./img/presidency-logo.png
 
 blogs:
-  - title: A Compelling Case for Using Bluespec SystemVerilog in Academia
+  - title: 'A Compelling Case for Using BSV in Academia: Insights from Redesigning a Capstone Project'
     link: https://todo.incore
-    description: <br> <a href="todo">[Link to the HackerNews Discussion]</a><br>A descriptive guide on the BSV redesign of the MDSA sorter, achieving a 25% reduction in gate-count compared to the legacy Verilog implementation, with one simple optimization.
+    date: 2024-01-XX
+    description: A descriptive guide on the BSV redesign of the MDSA sorter, achieving a 25% reduction in gate-count compared to the legacy Verilog implementation, with one simple optimization.<br>
       

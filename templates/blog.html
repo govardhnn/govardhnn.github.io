@@ -53,8 +53,12 @@
 <hr>
 
 {% for blog in blogs %}
-    <a href="{{ blog.link }}">{{ blog.title }}</a>
-    <br><i>{{ blog.description }}</i>
+    <blockquote style="text-align:left;">
+        <a href="{{ blog.link }}"><b>{{ blog.title }}</b></a><br><br>
+        
+        <i>{{ blog.description }}</i>
+        <!-- [<i>{{ blog.date }}</i>]  -->
+    </blockquote>
 {% endfor %}
 
 <hr>
