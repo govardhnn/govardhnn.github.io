@@ -163,7 +163,7 @@ education_history:
 
 blogs:
   - title: 'A Compelling Case for Using BSV in Academia: Insights from Redesigning a Capstone Project'
-    link: https://todo.incore
-    date: 2024-01-XX
+    link: https://incoresemi.com/a-compelling-case-for-using-bsv-bluespec-system-verilog-in-academia-insights-from-redesigning-a-capstone-project/
+    date: 2024-02-10
     description: A descriptive guide on the BSV redesign of the MDSA sorter, achieving a 25% reduction in gate-count compared to the legacy Verilog implementation, with one simple optimization.<br>
       
