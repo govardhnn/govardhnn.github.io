@@ -167,4 +167,3 @@ blogs:
     link: https://incoresemi.com/a-compelling-case-for-using-bsv-bluespec-system-verilog-in-academia-insights-from-redesigning-a-capstone-project/
     date: 10th February, 2025
     description: A descriptive guide on redesigning the Multi Dimensional Sorting Algorithm (MDSA) implementation in Bluespec SystemVerilog (BSV), and performs a comparative study with the Verilog implementation from my B.Tech Capstone Project. This work achieves a 25% reduction in gate-count compared to the legacy Verilog implementation, with one simple optimization.<br>
-      
