@@ -54,10 +54,15 @@
 
 {% for blog in blogs %}
     <blockquote style="text-align:left;">
-        <a href="{{ blog.link }}"><b>{{ blog.title }}</b></a><br><br>
-        
-        <i>{{ blog.description }}</i>
-        <!-- [<i>{{ blog.date }}</i>]  -->
+        <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="flex:1;padding-right:15px">
+                <b>[{{ blog.date }}]</b> <a href="{{ blog.link }}" style="text-align:left"><b>{{ blog.title }}</b></a><br>
+                <br><i style="display:block;text-align:left;"> {{ blog.description }}</i>
+            </div>
+            <div style="flex:0 0 40%">
+                <img style="width:100%;max-width:400px;display:block;" src="{{ blog.header_image }}">
+            </div>
+        </div>
     </blockquote>
 {% endfor %}
 
