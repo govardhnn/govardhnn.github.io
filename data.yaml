@@ -23,7 +23,7 @@ links:
   - name: Goodreads
     url: https://www.goodreads.com/user/show/45335591-govardhan
 experiences:
-  - title: CPU uArch Design Engineer
+  - title: CPU Design Engineer
     company: InCore Semiconductors
     company_url: https://incoresemi.com/
     location: Bangalore
@@ -166,4 +166,4 @@ blogs:
     header_image: ./blog/img/MDSA_header.png
     link: https://incoresemi.com/a-compelling-case-for-using-bsv-bluespec-system-verilog-in-academia-insights-from-redesigning-a-capstone-project/
     date: 10th February, 2025
-    description: A descriptive guide on redesigning the Multi Dimensional Sorting Algorithm (MDSA) implementation in Bluespec SystemVerilog (BSV), and performs a comparative study with the Verilog implementation from my B.Tech Capstone Project. This work achieves a 25% reduction in gate-count compared to the legacy Verilog implementation, with one simple optimization.<br>
+    description: A descriptive guide on redesigning the Multi Dimensional Sorting Algorithm (MDSA) implementation in Bluespec SystemVerilog (BSV), and performs a comparative study with the legacy Verilog implementation from my B.Tech Capstone Project. This work achieves a 25% reduction in gate-count with one simple micro-architectural trick.<br>
