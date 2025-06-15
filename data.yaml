@@ -1,7 +1,7 @@
 name: Sai Govardhan
 google_site_verification: LJiUXyRtAboUlddV7HHBhCtY3SGDcwlcaiIdPH_IYFc
 intro: >
-  Microarchitect at <a href="https://agranilabs.com/">Agrani Labs</a>. <br>
+  Microarchitect at <a href="https://agranilabs.com/">Agrani Labs</a> <br>
 profile_image: ./img/govardhan-profile.jpg
 links:
   - name: CV
@@ -23,11 +23,18 @@ links:
   - name: Goodreads
     url: https://www.goodreads.com/user/show/45335591-govardhan
 experiences:
+  - title: Microarchitect
+    company: Agrani Labs
+    company_url: https://agranilabs.com/
+    location: Bangalore
+    period: June 2025 - Present
+    logo: ''
+
   - title: CPU Design Engineer
     company: InCore Semiconductors
     company_url: https://incoresemi.com/
     location: Bangalore
-    period: November 2023 - present
+    period: November 2023 - June 2025
     logo: ./img/InCore_Logo.jpeg
 
   - title: RTL Design Intern
