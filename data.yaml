@@ -169,6 +169,11 @@ education_history:
     logo: ./img/presidency-logo.png
 
 blogs:
+  - title: 'Computer Architecture Resources'
+    header_image: ''
+    link: ./blog/comp_arch.html
+    date: '20th June, 2025'
+    description: A collection of books, courses, lectures and forums to study computer architecture.
   - title: 'A Compelling Case for Using BSV in Academia: Insights from Redesigning a Capstone Project'
     header_image: ./blog/img/MDSA_header.png
     link: https://incoresemi.com/a-compelling-case-for-using-bsv-bluespec-system-verilog-in-academia-insights-from-redesigning-a-capstone-project/
