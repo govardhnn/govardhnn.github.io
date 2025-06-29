@@ -27,26 +27,23 @@ for page in pages:
     print("INFO: Generated", page)
 
 # Generate all the blogs
+blog_templates = ['comp_arch.html']
 
-# blogs = [file for file in os.listdir('blog') if file.endswith('.html')]
+for blog in blog_templates:
+    # Load the data
+    with open('data.yaml', 'r') as file:
+        data = yaml.safe_load(file)
 
+    # Load the template
+    template_path = os.path.join('templates', 'blog', blog)
+    template = env.get_template(template_path)
 
-# # Get all the blogs
+    # Render the template
+    output = template.render(data)
 
-# for blog in blogs:
-#     # Load the data
-#     with open('data.yaml', 'r') as file:
-#         data = yaml.safe_load(file)
+    # Write the output to a file
+    output_path = os.path.join('blog', blog)
+    with open(output_path, 'w') as file:
+        file.write(output)
 
-#     # Load the template
-#     template_path = os.path.join('blog', blog)
-#     template = env.get_template(template_path)
-
-#     # Render the template
-#     output = template.render(data)
-
-#     # Write the output to a file
-#     with open(blog, 'w') as file:
-#         file.write(output)
-
-#     print("INFO: Generated", blog)
+    print("INFO: Generated", output_path)

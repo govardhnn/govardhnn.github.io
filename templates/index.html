@@ -12,234 +12,271 @@
 </head>
 
 <body data-new-gr-c-s-check-loaded="14.1097.0" data-gr-ext-installed="">
-    <table style="width:100%;max-width:800px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-        <tbody>
-            <tr style="padding:0px">
-                <td style="padding:0px">
-                    <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-                        <tbody>
-                            <tr style="padding:0px">
-                                <td style="padding:2.5%;width:70%;vertical-align:middle">
-                                    <p style="text-align:center">
-                                        <a href="index.html" ><name><b>{{ name }}</b></name></a>
-                                    </p>
-                                    <p style="text-align:center">
-                                        {{ intro | safe }}
-                                    </p>
-                                    <p style="text-align:center">
-                                        {% for link in links %}
-                                            <a href="{{ link.url }}" target="_self">{{ link.name }}</a>{% if not loop.last %} &nbsp;|&nbsp;{% endif %}
-                                        {% endfor %}
-                                    </p>
-                                </td>
-                                <td style="padding:2.5%;width:150%;max-width:150%">
-                                    <a href="{{ profile_image }}"><img style="width:110%;max-width:110%" alt="profile photo" src="{{ profile_image }}" class="hoverZoomLink"></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    
-                    
-                    <heading>Experiences</heading>
-                    <table width="100%" align="center" border="0" cellspacing="0" cellpadding="10">
-                        <tbody>
-                            {% for experience in experiences %}
-                            <tr>
-                                <td width="100%" valign="middle">
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <td width="85%">
-                                                    <b>{{ experience.title }}</b><br>
-                                                    <i>
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;">
+                <tbody>
+                    <tr style="padding:0px">
+                        <td style="padding:2.5%;width:70%;vertical-align:middle">
+                            <p style="text-align:center">
+                                <a href="#" onclick="showSection('home')"><name><b>{{ name }}</b></name></a>
+                            </p>
+                            <p style="text-align:center">
+                                {{ intro | safe }}
+                            </p>
+                        </td>
+                        <td style="padding:1.5%;width:30%;max-width:30%">
+                            <a href="{{ profile_image }}"><img style="width:100%;max-width:100%" alt="profile photo" src="{{ profile_image }}" class="hoverZoomLink"></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-                                                        <a href="{{ experience.company_url }}" target="_self">{{ experience.company }}</a>, {{ experience.location }} <br>
-                                                        {{ experience.period }} <br>
-                                                        {% if experience.advisor %}
-                                                        Advisor: <a href="{{ experience.advisor_url }}" target="_self">{{ experience.advisor }}</a>
-                                                        {% endif %}
-                                                    </i>
-                                                </td>
-                                                <td width="15%">
-                                                    <img src="{{ experience.logo }}" width="40%" style="display: block; margin-left: auto; margin-right: auto;">
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <br>
+        <!-- Navigation -->
+        <div class="navigation">
+            <div class="nav-container">
+                <a href="#" onclick="showSection('home')" class="nav-link active" data-section="home">Home</a>
+                <a href="#" onclick="showSection('cv')" class="nav-link" data-section="cv">CV</a>
+                <a href="#" onclick="showSection('blog')" class="nav-link" data-section="blog">Blog</a>
+                <a href="#" onclick="showSection('contact')" class="nav-link" data-section="contact">Contact</a>
+                <a href="https://github.com/govardhnn" target="_blank">GitHub</a>
+                <a href="https://www.goodreads.com/user/show/45335591-govardhan" target="_blank">Goodreads</a>
+            </div>
+        </div>
+
+        <!-- Content Sections -->
+        <div id="content">
+            <!-- Home Section -->
+            <div id="home-section" class="content-section active">
+
+                <!-- Experience Section -->
+                <div class="section">
+                    <heading>Experience</heading>
+                    {% for experience in experiences %}
+                    <div class="experience-item">
+                        <table width="100%">
+                            <tbody>
+                                <tr>
+                                    <td width="85%">
+                                        <b>{{ experience.title }}</b><br>
+                                        <i>
+                                            <a href="{{ experience.company_url }}">{{ experience.company }}</a>, {{ experience.location }}<br>
+                                            {{ experience.period }}
+                                            {% if experience.advisor %}<br>
+                                            Advisor: <a href="{{ experience.advisor_url }}">{{ experience.advisor }}</a>
+                                            {% endif %}
+                                        </i>
+                                    </td>
+                                    <td width="15%">
+                                        <img src="{{ experience.logo }}" width="60%" style="display: block; margin-left: auto; margin-right: auto;">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Teaching Experience Section -->
+                <div class="section">
                     <heading>Teaching Experience</heading>
-                    <table width="100%" align="center" border="0" cellspacing="0" cellpadding="10">
-                        <tbody>
-                            {% for teaching in teaching_experience %}
-                            <tr>
-                                <td width="100%" valign="middle">
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <td width="90%">
-                                                    <b>{{ teaching.course }}</b> ({{ teaching.code }}) <br>
-                                                    <i>
-                                                        {{ teaching.role }}<br>
-                                                        Course Instructor: <a href="{{ teaching.instructor_url }}" target="_self">{{ teaching.instructor }}</a>
-                                                    </i>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <br>
+                    {% for teaching in teaching_experience %}
+                    <div class="experience-item">
+                        <table width="100%">
+                            <tbody>
+                                <tr>
+                                    <td width="90%">
+                                        <b>{{ teaching.course }}</b> ({{ teaching.code }})<br>
+                                        <i>
+                                            {{ teaching.role }}<br>
+                                            Course Instructor: <a href="{{ teaching.instructor_url }}">{{ teaching.instructor }}</a>
+                                        </i>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                </div>
 
+                <!-- Projects Section -->
+                <div class="section">
                     <heading>Projects</heading>
-                    <table width="100%" align="middle" border="0" cellspacing="0" cellpadding="10">
-                        <tbody>
-                            <tr>
-                                <td width="100%" valign="middle">
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                {% for project in projects %}
-                                                <!-- <td width="50%"> -->
-                                                <b><a href="{{ project.link }}">[{{ project.title }}]</a></b><br>
-                                                <i>{{ project.description }} </i>   
-                                                <br>
-                                                <!-- </td> -->
-                                                {% endfor %}
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <br>
+                    <div class="experience-item">
+                        {% for project in projects %}
+                        <b><a href="{{ project.link }}">[{{ project.title }}]</a></b><br>
+                        <i>{{ project.description }}</i><br><br>
+                        {% endfor %}
+                    </div>
+                </div>
 
-
+                <!-- Publications Section -->
+                <div class="section">
                     <heading>Publications</heading>
-                    <table width="100%" align="center" border="0" cellspacing="0" cellpadding="10">
-                        <tbody>
-                            {% for publication in publications %}
-                            <tr>
-                                <td width="100%" valign="middle">
-                                    <table>
-                                        <tbody>
-                                            <tr class="spaceUnder">
-                                                <td width="35%" style="padding-right: 120px">
-                                                    <img src="{{ publication.image }}" width="150%" style="display: block; margin-left: auto; margin-right: auto;">
-                                                </td>
-                                                <td style="width:65%">
-                                                    <b>{{ publication.title }}</b> <br>
-                                                    <a href="{{ publication.link }}">[Paper Link]</a>
-                                                    <br>
-                                                    <i>
-                                                        Advisor: <a href="{{ publication.advisor_url }}" target="_self">{{ publication.advisor }}</a>
-                                                    </i>
-                                                    <br>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    {% for publication in publications %}
+                    <div class="experience-item">
+                        <table width="100%">
+                            <tbody>
+                                <tr>
+                                    <td width="35%" style="padding-right: 20px">
+                                        <img src="{{ publication.image }}" width="100%" style="display: block; margin-left: auto; margin-right: auto;">
+                                    </td>
+                                    <td width="65%">
+                                        <b>{{ publication.title }}</b><br>
+                                        <a href="{{ publication.link }}">[Paper Link]</a><br>
+                                        <i>Advisor: <a href="{{ publication.advisor_url }}">{{ publication.advisor }}</a></i>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                </div>
 
+                <!-- Awards Section -->
+                <div class="section">
                     <heading>Awards</heading>
-                    <table width="100%" align="middle" border="0" cellspacing="0" cellpadding="10">
-                        <tbody>
-                            <tr>
-                                <td width="100%" valign="middle">
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <td width="90%">
-                                                    {% for award in awards %}
-                                                    <b><a href="{{ award.image }}">{{ award.title }}</a></b>
-                                                    <i>
-                                                        {{ award.description }} 
-                                                    </i>
-                                                        <br><br>
-                                                    {% endfor %}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="experience-item">
+                        {% for award in awards %}
+                        <b><a href="{{ award.image }}">{{ award.title }}</a></b><br>
+                        <i>{{ award.description }}</i><br><br>
+                        {% endfor %}
+                    </div>
+                </div>
 
+                <!-- Certifications Section -->
+                <div class="section">
                     <heading>Certifications</heading>
-                    <table width="100%" align="middle" border="0" cellspacing="0" cellpadding="10">
-                        <tbody>
-                            <tr>
-                                <td width="100%" valign="middle">
-                                    <b>{{ certifications.nptel.name }} <br>
-                                        <ul>
-                                            {% for course in certifications.nptel.courses %}
-                                            <li>
-                                                <a href="{{ course.link }}" target="_self">{{ course.name }}</a>
-                                            </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </b>
-                                    <table>
-                                        <tbody>
-                                            <b>{{ certifications.cadence.name }} - <a href="{{ certifications.cadence.link }}" target="_self">Link to all badges</a></b>
-                                            {% for row in certifications.cadence.badges | batch(4) %}
-                                            <tr>
-                                                {% for badge in row %}
-                                                <td width="25%">
-                                                    <img src="{{ badge }}" width="80%" style="display: block; margin-left: auto; margin-right: auto;">
-                                                </td>
-                                                {% endfor %}
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <heading>Education</heading>
-                    <table width="100%" align="middle" border="0" cellspacing="0" cellpadding="10">
-                        <tbody>
-                            {% for education in education_history %}
-                            <tr>
-                                <td width="100%" valign="middle">
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <td width="85%">
-                                                    <b>{{ education.institution }}</b>, {{ education.location }}<br>
-                                                    <i>
-                                                    {{ education.degree }} <br>{{ education.period }}
-                                                    </i>
-                                                </td>
-                                                <td width="15%">
-                                                    <img src="{{ education.logo }}" width="60%" style="display: flex; justify-content: center;">
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
+                    <div class="experience-item">
+                        <b>{{ certifications.nptel.name }}</b><br>
+                        <ul>
+                            {% for course in certifications.nptel.courses %}
+                            <li><a href="{{ course.link }}">{{ course.name }}</a></li>
                             {% endfor %}
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                        </ul>
+                        <br>
+                        <b>{{ certifications.cadence.name }}</b> - <a href="{{ certifications.cadence.link }}">Link to all badges</a><br>
+                        <table style="margin-top: 15px;">
+                            <tbody>
+                                {% for row in certifications.cadence.badges | batch(4) %}
+                                <tr>
+                                    {% for badge in row %}
+                                    <td width="25%">
+                                        <img src="{{ badge }}" width="80%" style="display: block; margin-left: auto; margin-right: auto;">
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Education Section -->
+                <div class="section">
+                    <heading>Education</heading>
+                    {% for education in education_history %}
+                    <div class="experience-item">
+                        <table width="100%">
+                            <tbody>
+                                <tr>
+                                    <td width="85%">
+                                        <b>{{ education.institution }}</b>, {{ education.location }}<br>
+                                        <i>{{ education.degree }}<br>{{ education.period }}</i>
+                                    </td>
+                                    <td width="15%">
+                                        <img src="{{ education.logo }}" width="60%" style="display: block; margin-left: auto; margin-right: auto;">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- CV Section -->
+            <div id="cv-section" class="content-section">
+                <div class="section">
+                    <heading>Curriculum Vitae</heading>
+                    <iframe src="cv/govardhan_cv.pdf" style="width:100%; height:800px; border:none;"></iframe>
+                </div>
+            </div>
+
+            <!-- Blog Section -->
+            <div id="blog-section" class="content-section">
+                <div class="section">
+                    <heading>Blog Posts</heading>
+                    {% for blog in blogs %}
+                    <div class="experience-item">
+                        <b><a href="{{ blog.link }}">{{ blog.title }}</a></b><br>
+                        <i>{{ blog.date }}</i><br>
+                        <p>{{ blog.description | safe }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Contact Section -->
+            <div id="contact-section" class="content-section">
+                <div class="section">
+                    <heading>Contact Information</heading>
+                    
+                    <div class="contact-container">
+                        <div class="contact-item">
+                            <h3>Personal Email</h3>
+                            <p><a href="mailto:saigov14@gmail.com">saigov14@gmail.com</a></p>
+                        </div>
+
+                        <div class="contact-item">
+                            <h3>Work Email</h3>
+                            <p><a href="mailto:sgovardhan@agranilabs.com">sgovardhan@agranilabs.com</a></p>
+                        </div>
+
+                        <div class="contact-item">
+                            <h3>LinkedIn</h3>
+                            <p><a href="https://www.linkedin.com/in/saigovardhan/" target="_blank">linkedin.com/in/saigovardhan</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionName) {
+            // Hide all content sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all nav links
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Show selected section
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            // Add active class to clicked nav link
+            const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('home');
+        });
+    </script>
 </body>
 </html>

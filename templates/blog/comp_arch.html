@@ -3,11 +3,11 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="icon" type="image/jpg" href="../img/icon.jpg">
-    <title>Sai Govardhan - Computer Architecture Resources</title>
-    <meta name="author" content="Sai Govardhan">
-    <meta name="description" content="Sai Govardhan's Computer Architecture Resources.">
+    <title>{{ name }} - Computer Architecture Resources</title>
+    <meta name="author" content="{{ name }}">
+    <meta name="description" content="{{ name }}'s Computer Architecture Resources.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="google-site-verification" content="LJiUXyRtAboUlddV7HHBhCtY3SGDcwlcaiIdPH_IYFc" />
+    <meta name="google-site-verification" content="{{ google_site_verification }}" />
     <link rel="stylesheet" type="text/css" href="../img/stylesheet.css">
 </head>
 
@@ -21,15 +21,14 @@
                     <tr style="padding:0px">
                         <td style="padding:2.5%;width:70%;vertical-align:middle">
                             <p style="text-align:center">
-                                <a href="../index.html"><name><b>Sai Govardhan</b></name></a>
+                                <a href="../index.html"><name><b>{{ name }}</b></name></a>
                             </p>
                             <p style="text-align:center">
-                                Microarchitect at <a href="https://agranilabs.com/">Agrani Labs</a> <br>
-
+                                {{ intro | safe }}
                             </p>
                         </td>
                         <td style="padding:1.5%;width:30%;max-width:30%">
-                            <a href=".././img/govardhan-profile.jpg"><img style="width:100%;max-width:100%" alt="profile photo" src=".././img/govardhan-profile.jpg" class="hoverZoomLink"></a>
+                            <a href="../{{ profile_image }}"><img style="width:100%;max-width:100%" alt="profile photo" src="../{{ profile_image }}" class="hoverZoomLink"></a>
                         </td>
                     </tr>
                 </tbody>
