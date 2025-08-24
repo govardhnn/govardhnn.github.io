@@ -74,210 +74,56 @@ a:hover {
   text-decoration: none;
 }
 
-body {
+body,
+td,
+th,
+tr,
+p,
+a {
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  color: #333;
-  background-color: #fff;
-  margin: 0;
-  padding: 0;
-}
-
-td, th, tr, p, a {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 strong {
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-h1, h2, h3, heading {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-weight: 700;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  color: #222;
-}
-
-h1 {
-  font-size: 28px;
-  border-bottom: 2px solid #1772d0;
-  padding-bottom: 10px;
+  font-size: 14px;
 }
 
 h2 {
-  font-size: 24px;
-}
-
-h3 {
-  font-size: 20px;
+  margin: 0;
+  font-weight: normal;
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 22px;
 }
 
 heading {
-  font-size: 24px;
-  font-weight: 700;
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 22px;
+  font-weight: normal;
   display: block;
-  margin-top: 30px;
-  margin-bottom: 15px;
-  color: #222;
-  border-bottom: 2px solid #1772d0;
-  padding-bottom: 10px;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
-papertitle {
+.papertitle {
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 16px;
-  font-weight: 700
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.name {
+  padding-top: 20px;
+  margin: 0;
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 32px;
 }
 
 name {
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 36px;
-  font-weight: 700;
-  color: #222;
+  font-size: 32px;
+  font-weight: normal;
 }
 
-/* Navigation styles */
-.navigation {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
-  padding: 15px 0;
-  margin-bottom: 20px;
-}
-
-.nav-container {
-  max-width: 800px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.nav-container a {
-  margin: 0 5px;
-  padding: 8px 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  font-size: 14px;
-  letter-spacing: 0.5px;
-}
-
-.nav-container a:hover {
-  background-color: #e9ecef;
-  border-radius: 4px;
-}
-
-/* Main container */
-.main-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-/* Profile section */
-.profile-section {
-  margin-bottom: 20px;
-  padding: 20px 0 10px 0;
-  border-bottom: 1px solid #eee;
-}
-
-/* News section */
-.news-section {
-  background-color: #f8f9fa;
-  padding: 20px;
-  margin-bottom: 30px;
-  border-radius: 8px;
-  border-left: 4px solid #1772d0;
-}
-
-.news-item {
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.news-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-}
-
-.news-date {
-  font-weight: 700;
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 5px;
-}
-
-/* Section styling */
-.section {
-  margin-bottom: 40px;
-}
-
-/* Experience items */
-.experience-item, .project-item {
-  margin-bottom: 25px;
-  padding: 20px;
-  background-color: #fafafa;
-  border-radius: 8px;
-  border-left: 4px solid #1772d0;
-}
-
-/* Content sections for JavaScript switching */
-.content-section {
-  display: none;
-}
-
-.content-section.active {
-  display: block;
-}
-
-/* Navigation active state */
-.nav-link.active {
-  background-color: #1772d0;
-  color: white !important;
-  border-radius: 4px;
-}
-
-/* Contact page styles */
-.contact-container {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.contact-item {
-  background-color: #fafafa;
-  padding: 25px;
-  border-radius: 8px;
-  border-left: 4px solid #1772d0;
-  text-align: center;
-}
-
-.contact-item h3 {
-  font-size: 18px;
-  margin-bottom: 10px;
-  color: #222;
-}
-
-.contact-item p {
-  margin: 8px 0;
-  font-size: 16px;
-}
-
-.contact-item a {
-  font-weight: 600;
-  font-size: 18px;
-}
-
-.contact-description {
-  color: #666;
-  font-style: italic;
-  font-size: 14px !important;
-}
 
 .one {
   width: 160px;
@@ -304,6 +150,3 @@ span.highlight {
   background-color: #ffffd0;
 }
 
-tr.spaceUnder>td {
-  padding-bottom: 3em;
-}

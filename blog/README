@@ -1,2 +1,0 @@
-== TO GENERATE THE HTML BLOGS:
-pandoc -i <source_markdown>.md -o <output_html>.html --template=blog_template.html
