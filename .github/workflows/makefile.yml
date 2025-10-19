@@ -11,5 +11,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Build HTML
-      run: make html
+    - name: Make CV PDF
+      run: make -C cv
