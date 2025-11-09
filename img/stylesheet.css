@@ -80,24 +80,24 @@ th,
 tr,
 p,
 a {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 14px;
 }
 
 strong {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 14px;
 }
 
 h2 {
   margin: 0;
   font-weight: normal;
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 22px;
 }
 
 heading {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 22px;
   font-weight: normal;
   display: block;
@@ -106,7 +106,7 @@ heading {
 }
 
 .papertitle {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 14px;
   font-weight: 700;
 }
@@ -114,12 +114,12 @@ heading {
 .name {
   padding-top: 20px;
   margin: 0;
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 32px;
 }
 
 name {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 32px;
   font-weight: normal;
 }
