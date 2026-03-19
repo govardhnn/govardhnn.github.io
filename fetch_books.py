@@ -1,0 +1,268 @@
+#!/usr/bin/env python3
+"""
+fetch_books.py — Mirror Goodreads shelves into books.html
+
+Usage:
+    python3 fetch_books.py
+
+How it works:
+  1. Fetches your Goodreads profile to discover all custom shelves.
+  2. Each non-empty shelf becomes its own display shelf (no grouping).
+  3. Shelves with zero books are silently skipped.
+  4. Rewrites the CURRENTLY_READING and SHELVES arrays in books.html.
+
+To add a new shelf: just create it on Goodreads — it auto-appears on the next run.
+"""
+
+import urllib.request
+import re
+import json
+import os
+import html as html_module
+import time
+import sys
+
+# ── Config ────────────────────────────────────────────────────────────────────
+
+GOODREADS_USER_ID = "45335591"
+
+BOOKS_HTML = os.path.join(os.path.dirname(os.path.abspath(__file__)), "books.html")
+
+# Used when the profile page can't be parsed (Goodreads HTML changes, rate-limit, etc.)
+FALLBACK_SHELVES = [
+    "computers", "entrepreneurship", "fiction",
+    "mathematics", "memoir", "philosophy", "world",
+]
+
+# System shelves to never show
+SKIP_SHELVES = {"to-read", "read", "currently-reading", "did-not-finish", "owned"}
+
+# Height cycle for visual variety
+HEIGHT_CYCLE = ["", "tall", "", "short", "tall", "", "short", ""]
+
+REQUEST_DELAY = 0.5
+
+
+# ── HTTP ──────────────────────────────────────────────────────────────────────
+
+def fetch(url: str) -> str:
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        return resp.read().decode("utf-8", errors="replace")
+
+
+# ── Shelf discovery ───────────────────────────────────────────────────────────
+
+def discover_shelves(user_id: str) -> list[str]:
+    """
+    Parse the public Goodreads profile to get all custom shelf names.
+    Falls back to FALLBACK_SHELVES if parsing fails or returns nothing.
+    """
+    try:
+        page = fetch(f"https://www.goodreads.com/user/show/{user_id}")
+    except Exception as e:
+        print(f"  Could not fetch profile ({e}); using fallback shelf list.")
+        return FALLBACK_SHELVES
+
+    found = re.findall(r'>\s*([a-z][a-z0-9\-]*)\s*\(\s*(\d+)\s*\)', page)
+    shelves = [
+        name for name, count in found
+        if name not in SKIP_SHELVES and int(count) > 0
+    ]
+
+    # Deduplicate, preserve order
+    seen, unique = set(), []
+    for s in shelves:
+        if s not in seen:
+            seen.add(s)
+            unique.append(s)
+
+    if not unique:
+        print("  Profile shelf list was empty; using fallback shelf list.")
+        return FALLBACK_SHELVES
+
+    return unique
+
+
+# ── RSS parsing ───────────────────────────────────────────────────────────────
+
+def strip_html(s: str) -> str:
+    s = re.sub(r"<[^>]+>", "", s)
+    return html_module.unescape(s).strip()
+
+
+def normalise_cover(url: str) -> str:
+    return re.sub(r"\._S[XY]\d+_\.jpg$", "._SX98_.jpg", url)
+
+
+def get_field(item_text: str, tag: str) -> str | None:
+    """Extract a field from a Goodreads RSS <item> block, handling CDATA."""
+    m = re.search(rf"<{tag}[^>]*><!\[CDATA\[(.*?)\]\]></{tag}>", item_text, re.DOTALL)
+    if m:
+        return m.group(1).strip()
+    m = re.search(rf"<{tag}[^>]*>(.*?)</{tag}>", item_text, re.DOTALL)
+    if m:
+        return m.group(1).strip()
+    return None
+
+
+def fetch_shelf_rss(shelf: str) -> list[dict]:
+    url = (
+        f"https://www.goodreads.com/review/list_rss/{GOODREADS_USER_ID}"
+        f"?shelf={shelf}&per_page=200"
+    )
+    try:
+        xml_text = fetch(url)
+    except Exception as e:
+        print(f"FAILED ({e})")
+        return []
+
+    books = []
+    for item in re.findall(r"<item>(.*?)</item>", xml_text, re.DOTALL):
+        title  = get_field(item, "title")  or ""
+        author = get_field(item, "author_name") or ""
+
+        if not author and " by " in title:
+            title, author = [p.strip() for p in title.rsplit(" by ", 1)]
+
+        # Strip series tag: "Title (Series, #N)" → "Title"
+        title = re.sub(r"\s*\(.*?,\s*#\d+\)\s*$", "", title).strip()
+        # Collapse whitespace in author names
+        author = re.sub(r"\s+", " ", author).strip()
+
+        try:
+            rating = int(float(get_field(item, "user_rating") or "0"))
+        except ValueError:
+            rating = 0
+
+        review_raw = get_field(item, "user_review") or ""
+        review = strip_html(review_raw) or None
+
+        cover = normalise_cover(
+            get_field(item, "book_medium_image_url")
+            or get_field(item, "book_image_url")
+            or ""
+        )
+
+        if title and cover:
+            books.append({
+                "title": title, "author": author,
+                "rating": rating, "review": review,
+                "cover": cover, "height": "",
+            })
+
+    return books
+
+
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
+def assign_heights(books: list[dict]) -> None:
+    for i, book in enumerate(books):
+        book["height"] = HEIGHT_CYCLE[i % len(HEIGHT_CYCLE)]
+
+
+def shelf_to_label(name: str) -> str:
+    return name.replace("-", " ").title()
+
+
+# ── JS generation ─────────────────────────────────────────────────────────────
+
+def book_js(book: dict, indent: int = 16) -> str:
+    pad = " " * indent
+    return (
+        f"{pad}{{ title: {json.dumps(book['title'],  ensure_ascii=False)}, "
+        f"author: {json.dumps(book['author'], ensure_ascii=False)}, "
+        f"rating: {book['rating']}, height: {json.dumps(book['height'])},\n"
+        f"{pad}  cover: {json.dumps(book['cover'],  ensure_ascii=False)},\n"
+        f"{pad}  review: {json.dumps(book['review'], ensure_ascii=False)} }}"
+    )
+
+
+def build_cr_js(books: list[dict]) -> str:
+    if not books:
+        return "    const CURRENTLY_READING = [];"
+    lines = ",\n".join(book_js(b, indent=8) for b in books)
+    return f"    const CURRENTLY_READING = [\n{lines},\n    ];"
+
+
+def build_shelves_js(display_shelves: list[tuple[str, list[dict]]]) -> str:
+    parts = []
+    for label, books in display_shelves:
+        if not books:
+            continue
+        books_js = ",\n".join(book_js(b, indent=16) for b in books)
+        parts.append(
+            f"        {{\n"
+            f"            label: {json.dumps(label, ensure_ascii=False)},\n"
+            f"            books: [\n{books_js},\n            ]\n"
+            f"        }}"
+        )
+    return "    const SHELVES = [\n" + ",\n".join(parts) + "\n    ];"
+
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+def main() -> None:
+    print("Discovering shelves from Goodreads profile…")
+    custom_shelves = discover_shelves(GOODREADS_USER_ID)
+    print(f"  Found: {', '.join(custom_shelves)}\n")
+
+    print("  [currently-reading]", end=" ", flush=True)
+    cr_books = fetch_shelf_rss("currently-reading")
+    print(f"{len(cr_books)} books")
+    time.sleep(REQUEST_DELAY)
+
+    cr_titles = {b["title"].lower() for b in cr_books}
+
+    display_shelves: list[tuple[str, list[dict]]] = []
+
+    for shelf_name in custom_shelves:
+        print(f"  [{shelf_name}]", end=" ", flush=True)
+        books = fetch_shelf_rss(shelf_name)
+        print(f"{len(books)} books")
+        time.sleep(REQUEST_DELAY)
+
+        # Deduplicate and exclude currently-reading titles
+        seen: set[str] = set()
+        unique: list[dict] = []
+        for b in books:
+            key = b["title"].lower()
+            if key not in seen and key not in cr_titles:
+                seen.add(key)
+                unique.append(b)
+
+        if not unique:
+            continue
+
+        assign_heights(unique)
+        display_shelves.append((shelf_to_label(shelf_name), unique))
+
+    if not display_shelves:
+        print("\nNo books found — books.html not modified.", file=sys.stderr)
+        sys.exit(1)
+
+    assign_heights(cr_books)
+
+    cr_js      = build_cr_js(cr_books)
+    shelves_js = build_shelves_js(display_shelves)
+
+    with open(BOOKS_HTML, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    content = re.sub(
+        r"const CURRENTLY_READING\s*=\s*\[.*?\];", cr_js, content, flags=re.DOTALL)
+    content = re.sub(
+        r"const SHELVES\s*=\s*\[.*?\];", shelves_js, content, flags=re.DOTALL)
+
+    with open(BOOKS_HTML, "w", encoding="utf-8") as f:
+        f.write(content)
+
+    total = sum(len(b) for _, b in display_shelves)
+    print(f"\nDone. {total} books across {len(display_shelves)} shelves:")
+    for label, books in display_shelves:
+        print(f"  {label} ({len(books)})")
+    print(f"  + {len(cr_books)} currently reading → books.html updated.")
+
+
+if __name__ == "__main__":
+    main()

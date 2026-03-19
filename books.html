@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="icon" type="image/jpg" href="./img/icon.jpg">
+    <title>Book Reviews - Sai Govardhan</title>
+    <meta name="author" content="Govardhan">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="./img/stylesheet.css">
+    <style>
+        body {
+            width: 100% !important;
+            max-width: 1300px;
+        }
+
+        /* ── Full-width split layout ── */
+        .library-layout {
+            display: flex;
+            align-items: flex-start;
+            margin: 1em;
+            gap: 0;
+        }
+
+        /* Left: scrollable shelves */
+        .shelves-panel {
+            flex: 7;
+            min-width: 0;
+            padding: 22px 28px 32px 28px;
+            background-color: #eee;
+            border: 1px solid #333;
+        }
+
+        .library-title {
+            margin-bottom: 20px;
+        }
+
+        .library-title h1 {
+            font-size: 22pt;
+            font-weight: normal;
+            margin: 0 0 4px 0;
+        }
+
+        .library-title .subtitle {
+            font-style: italic;
+            color: #666;
+            font-size: 10pt;
+        }
+
+        /* Right: sticky review panel */
+        .review-panel {
+            flex: 3;
+            min-width: 260px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            background-color: #e2e2e2;
+            border: 1px solid #333;
+            border-left: none;
+            padding: 24px 18px;
+            box-sizing: border-box;
+        }
+
+        /* ── Shelf sections ── */
+        .shelf-section {
+            margin-bottom: 30px;
+        }
+
+        /* Wooden shelf */
+        .shelf {
+            background: linear-gradient(180deg, #d8b06e 0%, #c8984e 55%, #b8883a 100%);
+            border-bottom: 16px solid #7a5028;
+            border-left: 8px solid #8b6030;
+            border-right: 8px solid #8b6030;
+            border-top: 3px solid #e2bf7e;
+            border-radius: 1px 1px 3px 3px;
+            padding: 14px 16px 0 16px;
+            min-height: 118px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.32), inset 0 1px 4px rgba(255,255,255,0.22);
+        }
+
+        .books-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            flex-wrap: wrap;
+        }
+
+        /* ── Book on shelf ── */
+        .book {
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: margin-bottom 0.16s ease;
+            border-radius: 2px 2px 0 0;
+        }
+
+        .book img {
+            display: block;
+            width: 46px;
+            height: 78px;
+            object-fit: cover;
+            border-radius: 2px 2px 0 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.35), inset -2px 0 0 rgba(0,0,0,0.18);
+            transition: box-shadow 0.16s ease;
+        }
+
+        .book.tall img  { height: 94px; }
+        .book.short img { height: 62px; }
+
+        .book:hover {
+            margin-bottom: 14px;
+        }
+
+        .book.active {
+            margin-bottom: 20px;
+        }
+
+        .book.active img {
+            box-shadow: 2px 0 10px rgba(0,0,0,0.5), 0 0 0 2px #027, inset -2px 0 0 rgba(0,0,0,0.18);
+        }
+
+        /* ── Currently reading strip ── */
+        .currently-reading {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
+
+        .cr-book {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            background: #f4f4f4;
+            border-radius: 2px;
+            transition: background 0.14s;
+            max-width: 200px;
+        }
+
+        .cr-book:hover     { background: #e8e8e8; }
+        .cr-book.active    { border-color: #027; background: #dde8f2; }
+
+        .cr-book img {
+            width: 38px;
+            height: 56px;
+            object-fit: cover;
+            box-shadow: 1px 1px 4px rgba(0,0,0,0.25);
+        }
+
+        .cr-info          { font-size: 8.5pt; }
+        .cr-title         { font-weight: bold; color: #027; line-height: 1.3; }
+        .cr-author        { color: #666; margin-top: 2px; }
+
+        /* ── Review panel ── */
+        .review-empty {
+            height: 100%;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            font-size: 11pt;
+            padding: 40px 16px;
+            line-height: 1.6;
+        }
+
+        .review-content { display: none; }
+
+        .review-panel-label {
+            font-size: 8.5pt;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #999;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 6px;
+            margin-bottom: 16px;
+        }
+
+        .review-cover {
+            display: block;
+            width: 110px;
+            height: auto;
+            margin: 0 auto 16px auto;
+            box-shadow: 4px 4px 12px rgba(0,0,0,0.35);
+            border-radius: 2px;
+        }
+
+        .review-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 4px;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .review-author {
+            font-size: 9.5pt;
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .review-stars {
+            text-align: center;
+            font-size: 15pt;
+            color: #b8860b;
+            margin-bottom: 14px;
+            letter-spacing: 2px;
+        }
+
+        .review-divider {
+            border: none;
+            border-top: 1px solid #c5c5c5;
+            margin: 12px 0;
+        }
+
+        .review-text {
+            font-size: 9.5pt;
+            line-height: 1.65;
+            color: #333;
+            text-align: justify;
+        }
+
+        .review-text.no-review {
+            color: #bbb;
+            font-style: italic;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div>
+        <table border="0" id="menutable">
+            <tr>
+                <td class="menu"><div class="menuitem"><a href="index.html">Home</a></div></td>
+                <td class="menu"><div class="menuitem"><a href="https://www.linkedin.com/in/saigovardhan/">LinkedIn</a></div></td>
+                <td class="menu"><div class="menuitem"><a href="https://github.com/govardhnn">GitHub</a></div></td>
+                <td class="menu"><div class="menuitem"><a href="books.html">Book Reviews</a></div></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="library-layout">
+
+        <!-- ── Left: shelves ── -->
+        <div class="shelves-panel">
+            <div class="library-title">
+                <h1>Book Reviews</h1>
+                <div class="subtitle">A personal library</div>
+            </div>
+
+            <h2 class="section-heading">Currently Reading</h2>
+            <div class="currently-reading" id="crRow"></div>
+
+            <div id="shelvesContainer"></div>
+        </div>
+
+        <!-- ── Right: review panel ── -->
+        <div class="review-panel">
+            <div class="review-empty" id="reviewEmpty">
+                pick up a book<br>from the shelf
+            </div>
+            <div class="review-content" id="reviewContent">
+                <div class="review-panel-label">Reading notes</div>
+                <img class="review-cover" id="rCover" src="" alt="">
+                <div class="review-title"  id="rTitle"></div>
+                <div class="review-author" id="rAuthor"></div>
+                <div class="review-stars"  id="rStars"></div>
+                <hr class="review-divider">
+                <div class="review-text"   id="rText"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+                            const CURRENTLY_READING = [
+        { title: "Imagining India: The Idea of a Renewed Nation", author: "Nandan Nilekani", rating: 0, height: "",
+          cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347663427l/5501276._SX98_.jpg",
+          review: null },
+        { title: "The Golden Road: How Ancient India Transformed the World", author: "William Dalrymple", rating: 0, height: "tall",
+          cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1715854421l/201608148._SX98_.jpg",
+          review: null },
+        { title: "The Soros Lectures: At the Central European University", author: "George Soros", rating: 0, height: "",
+          cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1328757733l/7651910._SX98_.jpg",
+          review: null },
+    ];
+
+                            const SHELVES = [
+        {
+            label: "Computers",
+            books: [
+                { title: "Computer Science from the Bottom Up", author: "Ian Wienand", rating: 0, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1516907429l/21812243._SX98_.jpg",
+                  review: null },
+                { title: "Digital Design and Computer Architecture", author: "David Money Harris", rating: 0, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348276944l/2558730._SX98_.jpg",
+                  review: null },
+                { title: "Computer Architecture: A Quantitative Approach", author: "John L. Hennessy", rating: 0, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1388277732l/70135._SX98_.jpg",
+                  review: null },
+                { title: "Computer System Architecture", author: "M. Morris Mano", rating: 0, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348377789l/224131._SX98_.jpg",
+                  review: null },
+                { title: "Computer Organization & Design: The Hardware/Software Interface", author: "David A. Patterson", rating: 0, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1386925474l/83895._SX98_.jpg",
+                  review: null },
+                { title: "The Art of Computer Programming, Volume 1: Fundamental Algorithms", author: "Donald Ervin Knuth", rating: 0, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1388242904l/112247._SX98_.jpg",
+                  review: null },
+                { title: "BSV by Example", author: "Rishiyur S. Nikhil", rating: 0, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348846103l/13007693._SX98_.jpg",
+                  review: null },
+            ]
+        },
+        {
+            label: "Entrepreneurship",
+            books: [
+                { title: "Amazon Letters to Shareholders 1997 - 2020", author: "Jeff Bezos", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1680882178l/117222502._SX98_.jpg",
+                  review: null },
+                { title: "Business Model Generation", author: "Alexander Osterwalder", rating: 5, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1384676138l/7723797._SX98_.jpg",
+                  review: null },
+                { title: "Hit Refresh: The Quest to Rediscover Microsoft's Soul and Imagine a Better Future for Everyone", author: "Satya Nadella", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1506565784l/30835567._SX98_.jpg",
+                  review: null },
+                { title: "Zero to One: Notes on Startups, or How to Build the Future", author: "Peter Thiel", rating: 5, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1630663027l/18050143._SX98_.jpg",
+                  review: null },
+            ]
+        },
+        {
+            label: "Fiction",
+            books: [
+                { title: "The Adventures of Sherlock Holmes", author: "Arthur Conan Doyle", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1164045516l/3590._SX98_.jpg",
+                  review: null },
+                { title: "The Three-Body Problem", author: "Liu Cixin", rating: 4, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1415428227l/20518872._SX98_.jpg",
+                  review: "Someone needs to sit down with my man Liu Cixin and check what he was going through when he wrote this." },
+                { title: "Snow Crash", author: "Neal Stephenson", rating: 0, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1589842551l/40651883._SX98_.jpg",
+                  review: null },
+                { title: "Lord of Light", author: "Roger Zelazny", rating: 0, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1330127327l/13821._SX98_.jpg",
+                  review: null },
+                { title: "White Nights", author: "Fyodor Dostoyevsky", rating: 4, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1450699039l/1772910._SX98_.jpg",
+                  review: "Got beautiful flashbacks of pain and vulnerability from a year ago" },
+                { title: "One Indian Girl", author: "Chetan Bhagat", rating: 1, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1471605709l/31557698._SX98_.jpg",
+                  review: null },
+                { title: "The Merchant of Venice", author: "William Shakespeare", rating: 1, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1327871054l/24128._SX98_.jpg",
+                  review: "bro whats this book even lol" },
+                { title: "Cycle of the Werewolf", author: "Stephen King", rating: 2, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1565642120l/550844._SX98_.jpg",
+                  review: null },
+                { title: "Siddhartha", author: "Hermann Hesse", rating: 5, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1388205417l/56604._SX98_.jpg",
+                  review: "This book is a thought process adventure and in many ways relatable to anyone who differs to think from the redundant way of life, thought, belief and practice.  This book will make you question everything  without becoming an ascetic (or a 'Smana'/'Gautama') but as a Siddhartha." },
+                { title: "Inferno", author: "Dan Brown", rating: 4, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1534070896l/17212231._SX98_.jpg",
+                  review: null },
+                { title: "The Alchemist", author: "Paulo Coelho", rating: 2, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1654371463l/18144590._SX98_.jpg",
+                  review: null },
+                { title: "1984", author: "George Orwell", rating: 5, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1532714506l/40961427._SX98_.jpg",
+                  review: null },
+                { title: "The Great Gatsby", author: "F. Scott Fitzgerald", rating: 5, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1738790966l/4671._SX98_.jpg",
+                  review: null },
+                { title: "The Kite Runner", author: "Khaled Hosseini", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1579036753l/77203._SX98_.jpg",
+                  review: null },
+                { title: "Shibumi", author: "Trevanian", rating: 5, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1388187747l/1059._SX98_.jpg",
+                  review: null },
+                { title: "The Bankster", author: "Ravi Subramanian", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1351008254l/16104287._SX98_.jpg",
+                  review: null },
+                { title: "Dark Matter", author: "Blake Crouch", rating: 5, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1472119680l/27833670._SX98_.jpg",
+                  review: null },
+                { title: "Bloodline", author: "Sidney Sheldon", rating: 4, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1298570618l/300225._SX98_.jpg",
+                  review: null },
+                { title: "Deception Point", author: "Dan Brown", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1551277487l/976._SX98_.jpg",
+                  review: null },
+                { title: "The Da Vinci Code", author: "Dan Brown", rating: 3, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1720313229l/968._SX98_.jpg",
+                  review: null },
+                { title: "The Fault in Our Stars", author: "John Green", rating: 2, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1660273739l/11870085._SX98_.jpg",
+                  review: null },
+                { title: "Gone Girl", author: "Gillian Flynn", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1554086139l/19288043._SX98_.jpg",
+                  review: null },
+                { title: "If God Was a Banker", author: "Ravi Subramanian", rating: 3, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1332153978l/2646320._SX98_.jpg",
+                  review: null },
+                { title: "Frankenstein: The 1818 Text", author: "Mary Wollstonecraft Shelley", rating: 1, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1631088473l/35031085._SX98_.jpg",
+                  review: null },
+                { title: "Nightflyers", author: "George R.R. Martin", rating: 3, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1240361401l/67958._SX98_.jpg",
+                  review: "The book is spectacularly focused on one important character, Royd. I was personally moved by the character centeralisaton of Royd, his mysterious identity and the crew members confused and rattled about the identity. The other characters are fairly well suited to the plot but the short novel did its best to reveal the depth of these space wanderers. Disclaimer- this book contains horror and involves the members of the crew getting killed." },
+                { title: "The Krishna Key", author: "Ashwin Sanghi", rating: 4, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1341289060l/15733523._SX98_.jpg",
+                  review: null },
+            ]
+        },
+        {
+            label: "Mathematics",
+            books: [
+                { title: "more puzzles to puzzle you", author: "Shakuntala Devi", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1371017425l/18069480.jpg",
+                  review: "I have a crush on Shakuntala Devi's brain fr, such mindblowing questions" },
+                { title: "Puzzles to Puzzle You", author: "Shakuntala Devi", rating: 5, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1310136256l/358565._SX98_.jpg",
+                  review: null },
+            ]
+        },
+        {
+            label: "Memoir",
+            books: [
+                { title: "The Almanack of Naval Ravikant: A Guide to Wealth and Happiness", author: "Eric Jorgenson", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1598011736l/54898389._SX98_.jpg",
+                  review: "Naval is a mindful person and foundational thinker. He explains concepts- mainly wealth, decision making, and health with core reasoning and philosophical groundwork. This book answered many of my fundamental questions and related to aspects of my thought process parallel to Naval's.Although there are aspects I wouldn't agree with Naval at this point of my life, mainly on happiness- I feel that it's a personal exploratory journey and my meaning for a deep subject like happiness will take time to figure out." },
+                { title: "Krishnamurtis Notebook", author: "J. Krishnamurti", rating: 0, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1348224476l/143881._SX98_.jpg",
+                  review: null },
+                { title: "The Surrender Experiment: My Journey into Life's Perfection", author: "Michael A. Singer", rating: 5, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1423601289l/23164946._SX98_.jpg",
+                  review: null },
+                { title: "Tuesdays with Morrie: An Old Man, a Young Man, and Life's Greatest Lesson", author: "Mitch Albom", rating: 5, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1423763749l/6900._SX98_.jpg",
+                  review: null },
+                { title: "Man&apos;s Search for Meaning", author: "Viktor E. Frankl", rating: 4, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1535419394l/4069._SX98_.jpg",
+                  review: "This is not a self-help book. The pandemic by covid-19 has made most of us experience an existential vacuum and this book narrates worse (not that comparing crisis is important) conditions in the concentration camp during the holocaust. It is shameful how little we are educated about this mass murder, and even more importantly, the learnings from the martyrs and the survivors. On a personal level, this book has moved me from the darkness trying to isolate me due to the pandemic, however cliche that may sound." },
+                { title: "\"Surely You're Joking, Mr. Feynman!\": Adventures of a Curious Character", author: "Richard P. Feynman", rating: 0, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1504936953l/35167685._SX98_.jpg",
+                  review: null },
+                { title: "Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future", author: "Ashlee Vance", rating: 0, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1518291452l/25541028._SX98_.jpg",
+                  review: null },
+                { title: "Nikola Tesla: Imagination and the Man That Invented the 20th Century", author: "Sean Patrick", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1366561721l/17835351._SX98_.jpg",
+                  review: null },
+            ]
+        },
+        {
+            label: "Philosophy",
+            books: [
+                { title: "Ikigai: The Japanese Secret to a Long and Happy Life", author: "Héctor García", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1641896776l/58342375._SX98_.jpg",
+                  review: null },
+                { title: "Rest: Why You Get More Done When You Work Less", author: "Alex Soojung-Kim Pang", rating: 4, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1470283010l/29502354._SX98_.jpg",
+                  review: "after reading deep-work, this book made clear emphasis on why rest is not only necessary, but also a tool to achieve better performance and life satisfaction. The book could do away with lesser examples, as it overshadows the important points" },
+                { title: "The Complete Guide to Fasting: Heal Your Body Through Intermittent, Alternate-Day, and Extended Fasting", author: "Jason Fung", rating: 3, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1521670646l/32670670._SX98_.jpg",
+                  review: "Fasting was one lifestyle choice I always wanted to discover, and this book is good at convincing the same. The author lays out research on the topic and gives examples from people (all stars whatever) to motivate the reader. I’d say that only 20% of the book is relevant while the rest is junk(ironic considering this is a book about fasting)" },
+                { title: "Freedom from the Known", author: "J. Krishnamurti", rating: 5, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1410132490l/143877._SX98_.jpg",
+                  review: "This is a self-introspective journey of understanding social constructs and using clarity of thought to attain 'freedom' while in this book- J.Krishnamurti does no guidance but only help row this boat with immersive and brutally honest views on the human world. I also personally feel that I could perceive this book differently given a different phase in my life, for which I will revisit this book again." },
+                { title: "The Inner Game of Tennis: The Classic Guide to the Mental Side of Peak Performance", author: "W. Timothy Gallwey", rating: 5, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1750018611l/905._SX98_.jpg",
+                  review: "Gallwey makes a deep dive into the art of learning. He takes experience from studying amateurs to pros and makes a case for the non-judgemental, self introspective and flow-state learning process. Although the book talks about tennis majorly, there can be many parallels drawn to the Inner-Game of everyday life. Personally, I think I will read this book many more times over." },
+                { title: "Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones", author: "James Clear", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1655988385l/40121378._SX98_.jpg",
+                  review: null },
+                { title: "Rich Dad, Poor Dad", author: "Robert T. Kiyosaki", rating: 5, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1757619021l/69571._SX98_.jpg",
+                  review: null },
+                { title: "I, Pencil: My Family Tree As Told to Leonard E. Read", author: "Leonard Edward Read", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1346788984l/2153998._SX98_.jpg",
+                  review: null },
+                { title: "Tools of Titans: The Tactics, Routines, and Habits of Billionaires, Icons, and World-Class Performers", author: "Timothy Ferriss", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1472831109l/31823677._SX98_.jpg",
+                  review: null },
+                { title: "Deep Work: Rules for Focused Success in a Distracted World", author: "Cal Newport", rating: 4, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1447957962l/25744928._SX98_.jpg",
+                  review: "I was wrong when I decided I wouldn't need to immerse myself into deep work once I joined engineering and felt that the distracted life lead to an easy and happy life. This book essentially outlined and reminded me of my innate desire for deep immersive work and putting my focus to its limits, which requires digital minimalism and the reduction of context-switching, or more generally distractionsIt also made good emphasis on using distractions as mindfully limited useful tools, something I have personally overlooked.on a side note, this book also makes effort in convincing and answering knowledge-worker counter-takes on deep work. which rightfully fills in most of the pagesThis sounds cliche but the book made me realize this very important lesson at the most essential point of my life.My rating would be a strong 4.5/5 or a light 5/5." },
+                { title: "The God Delusion", author: "Richard Dawkins", rating: 5, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347220693l/14743._SX98_.jpg",
+                  review: null },
+                { title: "The Subtle Art of Not Giving a F*ck: A Counterintuitive Approach to Living a Good Life", author: "Mark Manson", rating: 3, height: "short",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1465761302l/28257707._SX98_.jpg",
+                  review: null },
+                { title: "The Psychology of Money: Timeless Lessons on Wealth, Greed, and Happiness", author: "Morgan Housel", rating: 5, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1581527774l/41881472._SX98_.jpg",
+                  review: null },
+            ]
+        },
+        {
+            label: "World",
+            books: [
+                { title: "What Young India Wants", author: "Chetan Bhagat", rating: 4, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1341852025l/15743828._SX98_.jpg",
+                  review: null },
+                { title: "Factfulness: Ten Reasons We're Wrong About the World – and Why Things Are Better Than You Think", author: "Hans Rosling", rating: 5, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1544963815l/34890015._SX98_.jpg",
+                  review: null },
+            ]
+        }
+    ];
+
+    // Upscale cover URL for the review panel
+    function largeCover(url) {
+        return url.replace(/\._S[XY]\d+_\.jpg$/, '._SX315_.jpg');
+    }
+
+    function renderStars(n) {
+        if (!n) return '';
+        return '★'.repeat(n) + '☆'.repeat(5 - n);
+    }
+
+    let activeEl = null;
+
+    function selectBook(book, el) {
+        if (activeEl) activeEl.classList.remove('active');
+        activeEl = el;
+        el.classList.add('active');
+
+        document.getElementById('reviewEmpty').style.display = 'none';
+        document.getElementById('reviewContent').style.display = 'block';
+
+        const cover = document.getElementById('rCover');
+        cover.src = largeCover(book.cover);
+        cover.alt = book.title;
+
+        document.getElementById('rTitle').textContent  = book.title;
+        document.getElementById('rAuthor').textContent = book.author;
+        document.getElementById('rStars').textContent  = renderStars(book.rating);
+
+        const textEl = document.getElementById('rText');
+        if (book.review) {
+            textEl.textContent = book.review;
+            textEl.className = 'review-text';
+        } else {
+            textEl.textContent = 'No review yet.';
+            textEl.className = 'review-text no-review';
+        }
+    }
+
+    // Build currently-reading strip
+    const crRow = document.getElementById('crRow');
+    CURRENTLY_READING.forEach(book => {
+        const el = document.createElement('div');
+        el.className = 'cr-book';
+        el.innerHTML = `
+            <img src="${book.cover}" alt="${book.title}">
+            <div class="cr-info">
+                <div class="cr-title">${book.title}</div>
+                <div class="cr-author">${book.author}</div>
+            </div>
+        `;
+        el.addEventListener('click', () => selectBook(book, el));
+        crRow.appendChild(el);
+    });
+
+    // Build shelves
+    const container = document.getElementById('shelvesContainer');
+    SHELVES.forEach(shelf => {
+        const section = document.createElement('div');
+        section.className = 'shelf-section';
+        section.innerHTML = `
+            <h2 class="section-heading">${shelf.label}</h2>
+            <div class="shelf"><div class="books-row" id="row-${shelf.label}"></div></div>
+        `;
+        container.appendChild(section);
+
+        const row = section.querySelector('.books-row');
+        shelf.books.forEach(book => {
+            const el = document.createElement('div');
+            el.className = 'book' + (book.height ? ' ' + book.height : '');
+            el.title = book.title;
+            el.innerHTML = `<img src="${book.cover}" alt="${book.title}" loading="lazy">`;
+            el.addEventListener('click', () => selectBook(book, el));
+            row.appendChild(el);
+        });
+    });
+    </script>
+</body>
+</html>
