@@ -86,9 +86,31 @@ def discover_shelves(user_id: str) -> list[str]:
 
 # ── RSS parsing ───────────────────────────────────────────────────────────────
 
-def strip_html(s: str) -> str:
-    s = re.sub(r"<[^>]+>", "", s)
-    return html_module.unescape(s).strip()
+def clean_review_html(s: str) -> str | None:
+    """
+    Convert Goodreads review HTML to safe display HTML.
+    - <br>, </p> → newline
+    - <a href> links are preserved
+    - All other tags are stripped
+    - Result uses <br> for line breaks so it renders correctly via innerHTML
+    """
+    if not s:
+        return None
+    # Block-level breaks → newline
+    s = re.sub(r"<br\s*/?>", "\n", s, flags=re.IGNORECASE)
+    s = re.sub(r"</p\s*>", "\n", s, flags=re.IGNORECASE)
+    s = re.sub(r"<p[^>]*>", "", s, flags=re.IGNORECASE)
+    # Strip everything except <a>, <em>, <i>, <b>, <strong>
+    s = re.sub(r"<(?!/?(?:a|em|i|b|strong)\b)[^>]+>", "", s, flags=re.IGNORECASE)
+    # Unescape HTML entities (&amp; → &, etc.)
+    s = html_module.unescape(s)
+    # Collapse excess blank lines
+    s = re.sub(r"\n{3,}", "\n\n", s)
+    s = s.strip()
+    if not s:
+        return None
+    # Convert newlines → <br> for innerHTML rendering
+    return s.replace("\n", "<br>")
 
 
 def normalise_cover(url: str) -> str:
@@ -136,7 +158,7 @@ def fetch_shelf_rss(shelf: str) -> list[dict]:
             rating = 0
 
         review_raw = get_field(item, "user_review") or ""
-        review = strip_html(review_raw) or None
+        review = clean_review_html(review_raw)
 
         cover = normalise_cover(
             get_field(item, "book_medium_image_url")
