@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="icon" type="image/jpg" href="./img/icon.jpg">
+    <title>Notes - Sai Govardhan</title>
+    <meta name="author" content="Govardhan">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="./img/stylesheet.css">
+    <style>
+        body {
+            width: 100% !important;
+            max-width: 1560px;
+        }
+
+        .notes-layout {
+            display: flex;
+            align-items: flex-start;
+            margin: 1em;
+            gap: 0;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* ── Left: topic list ── */
+        .topics-panel {
+            flex: 0 0 20%;
+            width: 20%;
+            min-width: 160px;
+            max-width: 260px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            background-color: #eee;
+            border: 1px solid #333;
+            box-sizing: border-box;
+            padding: 22px 0 32px 0;
+        }
+
+        .topics-title {
+            padding: 0 18px 16px 18px;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 8px;
+        }
+
+        .topics-title h1 {
+            font-size: 14pt;
+            font-weight: normal;
+            margin: 0 0 3px 0;
+        }
+
+        .topics-title .subtitle {
+            font-style: italic;
+            color: #666;
+            font-size: 8.5pt;
+        }
+
+        /* Section headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 18px 8px 14px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 9pt;
+            font-weight: bold;
+            color: #333;
+            letter-spacing: 0.3px;
+            border-left: 3px solid transparent;
+            transition: background 0.12s, border-color 0.12s;
+        }
+
+        .section-header:hover {
+            background: #e0e0e0;
+        }
+
+        .section-header.open {
+            border-left-color: #027;
+            color: #027;
+        }
+
+        .section-chevron {
+            font-size: 8pt;
+            color: #999;
+            transition: transform 0.18s;
+            flex-shrink: 0;
+        }
+
+        .section-header.open .section-chevron {
+            transform: rotate(90deg);
+        }
+
+        /* Note items */
+        .note-items {
+            display: none;
+            padding: 0 0 4px 0;
+        }
+
+        .note-items.open {
+            display: block;
+        }
+
+        .note-item {
+            display: block;
+            padding: 6px 18px 6px 24px;
+            font-size: 8.5pt;
+            color: #444;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: background 0.1s, color 0.1s;
+            line-height: 1.4;
+        }
+
+        .note-item:hover {
+            background: #e4e4e4;
+            color: #111;
+        }
+
+        .note-item.active {
+            border-left-color: #027;
+            background: #dde8f2;
+            color: #027;
+            font-weight: bold;
+        }
+
+        /* ── Right: PDF viewer ── */
+        .pdf-panel {
+            flex: 1 1 80%;
+            min-width: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            background-color: #e2e2e2;
+            border: 1px solid #333;
+            border-left: none;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pdf-toolbar {
+            flex-shrink: 0;
+            padding: 10px 18px;
+            border-bottom: 1px solid #ccc;
+            background: #e8e8e8;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pdf-toolbar-label {
+            font-size: 8.5pt;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #999;
+        }
+
+        .pdf-note-title {
+            font-size: 10pt;
+            color: #222;
+            font-weight: bold;
+        }
+
+        .pdf-note-section {
+            font-size: 8.5pt;
+            color: #666;
+            font-style: italic;
+        }
+
+        .pdf-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-style: italic;
+            font-size: 11pt;
+            text-align: center;
+            gap: 10px;
+            line-height: 1.7;
+        }
+
+        .pdf-empty-icon {
+            font-size: 36pt;
+            opacity: 0.3;
+        }
+
+        .adoc-viewer {
+            flex: 1;
+            display: none;
+            width: 100%;
+            border: none;
+            background: #fafafa;
+        }
+    </style>
+</head>
+<body>
+
+    <div>
+        <table border="0" id="menutable">
+            <tr>
+                <td class="menu"><div class="menuitem"><a href="index.html">Home</a></div></td>
+                <td class="menu"><div class="menuitem"><a href="https://www.linkedin.com/in/saigovardhan/">LinkedIn</a></div></td>
+                <td class="menu"><div class="menuitem"><a href="https://github.com/govardhnn">GitHub</a></div></td>
+                <td class="menu"><div class="menuitem"><a href="notes.html">Notes</a></div></td>
+                <td class="menu"><div class="menuitem"><a href="books.html">Book Reviews</a></div></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="notes-layout">
+
+        <!-- ── Left: topic tree ── -->
+        <div class="topics-panel">
+            <div class="topics-title">
+                <h1>Notes</h1>
+                <div class="subtitle">Technical &amp; general reading</div>
+            </div>
+            <div id="topicsContainer"></div>
+        </div>
+
+        <!-- ── Right: PDF viewer ── -->
+        <div class="pdf-panel" id="pdfPanel">
+            <div class="pdf-toolbar">
+                <span class="pdf-toolbar-label">Notes</span>
+                <span class="pdf-note-section" id="pdfSection"></span>
+                <span class="pdf-note-title" id="pdfTitle"></span>
+            </div>
+            <div class="pdf-empty" id="pdfEmpty">
+                <span class="pdf-empty-icon">&#128196;</span>
+                select a note<br>from the list
+            </div>
+            <iframe class="adoc-viewer" id="adocViewer" frameborder="0"></iframe>
+        </div>
+
+    </div>
+
+    <script>
+        // ── Notes API ──────────────────────────────────────────────────────────
+        // loadNote(filePath) points the iframe at a pre-rendered HTML file.
+        // Call it any time you want to display a different note.
+        const Notes = {
+            loadNote(filePath) {
+                const viewer = document.getElementById('adocViewer');
+                const empty  = document.getElementById('pdfEmpty');
+
+                viewer.src = filePath;
+                viewer.style.display = 'block';
+                empty.style.display  = 'none';
+            }
+        };
+        // ──────────────────────────────────────────────────────────────────────
+
+        const SECTIONS = [
+            {
+                label: "RTL Design",
+                notes: [
+                    { title: "Building Blocks", file: "notes/rtl-design/building-blocks.html" },
+                ]
+            },
+            {
+                label: "Computer Architecture",
+                notes: [
+                    { title: "RISC-V",              file: "notes/computer-architecture/risc-v.html" },
+                    { title: "Cache Coherence",      file: "notes/computer-architecture/cache-coherence.html" },
+                    { title: "Parallel Programming", file: "notes/computer-architecture/parallel-programming.html" },
+                ]
+            },
+            {
+                label: "Compilers",
+                notes: [
+                    { title: "Compilers", file: "notes/compilers/compilers.html" },
+                ]
+            },
+            {
+                label: "Algorithms",
+                notes: [
+                    { title: "Algorithms", file: "notes/algorithms/algorithms.html" },
+                ]
+            },
+            {
+                label: "Mathematics",
+                notes: [
+                    { title: "Mathematics", file: "notes/mathematics/mathematics.html" },
+                ]
+            },
+            {
+                label: "Economics",
+                notes: [
+                    { title: "Economics", file: "notes/economics/economics.html" },
+                ]
+            },
+            {
+                label: "Entrepreneurship",
+                notes: [
+                    { title: "Entrepreneurship", file: "notes/entrepreneurship/entrepreneurship.html" },
+                ]
+            },
+        ];
+
+        let activeItem = null;
+
+        function openNote(note, el, sectionLabel) {
+            if (activeItem) activeItem.classList.remove('active');
+            activeItem = el;
+            el.classList.add('active');
+
+            document.getElementById('pdfSection').textContent = sectionLabel + ' /';
+            document.getElementById('pdfTitle').textContent   = note.title;
+
+            history.replaceState(null, '', '#' + encodeURIComponent(sectionLabel + '/' + note.title));
+
+            Notes.loadNote(note.file);
+        }
+
+        const container = document.getElementById('topicsContainer');
+        const itemRegistry = {};
+
+        SECTIONS.forEach(section => {
+            const wrap = document.createElement('div');
+
+            const header = document.createElement('div');
+            header.className = 'section-header';
+            header.innerHTML = `<span>${section.label}</span><span class="section-chevron">&#9656;</span>`;
+
+            const items = document.createElement('div');
+            items.className = 'note-items';
+
+            section.notes.forEach(note => {
+                const el = document.createElement('div');
+                el.className = 'note-item';
+                el.textContent = note.title;
+                el.addEventListener('click', () => openNote(note, el, section.label));
+                items.appendChild(el);
+                itemRegistry[section.label + '/' + note.title] = { note, el, section: section.label };
+            });
+
+            header.addEventListener('click', () => {
+                const isOpen = items.classList.contains('open');
+                items.classList.toggle('open', !isOpen);
+                header.classList.toggle('open', !isOpen);
+            });
+
+            wrap.appendChild(header);
+            wrap.appendChild(items);
+            container.appendChild(wrap);
+        });
+
+        // Restore from URL hash
+        const initHash = decodeURIComponent(window.location.hash.slice(1));
+        if (initHash && itemRegistry[initHash]) {
+            const { note, el, section } = itemRegistry[initHash];
+            // Open parent section
+            el.closest('.note-items').classList.add('open');
+            el.closest('.note-items').previousElementSibling.classList.add('open');
+            openNote(note, el, section);
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    </script>
+</body>
+</html>

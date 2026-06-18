@@ -1,0 +1,1794 @@
+= RTL Design Manual — Basic Building Blocks
+:toc: left
+:toclevels: 2
+
+== Flip-Flops
+
+A *flip-flop* is an edge-triggered, 1-bit storage element. 
+All practical RTL designs use  *D flip-flop* as primitive Flip Flop. T, JK, and SR variants are derived from it.
+
+|===
+| Style | Reset triggers on | Use case
+
+| *Asynchronous* | Any time reset asserts | Power-on reset, safety-critical designs
+| *Synchronous*  | Next rising clock edge | Cleaner timing; requires clock to release
+|===
+
+=== D Flip-Flop — Asynchronous Reset
+
+[source,systemverilog]
+----
+module dff_async #(parameter W = 1) (
+  input  logic         clk,
+  input  logic         reset,   // active-low asynchronous reset
+  input  logic [W-1:0] d,
+  output logic [W-1:0] q
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)  q <= '0;
+    else       q <= d;
+  end
+endmodule
+----
+
+=== D Flip-Flop — Synchronous Reset
+
+[source,systemverilog]
+----
+module dff_sync #(parameter W = 1) (
+  input  logic         clk,
+  input  logic         reset,   // active-low synchronous reset
+  input  logic [W-1:0] d,
+  output logic [W-1:0] q
+);
+  always_ff @(posedge clk) begin
+    if (!reset)  q <= '0;
+    else       q <= d;
+  end
+endmodule
+----
+
+=== D Flip-Flop With Clock Enable
+
+[source,systemverilog]
+----
+module dff_en #(parameter W = 1) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         en,      // clock enable: FF only captures when high
+  input  logic [W-1:0] d,
+  output logic [W-1:0] q
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)    q <= '0;
+    else if (en) q <= d;
+  end
+endmodule
+----
+
+NOTE: Do not gate the clock signal directly to implement an enable.
+Use the `en` input to the FF data path.
+Synthesis tools map this to a dedicated clock-enable pin on the flip-flop primitive.
+
+=== T Flip-Flop (Toggle)
+
+Toggles `q` when `t = 1`; holds when `t = 0`. Used in ripple counters and clock dividers.
+
+[source,systemverilog]
+----
+module tff (
+  input  logic clk,
+  input  logic reset,
+  input  logic t,
+  output logic q
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)   q <= 1'b0;
+    else if (t) q <= ~q;
+  end
+endmodule
+----
+
+=== SR Flip-Flop
+
+|===
+| S | R | Action
+
+| 0 | 0 | Hold
+| 0 | 1 | Reset
+| 1 | 0 | Set
+| 1 | 1 | *Undefined*
+|===
+
+[source,systemverilog]
+----
+module srff (
+  input  logic clk,
+  input  logic reset,
+  input  logic s,
+  input  logic r,
+  output logic q
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)  q <= 1'b0;
+    else unique case ({s, r})
+      2'b00: q <= q; // retain the value of q
+      2'b01: q <= 1'b0; // reset
+      2'b10: q <= 1'b1; // set 1
+      2'b11: q <= 1'bx;  // undefined — avoid in practice
+    endcase
+  end
+endmodule
+----
+
+=== JK Flip-Flop
+
+Generalizes the SR FF by defining `J=K=1` as a toggle, eliminating the undefined state.
+
+|===
+| J | K | Action
+
+| 0 | 0 | Hold
+| 0 | 1 | Reset
+| 1 | 0 | Set
+| 1 | 1 | Toggle
+|===
+
+[source,systemverilog]
+----
+module jkff (
+  input  logic clk,
+  input  logic reset,
+  input  logic j,
+  input  logic k,
+  output logic q
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)  q <= 1'b0;
+    else unique case ({j, k})
+      2'b00: q <= q; // retain the value of q
+      2'b01: q <= 1'b0; // k = 1 implies reset
+      2'b10: q <= 1'b1; // j = 1 implies set 1
+      2'b11: q <= ~q; // T FF behaviour
+    endcase
+  end
+endmodule
+----
+
+
+== Latches
+
+A *latch* is level-sensitive: transparent while the enable is high, holds its value when
+the enable goes low. Latches are *not recommended* in synchronous RTL — synthesis tools
+infer them from incomplete `if`/`case` statements (missing `else` or default).
+Always close your combinational blocks.
+
+=== SR Latch (NOR-based)
+
+[source,systemverilog]
+----
+module sr_latch (
+  input  logic s,    // Set
+  input  logic r,    // Reset
+  output logic q,
+  output logic qn
+);
+  // Cross-coupled NOR gates — undefined when S=R=1
+  assign q  = ~(r | qn);
+  assign qn = ~(s | q);
+endmodule
+----
+
+=== D Latch
+
+[source,systemverilog]
+----
+module d_latch (
+  input  logic en,   // transparent while en=1
+  input  logic d,
+  output logic q
+);
+  always_latch begin
+    if (en) q <= d;
+    // implicit else: q holds — synthesis infers a latch
+  end
+endmodule
+----
+
+== Detectors
+
+=== Rising Edge Detector
+
+Outputs a single-cycle pulse on the rising edge of `sig`.
+
+[source,systemverilog]
+----
+module rise_detect (
+  input  logic clk,
+  input  logic reset,
+  input  logic sig,
+  output logic rise    // 1 for one clock cycle after sig goes high
+);
+  logic sig_q;
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) sig_q <= 1'b0;
+    else        sig_q <= sig;
+  end
+
+  assign rise = sig & ~sig_q;
+endmodule
+----
+
+=== Any-Edge Detector
+
+[source,systemverilog]
+----
+module edge_detect (
+  input  logic clk,
+  input  logic reset,
+  input  logic sig,
+  output logic rise,
+  output logic fall,
+  output logic any_edge
+);
+  logic sig_q;
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) sig_q <= 1'b0;
+    else        sig_q <= sig;
+  end
+
+  assign rise     = sig  & ~sig_q;
+  assign fall     = ~sig &  sig_q;
+  assign any_edge = sig  ^  sig_q;
+endmodule
+----
+
+=== Sequence Detector — `1011` (Overlapping, Mealy FSM)
+
+Detects the bit pattern `1011` in a serial stream.
+Overlapping means a detected sequence can share bits with the next one.
+
+|===
+| State | Matched prefix
+
+| S0 | (none)
+| S1 | `1`
+| S2 | `10`
+| S3 | `101`
+|===
+
+[source,systemverilog]
+----
+module seq_detect_1011 (
+  input  logic clk,
+  input  logic reset,
+  input  logic din,
+  output logic detected   // asserted for one cycle on match
+);
+  typedef enum logic [1:0] {S0, S1, S2, S3} state_t;
+  state_t state, next;
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) state <= S0;
+    else       state <= next;
+  end
+
+  always_comb begin
+    next     = S0;
+    detected = 1'b0;
+    unique case (state)
+      S0: next = din ? S1 : S0;
+      S1: next = din ? S1 : S2;
+      S2: next = din ? S3 : S0;
+      S3: begin
+        detected = din;
+        next     = din ? S1 : S2;
+      end
+    endcase
+  end
+endmodule
+----
+
+== Multiplexer
+
+A *MUX* routes one of N data inputs to a single output based on a select signal.
+
+=== 2:1 MUX — Four Implementation Styles
+
+All four produce identical hardware after synthesis.
+
+[source,systemverilog]
+----
+// Style 1: Ternary operator (most concise)
+module mux2_ternary #(parameter W = 8) (
+  input  logic [W-1:0] a, b,
+  input  logic         sel,
+  output logic [W-1:0] y
+);
+  assign y = sel ? b : a;
+endmodule
+----
+
+[source,systemverilog]
+----
+// Style 2: unique case
+module mux2_case #(parameter W = 8) (
+  input  logic [W-1:0] a, b,
+  input  logic         sel,
+  output logic [W-1:0] y
+);
+  always_comb begin
+    unique case (sel)
+      1'b0: y = a;
+      1'b1: y = b;
+    endcase
+  end
+endmodule
+----
+
+[source,systemverilog]
+----
+// Style 3: if-else
+module mux2_ifelse #(parameter W = 8) (
+  input  logic [W-1:0] a, b,
+  input  logic         sel,
+  output logic [W-1:0] y
+);
+  always_comb begin
+    if (sel) y = b;
+    else     y = a;
+  end
+endmodule
+----
+
+[source,systemverilog]
+----
+// Style 4: AND-OR (gate-level)
+module mux2_andor #(parameter W = 8) (
+  input  logic [W-1:0] a, b,
+  input  logic         sel,
+  output logic [W-1:0] y
+);
+  assign y = ({W{~sel}} & a) | ({W{sel}} & b);
+endmodule
+----
+
+=== 4:1 MUX
+
+[source,systemverilog]
+----
+module mux4 #(parameter W = 8) (
+  input  logic [W-1:0] a, b, c, d,
+  input  logic [1:0]   sel,
+  output logic [W-1:0] y
+);
+  always_comb begin
+    unique case (sel)
+      2'b00: y = a;
+      2'b01: y = b;
+      2'b10: y = c;
+      2'b11: y = d;
+    endcase
+  end
+endmodule
+----
+
+=== Parameterized N:1 MUX
+
+[source,systemverilog]
+----
+module mux_n #(
+  parameter N = 8,
+  parameter W = 8
+) (
+  input  logic [W-1:0]         in  [N],
+  input  logic [$clog2(N)-1:0] sel,
+  output logic [W-1:0]         y
+);
+  assign y = in[sel];
+endmodule
+----
+
+=== One-Hot MUX
+
+[source,systemverilog]
+----
+module mux_onehot #(
+  parameter N = 4,
+  parameter W = 8
+) (
+  input  logic [W-1:0] in   [N],
+  input  logic [N-1:0] sel,        // one-hot select
+  output logic [W-1:0] y
+);
+  always_comb begin
+    y = '0;
+    for (int i = 0; i < N; i++)
+      y |= {W{sel[i]}} & in[i];
+  end
+endmodule
+----
+
+
+== Adder
+
+=== Half Adder
+
+[source,systemverilog]
+----
+module half_adder (
+  input  logic a, b,
+  output logic sum,
+  output logic cout
+);
+  assign sum  = a ^ b;
+  assign cout = a & b;
+endmodule
+----
+
+=== Full Adder
+
+[source,systemverilog]
+----
+module full_adder (
+  input  logic a, b, cin,
+  output logic sum,
+  output logic cout
+);
+  assign {cout, sum} = a + b + cin;
+endmodule
+----
+
+=== Ripple Carry Adder (RCA)
+
+Chains N full adders. Simple, but carry must propagate through every stage —
+delay grows linearly with bit-width.
+
+[source,systemverilog]
+----
+module rca #(parameter W = 8) (
+  input  logic [W-1:0] a, b,
+  input  logic         cin,
+  output logic [W-1:0] sum,
+  output logic         cout
+);
+  logic [W:0] carry;
+  assign carry[0] = cin;
+
+  genvar i;
+  generate
+    for (i = 0; i < W; i++) begin : fa_stage
+      assign {carry[i+1], sum[i]} = a[i] + b[i] + carry[i];
+    end
+  endgenerate
+
+  assign cout = carry[W];
+endmodule
+----
+
+=== Carry Lookahead Adder (CLA)
+
+Computes all carries in parallel using *generate* (G) and *propagate* (P) signals.
+Delay grows logarithmically instead of linearly.
+
+[source,systemverilog]
+----
+module cla4 (
+  input  logic [3:0] a, b,
+  input  logic       cin,
+  output logic [3:0] sum,
+  output logic       cout
+);
+  logic [3:0] g, p;
+  logic [4:0] c;
+
+  assign g = a & b;
+  assign p = a ^ b;
+
+  assign c[0] = cin;
+  assign c[1] = g[0] | (p[0] & c[0]);
+  assign c[2] = g[1] | (p[1] & g[0])         | (p[1] & p[0] & c[0]);
+  assign c[3] = g[2] | (p[2] & g[1])         | (p[2] & p[1] & g[0])
+                     | (p[2] & p[1] & p[0] & c[0]);
+  assign c[4] = g[3] | (p[3] & g[2])         | (p[3] & p[2] & g[1])
+                     | (p[3] & p[2] & p[1] & g[0])
+                     | (p[3] & p[2] & p[1] & p[0] & c[0]);
+
+  assign sum  = p ^ c[3:0];
+  assign cout = c[4];
+endmodule
+----
+
+=== Carry Select Adder
+
+Pre-computes two sums in parallel (assuming `cin=0` and `cin=1`),
+then selects the correct result once the real carry-in arrives.
+
+[source,systemverilog]
+----
+module carry_select_adder #(
+  parameter W     = 16,
+  parameter BLOCK = 4
+) (
+  input  logic [W-1:0] a, b,
+  input  logic         cin,
+  output logic [W-1:0] sum,
+  output logic         cout
+);
+  localparam NBLK = W / BLOCK;
+
+  logic [NBLK:0]   carry;
+  logic [W-1:0]    sum0, sum1;
+  logic [NBLK-1:0] cout0, cout1;
+
+  assign carry[0] = cin;
+
+  genvar i;
+  generate
+    for (i = 0; i < NBLK; i++) begin : blk
+      assign {cout0[i], sum0[i*BLOCK +: BLOCK]} =
+          a[i*BLOCK +: BLOCK] + b[i*BLOCK +: BLOCK];
+      assign {cout1[i], sum1[i*BLOCK +: BLOCK]} =
+          a[i*BLOCK +: BLOCK] + b[i*BLOCK +: BLOCK] + 1'b1;
+
+      assign carry[i+1] = carry[i] ? cout1[i] : cout0[i];
+      assign sum[i*BLOCK +: BLOCK] =
+          carry[i] ? sum1[i*BLOCK +: BLOCK] : sum0[i*BLOCK +: BLOCK];
+    end
+  endgenerate
+
+  assign cout = carry[NBLK];
+endmodule
+----
+
+=== Carry Save Adder (CSA)
+
+Reduces *three* operands to *two* in a single gate delay.
+Core building block of Wallace and Dadda multiplier trees.
+
+[source,systemverilog]
+----
+module csa #(parameter W = 8) (
+  input  logic [W-1:0] a, b, c,
+  output logic [W-1:0] partial_sum,
+  output logic [W-1:0] partial_carry
+);
+  assign partial_sum   = a ^ b ^ c;
+  assign partial_carry = (a & b) | (b & c) | (a & c);
+  // Result = partial_sum + (partial_carry << 1)
+endmodule
+----
+
+=== Prefix Adders — Overview
+
+The *black cell* operation combines two (G, P) pairs:
+
+----
+(G_hi, P_hi) ○ (G_lo, P_lo) = (G_hi | (P_hi & G_lo), P_hi & P_lo)
+----
+
+|===
+| Architecture | Levels (depth) | Fanout | Area
+
+| Kogge-Stone  | log₂ N         | Low    | High
+| Brent-Kung   | 2·log₂ N − 1  | Low    | Low
+| Han-Carlson  | log₂ N + 1     | Medium | Medium
+| Sklansky     | log₂ N         | High   | Medium
+|===
+
+In practice, write `a + b` and let the synthesis tool select and optimize the tree.
+
+== Multiplier
+
+=== Combinational Array Multiplier
+
+[source,systemverilog]
+----
+module mult_array #(parameter W = 8) (
+  input  logic [W-1:0]   a,
+  input  logic [W-1:0]   b,
+  output logic [2*W-1:0] product
+);
+  logic [2*W-1:0] pp [W];
+
+  genvar i;
+  generate
+    for (i = 0; i < W; i++) begin : pp_gen
+      assign pp[i] = b[i] ? ({{W{1'b0}}, a} << i) : '0;
+    end
+  endgenerate
+
+  always_comb begin
+    product = '0;
+    for (int j = 0; j < W; j++)
+      product += pp[j];
+  end
+endmodule
+----
+
+=== Sequential Shift-and-Add Multiplier
+
+One partial product per clock cycle. Smallest area; takes W cycles.
+
+[source,systemverilog]
+----
+module mult_shift_add #(parameter W = 8) (
+  input  logic           clk,
+  input  logic           reset,
+  input  logic           start,
+  input  logic [W-1:0]   mcand,
+  input  logic [W-1:0]   mplier,
+  output logic [2*W-1:0] product,
+  output logic           done
+);
+  typedef enum logic [1:0] {IDLE, COMPUTE, OUTPUT} state_t;
+  state_t             state;
+  logic [2*W-1:0]     acc;
+  logic [W-1:0]       mpy;
+  logic [$clog2(W):0] iter;
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) begin
+      state <= IDLE;
+      done  <= 1'b0;
+    end else unique case (state)
+
+      IDLE: begin
+        done <= 1'b0;
+        if (start) begin
+          acc   <= '0;
+          mpy   <= mplier;
+          iter  <= '0;
+          state <= COMPUTE;
+        end
+      end
+
+      COMPUTE: begin
+        if (mpy[0])
+          acc <= acc + ({{W{1'b0}}, mcand} << iter);
+        mpy  <= mpy >> 1;
+        iter <= iter + 1;
+        if (iter == W[$clog2(W):0] - 1)
+          state <= OUTPUT;
+      end
+
+      OUTPUT: begin
+        product <= acc;
+        done    <= 1'b1;
+        state   <= IDLE;
+      end
+
+    endcase
+  end
+endmodule
+----
+
+=== Booth Radix-2 Multiplier (Signed)
+
+Handles *signed* two's complement multiplication by examining two consecutive
+multiplier bits per step.
+
+|===
+| `{b[i], b[i-1]}` | Action
+
+| `00` | + 0 (no-op)
+| `01` | + multiplicand
+| `10` | − multiplicand
+| `11` | + 0 (no-op)
+|===
+
+[source,systemverilog]
+----
+module booth_r2 #(parameter W = 8) (
+  input  logic                   clk,
+  input  logic                   reset,
+  input  logic                   start,
+  input  logic signed [W-1:0]    mcand,
+  input  logic signed [W-1:0]    mplier,
+  output logic signed [2*W-1:0]  product,
+  output logic                   done
+);
+  typedef enum logic [1:0] {IDLE, COMPUTE, OUTPUT} state_t;
+  state_t              state;
+  logic signed [2*W-1:0] acc;
+  logic [W:0]            mpy;
+  logic [$clog2(W):0]    iter;
+
+  wire signed [2*W-1:0] se_mcand = {{W{mcand[W-1]}}, mcand};
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) begin
+      state <= IDLE; done <= 1'b0;
+    end else unique case (state)
+
+      IDLE: begin
+        done <= 1'b0;
+        if (start) begin
+          acc   <= '0;
+          mpy   <= {mplier, 1'b0};
+          iter  <= '0;
+          state <= COMPUTE;
+        end
+      end
+
+      COMPUTE: begin
+        unique case (mpy[1:0])
+          2'b01: acc <= acc + (se_mcand <<< iter);
+          2'b10: acc <= acc - (se_mcand <<< iter);
+          default: ;
+        endcase
+        mpy  <= mpy >> 1;
+        iter <= iter + 1;
+        if (iter == W[$clog2(W):0] - 1) state <= OUTPUT;
+      end
+
+      OUTPUT: begin
+        product <= acc;
+        done    <= 1'b1;
+        state   <= IDLE;
+      end
+
+    endcase
+  end
+endmodule
+----
+
+=== Higher-Performance Multipliers — Overview
+
+|===
+| Architecture | Approach | Trade-off
+
+| *Wallace Tree*        | CSA tree reduces W partial products to 2 in minimum depth | Fastest; irregular wiring
+| *Dadda*               | CSA tree with minimum gate count                          | Smaller than Wallace; slightly slower
+| *Modified Booth (R4)* | Groups of 3 bits; halves the partial product count        | Fewer partial products → smaller CSA tree
+| *FMA*                 | Computes A×B + C without intermediate rounding            | Critical in floating-point and DSP
+|===
+
+In practice, instantiate the hard multiplier primitive from the FPGA or cell library
+(e.g., DSP48 on Xilinx, DSP blocks on Intel).
+
+== Encoder
+
+An encoder converts a *wide* one-hot or positional input into a compact *binary* output.
+
+=== Priority Encoder
+
+[source,systemverilog]
+----
+module priority_enc #(parameter N = 8) (
+  input  logic [N-1:0]         req,
+  output logic [$clog2(N)-1:0] enc,
+  output logic                 valid
+);
+  always_comb begin
+    enc   = '0;
+    valid = |req;
+    for (int i = N-1; i >= 0; i--)
+      if (req[i]) enc = $clog2(N)'(i);
+  end
+endmodule
+----
+
+=== Binary to One-Hot
+
+[source,systemverilog]
+----
+module bin2onehot #(parameter N = 3) (
+  input  logic [N-1:0]    bin,
+  output logic [2**N-1:0] one_hot
+);
+  assign one_hot = (2**N)'(1) << bin;
+endmodule
+----
+
+=== Binary to Gray Code
+
+Only one bit changes between consecutive codes — essential for CDC pointer
+synchronization.
+
+[source,systemverilog]
+----
+module bin2gray #(parameter N = 8) (
+  input  logic [N-1:0] bin,
+  output logic [N-1:0] gray
+);
+  assign gray = bin ^ (bin >> 1);
+endmodule
+----
+
+*Inverse — Gray to Binary:*
+
+[source,systemverilog]
+----
+module gray2bin #(parameter N = 8) (
+  input  logic [N-1:0] gray,
+  output logic [N-1:0] bin
+);
+  always_comb begin
+    bin[N-1] = gray[N-1];
+    for (int i = N-2; i >= 0; i--)
+      bin[i] = bin[i+1] ^ gray[i];
+  end
+endmodule
+----
+
+== Decoder
+
+A decoder converts a compact *binary* input into a *wide* output,
+typically activating exactly one output line.
+
+=== Binary 3:8 Decoder
+
+[source,systemverilog]
+----
+module dec3to8 (
+  input  logic [2:0] sel,
+  input  logic       en,
+  output logic [7:0] y
+);
+  assign y = en ? (8'h01 << sel) : 8'h00;
+endmodule
+----
+
+*Parameterized version:*
+
+[source,systemverilog]
+----
+module dec_n #(parameter N = 3) (
+  input  logic [N-1:0]    sel,
+  input  logic            en,
+  output logic [2**N-1:0] y
+);
+  assign y = en ? ((2**N)'(1) << sel) : '0;
+endmodule
+----
+
+=== One-Hot to Binary
+
+[source,systemverilog]
+----
+module onehot2bin #(parameter N = 3) (
+  input  logic [2**N-1:0] one_hot,
+  output logic [N-1:0]    bin
+);
+  always_comb begin
+    bin = '0;
+    for (int i = 0; i < 2**N; i++)
+      if (one_hot[i]) bin = N'(i);
+  end
+endmodule
+----
+
+== Shift Register
+
+=== SISO - Serial-In Serial-Out (Delay Line)
+
+Delays the input by `DEPTH` clock cycles.
+
+[source,systemverilog]
+----
+module siso #(
+  parameter DEPTH = 8,
+  parameter W     = 1
+) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic [W-1:0] sin,
+  output logic [W-1:0] sout
+);
+  logic [W-1:0] sr [DEPTH];
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) begin
+      for (int i = 0; i < DEPTH; i++) sr[i] <= '0;
+    end else begin
+      sr[0] <= sin;
+      for (int i = 1; i < DEPTH; i++) sr[i] <= sr[i-1];
+    end
+  end
+
+  assign sout = sr[DEPTH-1];
+endmodule
+----
+
+=== SIPO — Serial-In Parallel-Out (Deserializer)
+
+[source,systemverilog]
+----
+module sipo #(parameter W = 8) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         sin,
+  output logic [W-1:0] pout
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) pout <= '0;
+    else       pout <= {pout[W-2:0], sin};
+  end
+endmodule
+----
+
+=== PISO — Parallel-In Serial-Out (Serializer)
+
+[source,systemverilog]
+----
+module piso #(parameter W = 8) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         load,
+  input  logic [W-1:0] pin,
+  output logic         sout
+);
+  logic [W-1:0] sr;
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)     sr <= '0;
+    else if (load) sr <= pin;
+    else           sr <= {1'b0, sr[W-1:1]};
+  end
+
+  assign sout = sr[0];
+endmodule
+----
+
+=== PIPO — Parallel-In Parallel-Out (Pipeline Register)
+
+[source,systemverilog]
+----
+module pipo #(parameter W = 8) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         en,
+  input  logic [W-1:0] pin,
+  output logic [W-1:0] pout
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)   pout <= '0;
+    else if (en) pout <= pin;
+  end
+endmodule
+----
+
+=== Bidirectional Shift Register
+
+[source,systemverilog]
+----
+module bidir_sr #(parameter W = 8) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         load,
+  input  logic         dir,     // 0 = shift left, 1 = shift right
+  input  logic         sin,
+  input  logic [W-1:0] pin,
+  output logic [W-1:0] q
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)     q <= '0;
+    else if (load) q <= pin;
+    else if (dir)  q <= {sin, q[W-1:1]};
+    else           q <= {q[W-2:0], sin};
+  end
+endmodule
+----
+
+=== Barrel Shifter (Combinational)
+
+Shifts or rotates by an arbitrary amount in a single cycle.
+
+[source,systemverilog]
+----
+module barrel_shifter #(parameter W = 8) (
+  input  logic [W-1:0]         data_in,
+  input  logic [$clog2(W)-1:0] shamt,
+  input  logic [1:0]           mode,   // 00=SLL, 01=SRL, 10=ROL, 11=ROR
+  output logic [W-1:0]         data_out
+);
+  always_comb begin
+    unique case (mode)
+      2'b00: data_out =  data_in << shamt;
+      2'b01: data_out =  data_in >> shamt;
+      2'b10: data_out = (data_in << shamt) | (data_in >> (W-shamt));
+      2'b11: data_out = (data_in >> shamt) | (data_in << (W-shamt));
+    endcase
+  end
+endmodule
+----
+
+=== LFSR — Fibonacci (External XOR)
+
+Generates a pseudo-random sequence of length `2^W − 1`.
+
+|===
+| Width | Taps (1-indexed from LSB)
+
+| 4  | [4, 3]
+| 8  | [8, 6, 5, 4]
+| 16 | [16, 15, 13, 4]
+| 32 | [32, 22, 2, 1]
+|===
+
+[source,systemverilog]
+----
+module lfsr_fibonacci #(
+  parameter W    = 8,
+  parameter SEED = 8'hAD
+) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         en,
+  output logic [W-1:0] q
+);
+  // W=8: x^8 + x^6 + x^5 + x^4 + 1
+  logic feedback;
+  assign feedback = q[7] ^ q[5] ^ q[4] ^ q[3];
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)   q <= SEED;
+    else if (en) q <= {q[W-2:0], feedback};
+  end
+endmodule
+----
+
+=== LFSR — Galois (Internal XOR)
+
+XOR gates distributed along the register; faster clock speed than Fibonacci.
+Used in scramblers and CRCs.
+
+[source,systemverilog]
+----
+module lfsr_galois #(
+  parameter W    = 8,
+  parameter POLY = 8'hB8,
+  parameter SEED = 8'hAD
+) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         en,
+  output logic [W-1:0] q
+);
+  logic feedback;
+  assign feedback = q[0];
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)   q <= SEED;
+    else if (en) q <= {1'b0, q[W-1:1]} ^ (feedback ? POLY : '0);
+  end
+endmodule
+----
+
+== Counter
+
+=== Binary Up Counter
+
+[source,systemverilog]
+----
+module cnt_up #(parameter W = 8) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         en,
+  output logic [W-1:0] count
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)   count <= '0;
+    else if (en) count <= count + 1;
+  end
+endmodule
+----
+
+=== Up/Down Counter
+
+[source,systemverilog]
+----
+module cnt_updown #(parameter W = 8) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         en,
+  input  logic         up,
+  output logic [W-1:0] count
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)   count <= '0;
+    else if (en) count <= up ? count + 1 : count - 1;
+  end
+endmodule
+----
+
+=== Modulo-N Counter
+
+[source,systemverilog]
+----
+module cnt_mod_n #(
+  parameter N = 10,
+  parameter W = $clog2(N)
+) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         en,
+  output logic [W-1:0] count,
+  output logic         wrap
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) begin
+      count <= '0; wrap <= 1'b0;
+    end else if (en) begin
+      if (count == W'(N - 1)) begin
+        count <= '0; wrap <= 1'b1;
+      end else begin
+        count <= count + 1; wrap <= 1'b0;
+      end
+    end else begin
+      wrap <= 1'b0;
+    end
+  end
+endmodule
+----
+
+=== Self-Reloading Counter
+
+Reloads a programmable value when it reaches zero.
+
+[source,systemverilog]
+----
+module cnt_reload #(parameter W = 8) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         en,
+  input  logic [W-1:0] load_val,
+  output logic [W-1:0] count,
+  output logic         tick
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) begin
+      count <= '0; tick <= 1'b0;
+    end else if (en) begin
+      tick <= 1'b0;
+      if (count == '0) begin
+        count <= load_val; tick <= 1'b1;
+      end else begin
+        count <= count - 1;
+      end
+    end
+  end
+endmodule
+----
+
+=== Ring Counter
+
+A single `1` circulates through N flip-flops.
+
+[source,systemverilog]
+----
+module ring_counter #(parameter N = 4) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         en,
+  output logic [N-1:0] q
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)     q <= {{N-1{1'b0}}, 1'b1};
+    else if (en)   q <= {q[N-2:0], q[N-1]};
+  end
+endmodule
+----
+
+=== Johnson Counter (Twisted Ring)
+
+Complement of the MSB fed back to the LSB. 2N states from N flip-flops.
+
+[source,systemverilog]
+----
+module johnson_counter #(parameter N = 4) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         en,
+  output logic [N-1:0] q
+);
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)   q <= '0;
+    else if (en) q <= {q[N-2:0], ~q[N-1]};
+  end
+endmodule
+----
+
+=== Gray Code Counter
+
+Only one bit changes per step. Required for CDC interfaces.
+
+[source,systemverilog]
+----
+module cnt_gray #(parameter W = 8) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         en,
+  output logic [W-1:0] gray
+);
+  logic [W-1:0] bin;
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)   bin <= '0;
+    else if (en) bin <= bin + 1;
+  end
+
+  assign gray = bin ^ (bin >> 1);
+endmodule
+----
+
+=== LFSR Counter
+
+Covers all `2^N − 1` states in pseudo-random order. Faster than binary (no carry chain).
+
+[source,systemverilog]
+----
+module cnt_lfsr #(
+  parameter W    = 8,
+  parameter SEED = 8'h01
+) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         en,
+  output logic [W-1:0] count
+);
+  logic feedback;
+  assign feedback = count[7] ^ count[5] ^ count[4] ^ count[3];
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset)   count <= SEED;
+    else if (en) count <= {count[W-2:0], feedback};
+  end
+endmodule
+----
+
+=== Prescaler (Clock Divider)
+
+Outputs a single-cycle pulse every `DIV` input clocks.
+
+NOTE: Use `tick` to gate downstream logic rather than using a derived clock signal
+directly — this avoids clock-domain issues.
+
+[source,systemverilog]
+----
+module prescaler #(parameter DIV = 4) (
+  input  logic clk,
+  input  logic reset,
+  output logic tick
+);
+  logic [$clog2(DIV)-1:0] cnt;
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) begin
+      cnt <= '0; tick <= 1'b0;
+    end else begin
+      tick <= 1'b0;
+      if (cnt == $clog2(DIV)'(DIV - 1)) begin
+        cnt <= '0; tick <= 1'b1;
+      end else begin
+        cnt <= cnt + 1;
+      end
+    end
+  end
+endmodule
+----
+
+== Arbiter
+
+An arbiter grants *exclusive access* to a shared resource when multiple requestors
+compete.
+
+=== Fixed Priority Arbiter
+
+Port 0 is highest priority. Simple; risks *starvation* of lower-priority ports.
+
+[source,systemverilog]
+----
+module fixed_pri_arb #(parameter N = 4) (
+  input  logic [N-1:0] req,
+  output logic [N-1:0] grant
+);
+  // req & (-req) isolates the lowest set bit
+  assign grant = req & (~req + 1'b1);
+endmodule
+----
+
+*Structural equivalent:*
+
+[source,systemverilog]
+----
+module fixed_pri_arb_struct #(parameter N = 4) (
+  input  logic [N-1:0] req,
+  output logic [N-1:0] grant
+);
+  logic [N-1:0] mask;
+
+  genvar i;
+  generate
+    for (i = 0; i < N; i++) begin : g
+      assign mask[i]  = (i == 0) ? 1'b0 : |req[i-1:0];
+      assign grant[i] = req[i] & ~mask[i];
+    end
+  endgenerate
+endmodule
+----
+
+=== Round Robin Arbiter
+
+Rotates priority after each grant so every requestor eventually gets served.
+Uses the *two-arbiter mask* approach.
+
+[source,systemverilog]
+----
+module rr_arb #(parameter N = 4) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic [N-1:0] req,
+  output logic [N-1:0] grant
+);
+  logic [N-1:0] ptr;            // one-hot: next port with highest priority
+  logic [N-1:0] mask;
+  logic [N-1:0] grant_masked;
+  logic [N-1:0] grant_nomask;
+
+  function automatic logic [N-1:0] lsb_arb(input logic [N-1:0] r);
+    return r & (~r + 1'b1);
+  endfunction
+
+  assign mask         = ~(ptr - 1'b1);
+  assign grant_masked = lsb_arb(req & mask);
+  assign grant_nomask = lsb_arb(req);
+  assign grant        = |grant_masked ? grant_masked : grant_nomask;
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (reset)
+      ptr <= {{N-1{1'b0}}, 1'b1};
+    else if (|grant)
+      ptr <= {grant[N-2:0], grant[N-1]};   // rotate left by 1
+  end
+endmodule
+----
+
+`ptr = 0100` example: `mask = ~(0100−1) = 1100` — only ports 2 and 3 are considered
+first. If neither requests, falls back to `grant_nomask` and wraps to port 0 or 1.
+
+=== Higher-Fairness Arbiters — Overview
+
+|===
+| Type | Description
+
+| *Weighted Round Robin (WRR)* | Each port gets a weight-proportional share of bandwidth
+| *Weighted Fair Queuing (WFQ)* | Approximates GPS; supports variable-length transfers
+| *Matrix Arbiter* | Priority matrix updated after every grant — fully fair, O(N²) state
+| *Age-Based (LRU)* | Grants to the port that has waited the longest
+|===
+
+== FIFO
+
+A FIFO decouples a producer from a consumer. The two design axes are
+*clock domain* and *output style*.
+
+=== Synchronous FIFO (Registered Output)
+
+Single clock. Read data appears *one cycle after* `rd_en` is asserted.
+
+Full/empty detection uses an extra pointer bit (the wrap bit) to distinguish
+a full FIFO from an empty one without a counter.
+
+[source,systemverilog]
+----
+module sync_fifo #(
+  parameter DEPTH = 16,
+  parameter W     = 8
+) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         wr_en,
+  input  logic [W-1:0] wr_data,
+  output logic         full,
+  input  logic         rd_en,
+  output logic [W-1:0] rd_data,
+  output logic         empty
+);
+  localparam PTR_W = $clog2(DEPTH);
+
+  logic [W-1:0]   mem [DEPTH];
+  logic [PTR_W:0] wr_ptr, rd_ptr;
+
+  assign empty = (wr_ptr == rd_ptr);
+  assign full  = (wr_ptr[PTR_W] != rd_ptr[PTR_W]) &&
+                 (wr_ptr[PTR_W-1:0] == rd_ptr[PTR_W-1:0]);
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) begin
+      wr_ptr <= '0; rd_ptr <= '0;
+    end else begin
+      if (wr_en && !full) begin
+        mem[wr_ptr[PTR_W-1:0]] <= wr_data;
+        wr_ptr <= wr_ptr + 1;
+      end
+      if (rd_en && !empty) begin
+        rd_data <= mem[rd_ptr[PTR_W-1:0]];
+        rd_ptr  <= rd_ptr + 1;
+      end
+    end
+  end
+endmodule
+----
+
+=== FWFT FIFO (First Word Fall Through)
+
+The head of the FIFO is *always visible* at `rd_data` — zero read latency.
+`rd_en` simply advances to the next entry.
+The only difference from the standard FIFO is a combinational read port.
+
+[source,systemverilog]
+----
+module fwft_fifo #(
+  parameter DEPTH = 16,
+  parameter W     = 8
+) (
+  input  logic         clk,
+  input  logic         reset,
+  input  logic         wr_en,
+  input  logic [W-1:0] wr_data,
+  output logic         full,
+  input  logic         rd_en,
+  output logic [W-1:0] rd_data,   // valid combinationally whenever !empty
+  output logic         empty
+);
+  localparam PTR_W = $clog2(DEPTH);
+
+  logic [W-1:0]   mem [DEPTH];
+  logic [PTR_W:0] wr_ptr, rd_ptr;
+
+  assign empty = (wr_ptr == rd_ptr);
+  assign full  = (wr_ptr[PTR_W] != rd_ptr[PTR_W]) &&
+                 (wr_ptr[PTR_W-1:0] == rd_ptr[PTR_W-1:0]);
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) begin
+      wr_ptr <= '0; rd_ptr <= '0;
+    end else begin
+      if (wr_en && !full) begin
+        mem[wr_ptr[PTR_W-1:0]] <= wr_data;
+        wr_ptr <= wr_ptr + 1;
+      end
+      if (rd_en && !empty)
+        rd_ptr <= rd_ptr + 1;
+    end
+  end
+
+  assign rd_data = mem[rd_ptr[PTR_W-1:0]];   // combinational output
+endmodule
+----
+
+=== Asynchronous (Dual-Clock) FIFO
+
+Independent read and write clocks. Gray-code pointers cross clock domains safely
+via 2-FF synchronizers (only one bit changes per increment).
+
+[source,systemverilog]
+----
+module async_fifo #(
+  parameter DEPTH = 16,
+  parameter W     = 8
+) (
+  input  logic         wr_clk, wr_reset,
+  input  logic         wr_en,
+  input  logic [W-1:0] wr_data,
+  output logic         full,
+
+  input  logic         rd_clk, rd_reset,
+  input  logic         rd_en,
+  output logic [W-1:0] rd_data,
+  output logic         empty
+);
+  localparam PTR_W = $clog2(DEPTH);
+
+  logic [W-1:0]   mem [DEPTH];
+
+  function automatic logic [PTR_W:0] bin2gray(input logic [PTR_W:0] b);
+    return b ^ (b >> 1);
+  endfunction
+
+  // Write domain
+  logic [PTR_W:0] wr_bin, wr_gray;
+  logic [PTR_W:0] rd_gray_s1, rd_gray_s2;
+
+  always_ff @(posedge wr_clk or posedge wr_reset) begin
+    if (wr_reset) begin
+      wr_bin <= '0; wr_gray <= '0;
+    end else if (wr_en && !full) begin
+      wr_bin  <= wr_bin + 1;
+      wr_gray <= bin2gray(wr_bin + 1);
+    end
+  end
+
+  always_ff @(posedge wr_clk or posedge wr_reset) begin
+    if (wr_reset) {rd_gray_s2, rd_gray_s1} <= '0;
+    else          {rd_gray_s2, rd_gray_s1} <= {rd_gray_s1, rd_gray};
+  end
+
+  assign full = (wr_gray == {~rd_gray_s2[PTR_W:PTR_W-1], rd_gray_s2[PTR_W-2:0]});
+
+  always_ff @(posedge wr_clk) begin
+    if (wr_en && !full) mem[wr_bin[PTR_W-1:0]] <= wr_data;
+  end
+
+  // Read domain
+  logic [PTR_W:0] rd_bin, rd_gray;
+  logic [PTR_W:0] wr_gray_s1, wr_gray_s2;
+
+  always_ff @(posedge rd_clk or posedge rd_reset) begin
+    if (rd_reset) begin
+      rd_bin <= '0; rd_gray <= '0;
+    end else if (rd_en && !empty) begin
+      rd_bin  <= rd_bin + 1;
+      rd_gray <= bin2gray(rd_bin + 1);
+    end
+  end
+
+  always_ff @(posedge rd_clk or posedge rd_reset) begin
+    if (rd_reset) {wr_gray_s2, wr_gray_s1} <= '0;
+    else          {wr_gray_s2, wr_gray_s1} <= {wr_gray_s1, wr_gray};
+  end
+
+  assign empty   = (rd_gray == wr_gray_s2);
+  assign rd_data = mem[rd_bin[PTR_W-1:0]];
+endmodule
+----
+
+=== FIFO with Almost-Full / Almost-Empty Flags
+
+[source,systemverilog]
+----
+module sync_fifo_flags #(
+  parameter DEPTH        = 16,
+  parameter W            = 8,
+  parameter AFULL_THRES  = 12,
+  parameter AEMPTY_THRES = 4
+) (
+  input  logic         clk, reset,
+  input  logic         wr_en,
+  input  logic [W-1:0] wr_data,
+  output logic         full, almost_full,
+  input  logic         rd_en,
+  output logic [W-1:0] rd_data,
+  output logic         empty, almost_empty
+);
+  localparam PTR_W = $clog2(DEPTH);
+
+  logic [W-1:0]   mem [DEPTH];
+  logic [PTR_W:0] wr_ptr, rd_ptr;
+  logic [PTR_W:0] fill;
+
+  assign fill         = wr_ptr - rd_ptr;
+  assign empty        = (fill == '0);
+  assign full         = (fill == DEPTH[PTR_W:0]);
+  assign almost_full  = (fill >= AFULL_THRES[PTR_W:0]);
+  assign almost_empty = (fill <= AEMPTY_THRES[PTR_W:0]);
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) begin
+      wr_ptr <= '0; rd_ptr <= '0;
+    end else begin
+      if (wr_en && !full) begin
+        mem[wr_ptr[PTR_W-1:0]] <= wr_data;
+        wr_ptr <= wr_ptr + 1;
+      end
+      if (rd_en && !empty) begin
+        rd_data <= mem[rd_ptr[PTR_W-1:0]];
+        rd_ptr  <= rd_ptr + 1;
+      end
+    end
+  end
+endmodule
+----
+
+== Memory
+
+=== Port Configurations
+
+|===
+| Configuration | Ports | Simultaneous ops
+
+| Single Port (1RW)       | 1 shared R/W          | Read *or* write — not both
+| Simple Dual Port (1R1W) | 1 read + 1 write      | Read *and* write simultaneously
+| True Dual Port (2RW)    | 2 independent R/W     | Two independent reads, writes, or mix
+|===
+
+=== Read-During-Write Behaviour
+
+|===
+| Mode | Output on address collision
+
+| *Read-First*  | Old data appears at the read port
+| *Write-First* | New (just-written) data appears at the read port
+| *No-Change*   | Read port holds its previous value
+|===
+
+=== Single Port RAM (1RW) — Read-First
+
+[source,systemverilog]
+----
+module sp_ram_rf #(
+  parameter DEPTH = 1024,
+  parameter W     = 32
+) (
+  input  logic                     clk,
+  input  logic                     cs,
+  input  logic                     wr_en,
+  input  logic [$clog2(DEPTH)-1:0] addr,
+  input  logic [W-1:0]             wr_data,
+  output logic [W-1:0]             rd_data
+);
+  logic [W-1:0] mem [DEPTH];
+
+  always_ff @(posedge clk) begin
+    if (cs) begin
+      rd_data <= mem[addr];         // read old data (read-first)
+      if (wr_en) mem[addr] <= wr_data;
+    end
+  end
+endmodule
+----
+
+*Write-First variant:*
+
+[source,systemverilog]
+----
+module sp_ram_wf #(
+  parameter DEPTH = 1024,
+  parameter W     = 32
+) (
+  input  logic                     clk,
+  input  logic                     cs,
+  input  logic                     wr_en,
+  input  logic [$clog2(DEPTH)-1:0] addr,
+  input  logic [W-1:0]             wr_data,
+  output logic [W-1:0]             rd_data
+);
+  logic [W-1:0] mem [DEPTH];
+
+  always_ff @(posedge clk) begin
+    if (cs) begin
+      if (wr_en) mem[addr] <= wr_data;
+      rd_data <= wr_en ? wr_data : mem[addr];
+    end
+  end
+endmodule
+----
+
+=== Simple Dual Port RAM (1R1W)
+
+[source,systemverilog]
+----
+module sdp_ram #(
+  parameter DEPTH = 1024,
+  parameter W     = 32
+) (
+  input  logic                     clk,
+  input  logic                     wr_en,
+  input  logic [$clog2(DEPTH)-1:0] wr_addr,
+  input  logic [W-1:0]             wr_data,
+  input  logic                     rd_en,
+  input  logic [$clog2(DEPTH)-1:0] rd_addr,
+  output logic [W-1:0]             rd_data
+);
+  logic [W-1:0] mem [DEPTH];
+
+  always_ff @(posedge clk) begin
+    if (wr_en) mem[wr_addr] <= wr_data;
+    if (rd_en) rd_data      <= mem[rd_addr];
+  end
+endmodule
+----
+
+=== True Dual Port RAM (2RW)
+
+[source,systemverilog]
+----
+module tdp_ram #(
+  parameter DEPTH = 1024,
+  parameter W     = 32
+) (
+  input  logic                     clk_a, en_a, wr_en_a,
+  input  logic [$clog2(DEPTH)-1:0] addr_a,
+  input  logic [W-1:0]             wr_data_a,
+  output logic [W-1:0]             rd_data_a,
+
+  input  logic                     clk_b, en_b, wr_en_b,
+  input  logic [$clog2(DEPTH)-1:0] addr_b,
+  input  logic [W-1:0]             wr_data_b,
+  output logic [W-1:0]             rd_data_b
+);
+  logic [W-1:0] mem [DEPTH];
+
+  always_ff @(posedge clk_a) begin
+    if (en_a) begin
+      if (wr_en_a) mem[addr_a] <= wr_data_a;
+      rd_data_a <= mem[addr_a];
+    end
+  end
+
+  always_ff @(posedge clk_b) begin
+    if (en_b) begin
+      if (wr_en_b) mem[addr_b] <= wr_data_b;
+      rd_data_b <= mem[addr_b];
+    end
+  end
+endmodule
+----
+
+=== ROM
+
+[source,systemverilog]
+----
+module rom #(
+  parameter DEPTH     = 256,
+  parameter W         = 8,
+  parameter INIT_FILE = "rom_init.mem"
+) (
+  input  logic                     clk,
+  input  logic                     en,
+  input  logic [$clog2(DEPTH)-1:0] addr,
+  output logic [W-1:0]             rd_data
+);
+  logic [W-1:0] mem [DEPTH];
+
+  initial begin
+    if (INIT_FILE != "") $readmemh(INIT_FILE, mem);
+  end
+
+  always_ff @(posedge clk) begin
+    if (en) rd_data <= mem[addr];
+  end
+endmodule
+----
+
+=== Content-Addressable Memory (CAM)
+
+Lookup by *value* rather than by address. Used in TLBs and network routing tables.
+
+[source,systemverilog]
+----
+module cam #(
+  parameter DEPTH = 16,
+  parameter W     = 8
+) (
+  input  logic                     clk, reset,
+  input  logic                     wr_en,
+  input  logic [$clog2(DEPTH)-1:0] wr_addr,
+  input  logic [W-1:0]             wr_data,
+  input  logic                     lookup_en,
+  input  logic [W-1:0]             lookup_key,
+  output logic [$clog2(DEPTH)-1:0] match_addr,
+  output logic                     match_valid
+);
+  logic [W-1:0]      mem [DEPTH];
+  logic [DEPTH-1:0]  match_vec;
+
+  always_ff @(posedge clk or negedge reset) begin
+    if (!reset) begin
+      for (int i = 0; i < DEPTH; i++) mem[i] <= '0;
+    end else if (wr_en) begin
+      mem[wr_addr] <= wr_data;
+    end
+  end
+
+  genvar i;
+  generate
+    for (i = 0; i < DEPTH; i++) begin : cmp
+      assign match_vec[i] = lookup_en && (mem[i] == lookup_key);
+    end
+  endgenerate
+
+  always_comb begin
+    match_valid = |match_vec;
+    match_addr  = '0;
+    for (int j = DEPTH-1; j >= 0; j--)
+      if (match_vec[j]) match_addr = $clog2(DEPTH)'(j);
+  end
+endmodule
+----
+
+
