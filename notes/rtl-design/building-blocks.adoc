@@ -1,6 +1,7 @@
 = RTL Design Manual — Basic Building Blocks
 :toc: left
 :toclevels: 2
+:source-highlighter: highlightjs
 
 == Flip-Flops
 
@@ -16,7 +17,7 @@ All practical RTL designs use  *D flip-flop* as primitive Flip Flop. T, JK, and 
 
 === D Flip-Flop — Asynchronous Reset
 
-[source,systemverilog]
+[source,verilog]
 ----
 module dff_async #(parameter W = 1) (
   input  logic         clk,
@@ -33,7 +34,7 @@ endmodule
 
 === D Flip-Flop — Synchronous Reset
 
-[source,systemverilog]
+[source,verilog]
 ----
 module dff_sync #(parameter W = 1) (
   input  logic         clk,
@@ -50,7 +51,7 @@ endmodule
 
 === D Flip-Flop With Clock Enable
 
-[source,systemverilog]
+[source,verilog]
 ----
 module dff_en #(parameter W = 1) (
   input  logic         clk,
@@ -74,7 +75,7 @@ Synthesis tools map this to a dedicated clock-enable pin on the flip-flop primit
 
 Toggles `q` when `t = 1`; holds when `t = 0`. Used in ripple counters and clock dividers.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module tff (
   input  logic clk,
@@ -100,7 +101,7 @@ endmodule
 | 1 | 1 | *Undefined*
 |===
 
-[source,systemverilog]
+[source,verilog]
 ----
 module srff (
   input  logic clk,
@@ -134,7 +135,7 @@ Generalizes the SR FF by defining `J=K=1` as a toggle, eliminating the undefined
 | 1 | 1 | Toggle
 |===
 
-[source,systemverilog]
+[source,verilog]
 ----
 module jkff (
   input  logic clk,
@@ -165,7 +166,7 @@ Always close your combinational blocks.
 
 === SR Latch (NOR-based)
 
-[source,systemverilog]
+[source,verilog]
 ----
 module sr_latch (
   input  logic s,    // Set
@@ -181,7 +182,7 @@ endmodule
 
 === D Latch
 
-[source,systemverilog]
+[source,verilog]
 ----
 module d_latch (
   input  logic en,   // transparent while en=1
@@ -201,7 +202,7 @@ endmodule
 
 Outputs a single-cycle pulse on the rising edge of `sig`.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module rise_detect (
   input  logic clk,
@@ -222,7 +223,7 @@ endmodule
 
 === Any-Edge Detector
 
-[source,systemverilog]
+[source,verilog]
 ----
 module edge_detect (
   input  logic clk,
@@ -259,7 +260,7 @@ Overlapping means a detected sequence can share bits with the next one.
 | S3 | `101`
 |===
 
-[source,systemverilog]
+[source,verilog]
 ----
 module seq_detect_1011 (
   input  logic clk,
@@ -299,7 +300,7 @@ A *MUX* routes one of N data inputs to a single output based on a select signal.
 
 All four produce identical hardware after synthesis.
 
-[source,systemverilog]
+[source,verilog]
 ----
 // Style 1: Ternary operator (most concise)
 module mux2_ternary #(parameter W = 8) (
@@ -311,7 +312,7 @@ module mux2_ternary #(parameter W = 8) (
 endmodule
 ----
 
-[source,systemverilog]
+[source,verilog]
 ----
 // Style 2: unique case
 module mux2_case #(parameter W = 8) (
@@ -328,7 +329,7 @@ module mux2_case #(parameter W = 8) (
 endmodule
 ----
 
-[source,systemverilog]
+[source,verilog]
 ----
 // Style 3: if-else
 module mux2_ifelse #(parameter W = 8) (
@@ -343,7 +344,7 @@ module mux2_ifelse #(parameter W = 8) (
 endmodule
 ----
 
-[source,systemverilog]
+[source,verilog]
 ----
 // Style 4: AND-OR (gate-level)
 module mux2_andor #(parameter W = 8) (
@@ -357,7 +358,7 @@ endmodule
 
 === 4:1 MUX
 
-[source,systemverilog]
+[source,verilog]
 ----
 module mux4 #(parameter W = 8) (
   input  logic [W-1:0] a, b, c, d,
@@ -377,7 +378,7 @@ endmodule
 
 === Parameterized N:1 MUX
 
-[source,systemverilog]
+[source,verilog]
 ----
 module mux_n #(
   parameter N = 8,
@@ -393,7 +394,7 @@ endmodule
 
 === One-Hot MUX
 
-[source,systemverilog]
+[source,verilog]
 ----
 module mux_onehot #(
   parameter N = 4,
@@ -416,7 +417,7 @@ endmodule
 
 === Half Adder
 
-[source,systemverilog]
+[source,verilog]
 ----
 module half_adder (
   input  logic a, b,
@@ -430,7 +431,7 @@ endmodule
 
 === Full Adder
 
-[source,systemverilog]
+[source,verilog]
 ----
 module full_adder (
   input  logic a, b, cin,
@@ -446,7 +447,7 @@ endmodule
 Chains N full adders. Simple, but carry must propagate through every stage —
 delay grows linearly with bit-width.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module rca #(parameter W = 8) (
   input  logic [W-1:0] a, b,
@@ -473,7 +474,7 @@ endmodule
 Computes all carries in parallel using *generate* (G) and *propagate* (P) signals.
 Delay grows logarithmically instead of linearly.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module cla4 (
   input  logic [3:0] a, b,
@@ -506,7 +507,7 @@ endmodule
 Pre-computes two sums in parallel (assuming `cin=0` and `cin=1`),
 then selects the correct result once the real carry-in arrives.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module carry_select_adder #(
   parameter W     = 16,
@@ -548,7 +549,7 @@ endmodule
 Reduces *three* operands to *two* in a single gate delay.
 Core building block of Wallace and Dadda multiplier trees.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module csa #(parameter W = 8) (
   input  logic [W-1:0] a, b, c,
@@ -584,7 +585,7 @@ In practice, write `a + b` and let the synthesis tool select and optimize the tr
 
 === Combinational Array Multiplier
 
-[source,systemverilog]
+[source,verilog]
 ----
 module mult_array #(parameter W = 8) (
   input  logic [W-1:0]   a,
@@ -612,7 +613,7 @@ endmodule
 
 One partial product per clock cycle. Smallest area; takes W cycles.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module mult_shift_add #(parameter W = 8) (
   input  logic           clk,
@@ -679,7 +680,7 @@ multiplier bits per step.
 | `11` | + 0 (no-op)
 |===
 
-[source,systemverilog]
+[source,verilog]
 ----
 module booth_r2 #(parameter W = 8) (
   input  logic                   clk,
@@ -755,7 +756,7 @@ An encoder converts a *wide* one-hot or positional input into a compact *binary*
 
 === Priority Encoder
 
-[source,systemverilog]
+[source,verilog]
 ----
 module priority_enc #(parameter N = 8) (
   input  logic [N-1:0]         req,
@@ -773,7 +774,7 @@ endmodule
 
 === Binary to One-Hot
 
-[source,systemverilog]
+[source,verilog]
 ----
 module bin2onehot #(parameter N = 3) (
   input  logic [N-1:0]    bin,
@@ -788,7 +789,7 @@ endmodule
 Only one bit changes between consecutive codes — essential for CDC pointer
 synchronization.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module bin2gray #(parameter N = 8) (
   input  logic [N-1:0] bin,
@@ -800,7 +801,7 @@ endmodule
 
 *Inverse — Gray to Binary:*
 
-[source,systemverilog]
+[source,verilog]
 ----
 module gray2bin #(parameter N = 8) (
   input  logic [N-1:0] gray,
@@ -821,7 +822,7 @@ typically activating exactly one output line.
 
 === Binary 3:8 Decoder
 
-[source,systemverilog]
+[source,verilog]
 ----
 module dec3to8 (
   input  logic [2:0] sel,
@@ -834,7 +835,7 @@ endmodule
 
 *Parameterized version:*
 
-[source,systemverilog]
+[source,verilog]
 ----
 module dec_n #(parameter N = 3) (
   input  logic [N-1:0]    sel,
@@ -847,7 +848,7 @@ endmodule
 
 === One-Hot to Binary
 
-[source,systemverilog]
+[source,verilog]
 ----
 module onehot2bin #(parameter N = 3) (
   input  logic [2**N-1:0] one_hot,
@@ -867,7 +868,7 @@ endmodule
 
 Delays the input by `DEPTH` clock cycles.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module siso #(
   parameter DEPTH = 8,
@@ -895,7 +896,7 @@ endmodule
 
 === SIPO — Serial-In Parallel-Out (Deserializer)
 
-[source,systemverilog]
+[source,verilog]
 ----
 module sipo #(parameter W = 8) (
   input  logic         clk,
@@ -912,7 +913,7 @@ endmodule
 
 === PISO — Parallel-In Serial-Out (Serializer)
 
-[source,systemverilog]
+[source,verilog]
 ----
 module piso #(parameter W = 8) (
   input  logic         clk,
@@ -935,7 +936,7 @@ endmodule
 
 === PIPO — Parallel-In Parallel-Out (Pipeline Register)
 
-[source,systemverilog]
+[source,verilog]
 ----
 module pipo #(parameter W = 8) (
   input  logic         clk,
@@ -953,7 +954,7 @@ endmodule
 
 === Bidirectional Shift Register
 
-[source,systemverilog]
+[source,verilog]
 ----
 module bidir_sr #(parameter W = 8) (
   input  logic         clk,
@@ -977,7 +978,7 @@ endmodule
 
 Shifts or rotates by an arbitrary amount in a single cycle.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module barrel_shifter #(parameter W = 8) (
   input  logic [W-1:0]         data_in,
@@ -1009,7 +1010,7 @@ Generates a pseudo-random sequence of length `2^W − 1`.
 | 32 | [32, 22, 2, 1]
 |===
 
-[source,systemverilog]
+[source,verilog]
 ----
 module lfsr_fibonacci #(
   parameter W    = 8,
@@ -1036,7 +1037,7 @@ endmodule
 XOR gates distributed along the register; faster clock speed than Fibonacci.
 Used in scramblers and CRCs.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module lfsr_galois #(
   parameter W    = 8,
@@ -1062,7 +1063,7 @@ endmodule
 
 === Binary Up Counter
 
-[source,systemverilog]
+[source,verilog]
 ----
 module cnt_up #(parameter W = 8) (
   input  logic         clk,
@@ -1079,7 +1080,7 @@ endmodule
 
 === Up/Down Counter
 
-[source,systemverilog]
+[source,verilog]
 ----
 module cnt_updown #(parameter W = 8) (
   input  logic         clk,
@@ -1097,7 +1098,7 @@ endmodule
 
 === Modulo-N Counter
 
-[source,systemverilog]
+[source,verilog]
 ----
 module cnt_mod_n #(
   parameter N = 10,
@@ -1129,7 +1130,7 @@ endmodule
 
 Reloads a programmable value when it reaches zero.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module cnt_reload #(parameter W = 8) (
   input  logic         clk,
@@ -1158,7 +1159,7 @@ endmodule
 
 A single `1` circulates through N flip-flops.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module ring_counter #(parameter N = 4) (
   input  logic         clk,
@@ -1177,7 +1178,7 @@ endmodule
 
 Complement of the MSB fed back to the LSB. 2N states from N flip-flops.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module johnson_counter #(parameter N = 4) (
   input  logic         clk,
@@ -1196,7 +1197,7 @@ endmodule
 
 Only one bit changes per step. Required for CDC interfaces.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module cnt_gray #(parameter W = 8) (
   input  logic         clk,
@@ -1219,7 +1220,7 @@ endmodule
 
 Covers all `2^N − 1` states in pseudo-random order. Faster than binary (no carry chain).
 
-[source,systemverilog]
+[source,verilog]
 ----
 module cnt_lfsr #(
   parameter W    = 8,
@@ -1247,7 +1248,7 @@ Outputs a single-cycle pulse every `DIV` input clocks.
 NOTE: Use `tick` to gate downstream logic rather than using a derived clock signal
 directly — this avoids clock-domain issues.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module prescaler #(parameter DIV = 4) (
   input  logic clk,
@@ -1280,7 +1281,7 @@ compete.
 
 Port 0 is highest priority. Simple; risks *starvation* of lower-priority ports.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module fixed_pri_arb #(parameter N = 4) (
   input  logic [N-1:0] req,
@@ -1293,7 +1294,7 @@ endmodule
 
 *Structural equivalent:*
 
-[source,systemverilog]
+[source,verilog]
 ----
 module fixed_pri_arb_struct #(parameter N = 4) (
   input  logic [N-1:0] req,
@@ -1316,7 +1317,7 @@ endmodule
 Rotates priority after each grant so every requestor eventually gets served.
 Uses the *two-arbiter mask* approach.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module rr_arb #(parameter N = 4) (
   input  logic         clk,
@@ -1373,7 +1374,7 @@ Single clock. Read data appears *one cycle after* `rd_en` is asserted.
 Full/empty detection uses an extra pointer bit (the wrap bit) to distinguish
 a full FIFO from an empty one without a counter.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module sync_fifo #(
   parameter DEPTH = 16,
@@ -1420,7 +1421,7 @@ The head of the FIFO is *always visible* at `rd_data` — zero read latency.
 `rd_en` simply advances to the next entry.
 The only difference from the standard FIFO is a combinational read port.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module fwft_fifo #(
   parameter DEPTH = 16,
@@ -1466,7 +1467,7 @@ endmodule
 Independent read and write clocks. Gray-code pointers cross clock domains safely
 via 2-FF synchronizers (only one bit changes per increment).
 
-[source,systemverilog]
+[source,verilog]
 ----
 module async_fifo #(
   parameter DEPTH = 16,
@@ -1539,7 +1540,7 @@ endmodule
 
 === FIFO with Almost-Full / Almost-Empty Flags
 
-[source,systemverilog]
+[source,verilog]
 ----
 module sync_fifo_flags #(
   parameter DEPTH        = 16,
@@ -1608,7 +1609,7 @@ endmodule
 
 === Single Port RAM (1RW) — Read-First
 
-[source,systemverilog]
+[source,verilog]
 ----
 module sp_ram_rf #(
   parameter DEPTH = 1024,
@@ -1634,7 +1635,7 @@ endmodule
 
 *Write-First variant:*
 
-[source,systemverilog]
+[source,verilog]
 ----
 module sp_ram_wf #(
   parameter DEPTH = 1024,
@@ -1660,7 +1661,7 @@ endmodule
 
 === Simple Dual Port RAM (1R1W)
 
-[source,systemverilog]
+[source,verilog]
 ----
 module sdp_ram #(
   parameter DEPTH = 1024,
@@ -1685,7 +1686,7 @@ endmodule
 
 === True Dual Port RAM (2RW)
 
-[source,systemverilog]
+[source,verilog]
 ----
 module tdp_ram #(
   parameter DEPTH = 1024,
@@ -1721,7 +1722,7 @@ endmodule
 
 === ROM
 
-[source,systemverilog]
+[source,verilog]
 ----
 module rom #(
   parameter DEPTH     = 256,
@@ -1749,7 +1750,7 @@ endmodule
 
 Lookup by *value* rather than by address. Used in TLBs and network routing tables.
 
-[source,systemverilog]
+[source,verilog]
 ----
 module cam #(
   parameter DEPTH = 16,

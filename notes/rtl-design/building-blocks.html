@@ -432,6 +432,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/github.min.css">
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
@@ -594,7 +595,7 @@ All practical RTL designs use  <strong>D flip-flop</strong> as primitive Flip Fl
 <h3 id="_d_flip_flop_asynchronous_reset">D Flip-Flop — Asynchronous Reset</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module dff_async #(parameter W = 1) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module dff_async #(parameter W = 1) (
   input  logic         clk,
   input  logic         reset,   // active-low asynchronous reset
   input  logic [W-1:0] d,
@@ -612,7 +613,7 @@ endmodule</code></pre>
 <h3 id="_d_flip_flop_synchronous_reset">D Flip-Flop — Synchronous Reset</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module dff_sync #(parameter W = 1) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module dff_sync #(parameter W = 1) (
   input  logic         clk,
   input  logic         reset,   // active-low synchronous reset
   input  logic [W-1:0] d,
@@ -630,7 +631,7 @@ endmodule</code></pre>
 <h3 id="_d_flip_flop_with_clock_enable">D Flip-Flop With Clock Enable</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module dff_en #(parameter W = 1) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module dff_en #(parameter W = 1) (
   input  logic         clk,
   input  logic         reset,
   input  logic         en,      // clock enable: FF only captures when high
@@ -666,7 +667,7 @@ Synthesis tools map this to a dedicated clock-enable pin on the flip-flop primit
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module tff (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module tff (
   input  logic clk,
   input  logic reset,
   input  logic t,
@@ -720,7 +721,7 @@ endmodule</code></pre>
 </table>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module srff (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module srff (
   input  logic clk,
   input  logic reset,
   input  logic s,
@@ -783,7 +784,7 @@ endmodule</code></pre>
 </table>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module jkff (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module jkff (
   input  logic clk,
   input  logic reset,
   input  logic j,
@@ -818,7 +819,7 @@ Always close your combinational blocks.</p>
 <h3 id="_sr_latch_nor_based">SR Latch (NOR-based)</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module sr_latch (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module sr_latch (
   input  logic s,    // Set
   input  logic r,    // Reset
   output logic q,
@@ -835,7 +836,7 @@ endmodule</code></pre>
 <h3 id="_d_latch">D Latch</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module d_latch (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module d_latch (
   input  logic en,   // transparent while en=1
   input  logic d,
   output logic q
@@ -860,7 +861,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module rise_detect (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module rise_detect (
   input  logic clk,
   input  logic reset,
   input  logic sig,
@@ -882,7 +883,7 @@ endmodule</code></pre>
 <h3 id="_any_edge_detector">Any-Edge Detector</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module edge_detect (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module edge_detect (
   input  logic clk,
   input  logic reset,
   input  logic sig,
@@ -942,7 +943,7 @@ Overlapping means a detected sequence can share bits with the next one.</p>
 </table>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module seq_detect_1011 (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module seq_detect_1011 (
   input  logic clk,
   input  logic reset,
   input  logic din,
@@ -988,7 +989,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">// Style 1: Ternary operator (most concise)
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">// Style 1: Ternary operator (most concise)
 module mux2_ternary #(parameter W = 8) (
   input  logic [W-1:0] a, b,
   input  logic         sel,
@@ -1000,7 +1001,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">// Style 2: unique case
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">// Style 2: unique case
 module mux2_case #(parameter W = 8) (
   input  logic [W-1:0] a, b,
   input  logic         sel,
@@ -1017,7 +1018,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">// Style 3: if-else
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">// Style 3: if-else
 module mux2_ifelse #(parameter W = 8) (
   input  logic [W-1:0] a, b,
   input  logic         sel,
@@ -1032,7 +1033,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">// Style 4: AND-OR (gate-level)
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">// Style 4: AND-OR (gate-level)
 module mux2_andor #(parameter W = 8) (
   input  logic [W-1:0] a, b,
   input  logic         sel,
@@ -1047,7 +1048,7 @@ endmodule</code></pre>
 <h3 id="_41_mux">4:1 MUX</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module mux4 #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module mux4 #(parameter W = 8) (
   input  logic [W-1:0] a, b, c, d,
   input  logic [1:0]   sel,
   output logic [W-1:0] y
@@ -1068,7 +1069,7 @@ endmodule</code></pre>
 <h3 id="_parameterized_n1_mux">Parameterized N:1 MUX</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module mux_n #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module mux_n #(
   parameter N = 8,
   parameter W = 8
 ) (
@@ -1085,7 +1086,7 @@ endmodule</code></pre>
 <h3 id="_one_hot_mux">One-Hot MUX</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module mux_onehot #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module mux_onehot #(
   parameter N = 4,
   parameter W = 8
 ) (
@@ -1111,7 +1112,7 @@ endmodule</code></pre>
 <h3 id="_half_adder">Half Adder</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module half_adder (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module half_adder (
   input  logic a, b,
   output logic sum,
   output logic cout
@@ -1126,7 +1127,7 @@ endmodule</code></pre>
 <h3 id="_full_adder">Full Adder</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module full_adder (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module full_adder (
   input  logic a, b, cin,
   output logic sum,
   output logic cout
@@ -1144,7 +1145,7 @@ delay grows linearly with bit-width.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module rca #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module rca #(parameter W = 8) (
   input  logic [W-1:0] a, b,
   input  logic         cin,
   output logic [W-1:0] sum,
@@ -1173,7 +1174,7 @@ Delay grows logarithmically instead of linearly.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module cla4 (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module cla4 (
   input  logic [3:0] a, b,
   input  logic       cin,
   output logic [3:0] sum,
@@ -1208,7 +1209,7 @@ then selects the correct result once the real carry-in arrives.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module carry_select_adder #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module carry_select_adder #(
   parameter W     = 16,
   parameter BLOCK = 4
 ) (
@@ -1252,7 +1253,7 @@ Core building block of Wallace and Dadda multiplier trees.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module csa #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module csa #(parameter W = 8) (
   input  logic [W-1:0] a, b, c,
   output logic [W-1:0] partial_sum,
   output logic [W-1:0] partial_carry
@@ -1329,7 +1330,7 @@ endmodule</code></pre>
 <h3 id="_combinational_array_multiplier">Combinational Array Multiplier</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module mult_array #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module mult_array #(parameter W = 8) (
   input  logic [W-1:0]   a,
   input  logic [W-1:0]   b,
   output logic [2*W-1:0] product
@@ -1359,7 +1360,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module mult_shift_add #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module mult_shift_add #(parameter W = 8) (
   input  logic           clk,
   input  logic           reset,
   input  logic           start,
@@ -1449,7 +1450,7 @@ multiplier bits per step.</p>
 </table>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module booth_r2 #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module booth_r2 #(parameter W = 8) (
   input  logic                   clk,
   input  logic                   reset,
   input  logic                   start,
@@ -1559,7 +1560,7 @@ endmodule</code></pre>
 <h3 id="_priority_encoder">Priority Encoder</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module priority_enc #(parameter N = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module priority_enc #(parameter N = 8) (
   input  logic [N-1:0]         req,
   output logic [$clog2(N)-1:0] enc,
   output logic                 valid
@@ -1578,7 +1579,7 @@ endmodule</code></pre>
 <h3 id="_binary_to_one_hot">Binary to One-Hot</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module bin2onehot #(parameter N = 3) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module bin2onehot #(parameter N = 3) (
   input  logic [N-1:0]    bin,
   output logic [2**N-1:0] one_hot
 );
@@ -1595,7 +1596,7 @@ synchronization.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module bin2gray #(parameter N = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module bin2gray #(parameter N = 8) (
   input  logic [N-1:0] bin,
   output logic [N-1:0] gray
 );
@@ -1608,7 +1609,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module gray2bin #(parameter N = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module gray2bin #(parameter N = 8) (
   input  logic [N-1:0] gray,
   output logic [N-1:0] bin
 );
@@ -1634,7 +1635,7 @@ typically activating exactly one output line.</p>
 <h3 id="_binary_38_decoder">Binary 3:8 Decoder</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module dec3to8 (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module dec3to8 (
   input  logic [2:0] sel,
   input  logic       en,
   output logic [7:0] y
@@ -1648,7 +1649,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module dec_n #(parameter N = 3) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module dec_n #(parameter N = 3) (
   input  logic [N-1:0]    sel,
   input  logic            en,
   output logic [2**N-1:0] y
@@ -1662,7 +1663,7 @@ endmodule</code></pre>
 <h3 id="_one_hot_to_binary">One-Hot to Binary</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module onehot2bin #(parameter N = 3) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module onehot2bin #(parameter N = 3) (
   input  logic [2**N-1:0] one_hot,
   output logic [N-1:0]    bin
 );
@@ -1687,7 +1688,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module siso #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module siso #(
   parameter DEPTH = 8,
   parameter W     = 1
 ) (
@@ -1716,7 +1717,7 @@ endmodule</code></pre>
 <h3 id="_sipo_serial_in_parallel_out_deserializer">SIPO — Serial-In Parallel-Out (Deserializer)</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module sipo #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module sipo #(parameter W = 8) (
   input  logic         clk,
   input  logic         reset,
   input  logic         sin,
@@ -1734,7 +1735,7 @@ endmodule</code></pre>
 <h3 id="_piso_parallel_in_serial_out_serializer">PISO — Parallel-In Serial-Out (Serializer)</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module piso #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module piso #(parameter W = 8) (
   input  logic         clk,
   input  logic         reset,
   input  logic         load,
@@ -1758,7 +1759,7 @@ endmodule</code></pre>
 <h3 id="_pipo_parallel_in_parallel_out_pipeline_register">PIPO — Parallel-In Parallel-Out (Pipeline Register)</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module pipo #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module pipo #(parameter W = 8) (
   input  logic         clk,
   input  logic         reset,
   input  logic         en,
@@ -1777,7 +1778,7 @@ endmodule</code></pre>
 <h3 id="_bidirectional_shift_register">Bidirectional Shift Register</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module bidir_sr #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module bidir_sr #(parameter W = 8) (
   input  logic         clk,
   input  logic         reset,
   input  logic         load,
@@ -1803,7 +1804,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module barrel_shifter #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module barrel_shifter #(parameter W = 8) (
   input  logic [W-1:0]         data_in,
   input  logic [$clog2(W)-1:0] shamt,
   input  logic [1:0]           mode,   // 00=SLL, 01=SRL, 10=ROL, 11=ROR
@@ -1858,7 +1859,7 @@ endmodule</code></pre>
 </table>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module lfsr_fibonacci #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module lfsr_fibonacci #(
   parameter W    = 8,
   parameter SEED = 8'hAD
 ) (
@@ -1887,7 +1888,7 @@ Used in scramblers and CRCs.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module lfsr_galois #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module lfsr_galois #(
   parameter W    = 8,
   parameter POLY = 8'hB8,
   parameter SEED = 8'hAD
@@ -1917,7 +1918,7 @@ endmodule</code></pre>
 <h3 id="_binary_up_counter">Binary Up Counter</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module cnt_up #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module cnt_up #(parameter W = 8) (
   input  logic         clk,
   input  logic         reset,
   input  logic         en,
@@ -1935,7 +1936,7 @@ endmodule</code></pre>
 <h3 id="_updown_counter">Up/Down Counter</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module cnt_updown #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module cnt_updown #(parameter W = 8) (
   input  logic         clk,
   input  logic         reset,
   input  logic         en,
@@ -1954,7 +1955,7 @@ endmodule</code></pre>
 <h3 id="_modulo_n_counter">Modulo-N Counter</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module cnt_mod_n #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module cnt_mod_n #(
   parameter N = 10,
   parameter W = $clog2(N)
 ) (
@@ -1988,7 +1989,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module cnt_reload #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module cnt_reload #(parameter W = 8) (
   input  logic         clk,
   input  logic         reset,
   input  logic         en,
@@ -2019,7 +2020,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module ring_counter #(parameter N = 4) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module ring_counter #(parameter N = 4) (
   input  logic         clk,
   input  logic         reset,
   input  logic         en,
@@ -2040,7 +2041,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module johnson_counter #(parameter N = 4) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module johnson_counter #(parameter N = 4) (
   input  logic         clk,
   input  logic         reset,
   input  logic         en,
@@ -2061,7 +2062,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module cnt_gray #(parameter W = 8) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module cnt_gray #(parameter W = 8) (
   input  logic         clk,
   input  logic         reset,
   input  logic         en,
@@ -2086,7 +2087,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module cnt_lfsr #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module cnt_lfsr #(
   parameter W    = 8,
   parameter SEED = 8'h01
 ) (
@@ -2126,7 +2127,7 @@ directly — this avoids clock-domain issues.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module prescaler #(parameter DIV = 4) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module prescaler #(parameter DIV = 4) (
   input  logic clk,
   input  logic reset,
   output logic tick
@@ -2165,7 +2166,7 @@ compete.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module fixed_pri_arb #(parameter N = 4) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module fixed_pri_arb #(parameter N = 4) (
   input  logic [N-1:0] req,
   output logic [N-1:0] grant
 );
@@ -2179,7 +2180,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module fixed_pri_arb_struct #(parameter N = 4) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module fixed_pri_arb_struct #(parameter N = 4) (
   input  logic [N-1:0] req,
   output logic [N-1:0] grant
 );
@@ -2204,7 +2205,7 @@ Uses the <strong>two-arbiter mask</strong> approach.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module rr_arb #(parameter N = 4) (
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module rr_arb #(parameter N = 4) (
   input  logic         clk,
   input  logic         reset,
   input  logic [N-1:0] req,
@@ -2291,7 +2292,7 @@ a full FIFO from an empty one without a counter.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module sync_fifo #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module sync_fifo #(
   parameter DEPTH = 16,
   parameter W     = 8
 ) (
@@ -2340,7 +2341,7 @@ The only difference from the standard FIFO is a combinational read port.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module fwft_fifo #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module fwft_fifo #(
   parameter DEPTH = 16,
   parameter W     = 8
 ) (
@@ -2388,7 +2389,7 @@ via 2-FF synchronizers (only one bit changes per increment).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module async_fifo #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module async_fifo #(
   parameter DEPTH = 16,
   parameter W     = 8
 ) (
@@ -2462,7 +2463,7 @@ endmodule</code></pre>
 <h3 id="_fifo_with_almost_full_almost_empty_flags">FIFO with Almost-Full / Almost-Empty Flags</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module sync_fifo_flags #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module sync_fifo_flags #(
   parameter DEPTH        = 16,
   parameter W            = 8,
   parameter AFULL_THRES  = 12,
@@ -2578,7 +2579,7 @@ endmodule</code></pre>
 <h3 id="_single_port_ram_1rw_read_first">Single Port RAM (1RW) — Read-First</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module sp_ram_rf #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module sp_ram_rf #(
   parameter DEPTH = 1024,
   parameter W     = 32
 ) (
@@ -2605,7 +2606,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module sp_ram_wf #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module sp_ram_wf #(
   parameter DEPTH = 1024,
   parameter W     = 32
 ) (
@@ -2632,7 +2633,7 @@ endmodule</code></pre>
 <h3 id="_simple_dual_port_ram_1r1w">Simple Dual Port RAM (1R1W)</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module sdp_ram #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module sdp_ram #(
   parameter DEPTH = 1024,
   parameter W     = 32
 ) (
@@ -2658,7 +2659,7 @@ endmodule</code></pre>
 <h3 id="_true_dual_port_ram_2rw">True Dual Port RAM (2RW)</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module tdp_ram #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module tdp_ram #(
   parameter DEPTH = 1024,
   parameter W     = 32
 ) (
@@ -2695,7 +2696,7 @@ endmodule</code></pre>
 <h3 id="_rom">ROM</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module rom #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module rom #(
   parameter DEPTH     = 256,
   parameter W         = 8,
   parameter INIT_FILE = "rom_init.mem"
@@ -2725,7 +2726,7 @@ endmodule</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-systemverilog" data-lang="systemverilog">module cam #(
+<pre class="highlightjs highlight"><code class="language-verilog hljs" data-lang="verilog">module cam #(
   parameter DEPTH = 16,
   parameter W     = 8
 ) (
@@ -2771,8 +2772,15 @@ endmodule</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-06-15 18:02:27 UTC
+Last updated 2026-06-19 04:17:19 UTC
 </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
+<script>
+if (!hljs.initHighlighting.called) {
+  hljs.initHighlighting.called = true
+  ;[].slice.call(document.querySelectorAll('pre.highlight > code[data-lang]')).forEach(function (el) { hljs.highlightBlock(el) })
+}
+</script>
 </body>
 </html>
