@@ -55,6 +55,36 @@
           font-size: 8.5pt;
       }
 
+      /* Search box */
+      .topics-search {
+          padding: 0 14px 12px 14px;
+      }
+
+      .topics-search input {
+          width: 100%;
+          box-sizing: border-box;
+          padding: 6px 9px;
+          font-size: 8.5pt;
+          font-family: inherit;
+          color: #222;
+          background: #fff;
+          border: 1px solid #bbb;
+          border-radius: 3px;
+          outline: none;
+      }
+
+      .topics-search input:focus {
+          border-color: #027;
+      }
+
+      .topics-noresults {
+          display: none;
+          padding: 8px 18px;
+          font-size: 8.5pt;
+          font-style: italic;
+          color: #999;
+      }
+
       /* Section headers */
       .section-header {
           display: flex;
@@ -218,7 +248,11 @@
           <h1>Notes</h1>
           <div class="subtitle">Technical &amp; general reading</div>
         </div>
+        <div class="topics-search">
+          <input type="text" id="topicsSearch" placeholder="Search notes&hellip;" autocomplete="off">
+        </div>
         <div id="topicsContainer"></div>
+        <div class="topics-noresults" id="topicsNoResults">no matching notes</div>
       </div>
 
       <!-- ── Right: PDF viewer ── -->
@@ -257,20 +291,28 @@
           {
               label: "Digital Design",
               notes: [
-		  { title: "Boolean Algebra", file: "notes/rtl-design/tbd.html" },
-		  { title: "RTL Building Blocks", file: "notes/rtl-design/building-blocks.html" },
-		  { title: "Synthesis and Timing Analysis", file: "notes/rtl-design/tbd.html" },
-		  
+		  { title: "Number Systems and Boolean Algebra", file: "notes/rtl-design/foundations.html" },
+		  { title: "Building Blocks and Sequential Design", file: "notes/rtl-design/building-blocks-sequential.html" },
+		  { title: "HDL Design Practices", file: "notes/rtl-design/hdl-practices.html" },
+		  { title: "Timing, Synthesis and Power", file: "notes/rtl-design/timing-synthesis-power.html" },
               ]
           },
           {
               label: "Computer Architecture",
               notes: [
-                  { title: "RISC-V ISA", file: "notes/computer-architecture/tbd.html" },
-                  { title: "Microarchitecture Fundamentals", file: "notes/computer-architecture/tbd.html" },
-                  { title: "Floating Point Arithmetic", file: "notes/rtl-design/tbd.html" },
-		  { title: "Parallel Programming Architectures", file: "notes/computer-architecture/tbd.html" },
-		  { title: "Cache Coherence", file: "notes/computer-architecture/tbd.html" }
+                  { title: "Performance and ISA", file: "notes/computer-architecture/performance-and-isa.html" },
+                  { title: "Processor Microarchitecture", file: "notes/computer-architecture/processor-microarchitecture.html" },
+                  { title: "Caches and Virtual Memory", file: "notes/computer-architecture/caches-virtual-memory.html" },
+                  { title: "Main Memory and Storage", file: "notes/computer-architecture/main-memory-storage.html" },
+                  { title: "Multiprocessors: Coherence, Consistency and Parallelism", file: "notes/computer-architecture/multiprocessors.html" },
+                  { title: "Deep Learning Accelerators", file: "notes/computer-architecture/deep-learning-accelerators.html" }
+               	  ]
+          },
+          {
+              label: "VLSI Implementation",
+              notes: [
+                  { title: "CMOS Circuit Design", file: "notes/rtl-design/cmos-circuit-design.html" },
+                  { title: "Physical Design and Design-for-Test", file: "notes/rtl-design/physical-design-dft.html" }
                	  ]
           },
       ];
@@ -292,6 +334,7 @@
 
       const container = document.getElementById('topicsContainer');
       const itemRegistry = {};
+      const sectionRegistry = [];
 
       SECTIONS.forEach(section => {
           const wrap = document.createElement('div');
@@ -303,6 +346,7 @@
           const items = document.createElement('div');
           items.className = 'note-items';
 
+          const noteEls = [];
           section.notes.forEach(note => {
               const el = document.createElement('div');
               el.className = 'note-item';
@@ -310,6 +354,7 @@
               el.addEventListener('click', () => openNote(note, el, section.label));
               items.appendChild(el);
               itemRegistry[section.label + '/' + note.title] = { note, el, section: section.label };
+              noteEls.push({ el, title: note.title });
           });
 
           header.addEventListener('click', () => {
@@ -321,6 +366,47 @@
           wrap.appendChild(header);
           wrap.appendChild(items);
           container.appendChild(wrap);
+          sectionRegistry.push({ wrap, header, items, label: section.label, noteEls });
+      });
+
+      // ── Search / filter ──
+      const searchInput = document.getElementById('topicsSearch');
+      const noResultsEl = document.getElementById('topicsNoResults');
+
+      searchInput.addEventListener('input', () => {
+          const q = searchInput.value.trim().toLowerCase();
+          let totalMatches = 0;
+
+          sectionRegistry.forEach(sec => {
+              if (!q) {
+                  // Reset to default: show everything, collapse sections
+                  sec.wrap.style.display = '';
+                  sec.noteEls.forEach(n => { n.el.style.display = ''; });
+                  sec.items.classList.remove('open');
+                  sec.header.classList.remove('open');
+                  return;
+              }
+
+              const labelMatch = sec.label.toLowerCase().includes(q);
+              let sectionMatches = 0;
+
+              sec.noteEls.forEach(n => {
+                  const hit = labelMatch || n.title.toLowerCase().includes(q);
+                  n.el.style.display = hit ? '' : 'none';
+                  if (hit) sectionMatches++;
+              });
+
+              if (sectionMatches > 0) {
+                  sec.wrap.style.display = '';
+                  sec.items.classList.add('open');
+                  sec.header.classList.add('open');
+                  totalMatches += sectionMatches;
+              } else {
+                  sec.wrap.style.display = 'none';
+              }
+          });
+
+          noResultsEl.style.display = (q && totalMatches === 0) ? 'block' : 'none';
       });
 
       // Restore from URL hash

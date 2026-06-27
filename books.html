@@ -46,6 +46,43 @@
             font-size: 10pt;
         }
 
+        /* Search box */
+        .library-search {
+            margin-bottom: 22px;
+            max-width: 340px;
+        }
+
+        .library-search input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 11px;
+            font-size: 10pt;
+            font-family: inherit;
+            color: #222;
+            background: #fff;
+            border: 1px solid #bbb;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .library-search input:focus {
+            border-color: #027;
+        }
+
+        .shelf-section.hidden,
+        .cr-book.hidden,
+        .book.hidden {
+            display: none;
+        }
+
+        .library-noresults {
+            display: none;
+            font-style: italic;
+            color: #999;
+            font-size: 10pt;
+            padding: 8px 0;
+        }
+
         /* Right: sticky review panel */
         .review-panel {
             flex: 2;
@@ -258,10 +295,17 @@
                 <div class="subtitle">A personal library</div>
             </div>
 
-            <h2 class="section-heading">Currently Reading</h2>
-            <div class="currently-reading" id="crRow"></div>
+            <div class="library-search">
+                <input type="text" id="bookSearch" placeholder="Search by title or author&hellip;" autocomplete="off">
+            </div>
+
+            <div id="crSection">
+                <h2 class="section-heading">Currently Reading</h2>
+                <div class="currently-reading" id="crRow"></div>
+            </div>
 
             <div id="shelvesContainer"></div>
+            <div class="library-noresults" id="bookNoResults">no matching books</div>
         </div>
 
         <!-- ── Right: review panel ── -->
@@ -283,19 +327,9 @@
     </div>
 
     <script>
-                                                                                            const CURRENTLY_READING = [
-        { title: "Imagining India: The Idea of a Renewed Nation", author: "Nandan Nilekani", rating: 0, height: "",
-          cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347663427l/5501276._SX98_.jpg",
-          review: null },
-        { title: "The Golden Road: How Ancient India Transformed the World", author: "William Dalrymple", rating: 0, height: "tall",
-          cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1715854421l/201608148._SX98_.jpg",
-          review: null },
-        { title: "The Soros Lectures: At the Central European University", author: "George Soros", rating: 0, height: "",
-          cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1328757733l/7651910._SX98_.jpg",
-          review: null },
-    ];
+                                                                                                const CURRENTLY_READING = [];
 
-                                                                                            const SHELVES = [
+                                                                                                const SHELVES = [
         {
             label: "Computers",
             books: [
@@ -322,19 +356,22 @@
         {
             label: "Entrepreneurship",
             books: [
-                { title: "Build: An Unorthodox Guide to Making Things Worth Making", author: "Tony Fadell", rating: 4, height: "",
+                { title: "The Startup of You: Adapt to the Future, Invest in Yourself, and Transform Your Career", author: "Reid Hoffman", rating: 0, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1328301968l/12030438._SX98_.jpg",
+                  review: null },
+                { title: "Build: An Unorthodox Guide to Making Things Worth Making", author: "Tony Fadell", rating: 4, height: "tall",
                   cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1652120231l/59696349._SX98_.jpg",
                   review: "Tony Fadell offers a front seat view of his fantastic entrepreneurial journey at Magic, Philips, Apple, and Nest, and a counterinsurgency manual for people navigating the world of startups (either working in them, or leading them).<br><br>One of his initial propositions in Part I is that for people stepping into adulthood is to look for careers with the introspection of \"What do I want to learn,\" and encourages taking risks while choosing where to work. <br><br>He says, <b>\"Assume that for much of your twenties your choices will not work out, and the companies you start or join will likely fail,\"</b> and <b>\"the worst that can happen if you take big risks is probably moving back with your parents. And that is not shameful\"</b>. He also offers an insider perspective on all mistakes made while building the <b>Magic Link</b> at <a href=\"https://en.wikipedia.org/wiki/General_Magic\" rel=\"nofollow noopener\"> General Magic </a> also adding that <b>\"After four years, I realized that there was a whole world of thinking that was needed before a line of code should be written. And that thinking was fascinating. That thinking was what I wanted to do\"</b>.<br><br>For people seeking a job, he lays deep emphasis on joining a revolution that solves a real problem, and in favour of choosing to work with your Heroes (specific people or organizations that create real impact). And if you get the chance, he recommends having a clear target of who you want to become, but being very flexible on how to get there. Once you do have a job, he guides on how often one needs to look up or look around - beyond their work, and in which stage of your career. <br><br>He also gives general advice on building one's career and valuable management lessons which could be generally applied to an audience right out of college, more than the experienced leader. He says, <b>\"Examining the product in great detail and caring deeply about the quality of what your team is producing is not micromanagement. That's exactly what you should be doing\"</b>, and the importance of 1:1 meetings with an agenda and clear purpose, along with performance review cycles. He also says that <b>\"a great deal of management comes down to how you manage your own fears and anxieties,\"</b> while explaining diverse kinds of management styles rather than a one-size-fits-all approach.<br><br>He also discusses data vs opinion-based judgement, the types of people you work with, and when to leave a mission.<br><br>He shares his views on how to Build Your Product, how to understand the customer, and how to make the intangible tangible, or even how to tell a story like Steve Jobs in 2007 at Macworld, introducing the iPhone 1. He also explains the need for evolution vs disruption vs execution, and the lifecycle of a project during the first, second, and third generations. And the need for crafting a rhythm of <b>heartbeats</b> - updates for internal teams, project members, customers, and why it is extremely important for success.<br><br>Towards the end of this book, Tony writes out what would have been hard-won lessons that would otherwise cost years and failed companies to learn in the world of startup idea inception and understanding customers, and raising capital. He does a great job explaining the types of VCs, on how to manage yourself to be productive and elegantly deal with crisis.<br><br>He advocates for working with the best teams, about how find the best early employees, or as he calls <b>seed catalysts</b>, how to hire more of them. He puts it neatly, <b>\"What you're building never matters as much as who you're building it with\"</b>. He also discusses about breakpoints in growth, and how to design, manage products and market them honestly.<br><br>Finally, this book is an eye opener for someone who struggles to understand the complex world of startups - on how to successfully drive real impact to the customer / to a business as a team of revolutionaries. <br><br>Govardhan" },
-                { title: "Amazon Letters to Shareholders 1997 - 2020", author: "Jeff Bezos", rating: 4, height: "tall",
+                { title: "Amazon Letters to Shareholders 1997 - 2020", author: "Jeff Bezos", rating: 4, height: "",
                   cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1680882178l/117222502._SX98_.jpg",
                   review: null },
-                { title: "Business Model Generation", author: "Alexander Osterwalder", rating: 5, height: "",
+                { title: "Business Model Generation", author: "Alexander Osterwalder", rating: 5, height: "short",
                   cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1384676138l/7723797._SX98_.jpg",
                   review: null },
-                { title: "Hit Refresh: The Quest to Rediscover Microsoft's Soul and Imagine a Better Future for Everyone", author: "Satya Nadella", rating: 4, height: "short",
+                { title: "Hit Refresh: The Quest to Rediscover Microsoft's Soul and Imagine a Better Future for Everyone", author: "Satya Nadella", rating: 4, height: "tall",
                   cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1506565784l/30835567._SX98_.jpg",
                   review: null },
-                { title: "Zero to One: Notes on Startups, or How to Build the Future", author: "Peter Thiel", rating: 5, height: "tall",
+                { title: "Zero to One: Notes on Startups, or How to Build the Future", author: "Peter Thiel", rating: 5, height: "",
                   cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1630663027l/18050143._SX98_.jpg",
                   review: null },
             ]
@@ -342,7 +379,7 @@
         {
             label: "Fiction",
             books: [
-                { title: "White Nights", author: "Fyodor Dostoyevsky", rating: 4, height: "",
+                { title: "White Nights", author: "Fyodor Dostoevsky", rating: 4, height: "",
                   cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1450699039l/1772910._SX98_.jpg",
                   review: null },
                 { title: "The Adventures of Sherlock Holmes", author: "Arthur Conan Doyle", rating: 4, height: "tall",
@@ -486,7 +523,7 @@
                 { title: "Deep Work: Rules for Focused Success in a Distracted World", author: "Cal Newport", rating: 4, height: "tall",
                   cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1447957962l/25744928._SX98_.jpg",
                   review: "I was wrong when I decided I wouldn't need to immerse myself into deep work once I joined engineering and felt that the distracted life lead to an easy and happy life. <br>This book essentially outlined and reminded me of my innate desire for deep immersive work and putting my focus to its limits, which requires digital minimalism and the reduction of context-switching, or more generally distractions<br>It also made good emphasis on using distractions as mindfully limited useful tools, something I have personally overlooked.<br>on a side note, this book also makes effort in convincing and answering knowledge-worker counter-takes on deep work. which rightfully fills in most of the pages<br>This sounds cliche but the book made me realize this very important lesson at the most essential point of my life.<br>My rating would be a strong 4.5/5 or a light 5/5." },
-                { title: "The God Delusion", author: "Richard Dawkins", rating: 5, height: "",
+                { title: "The God Delusion: A Study of Religious Belief and Skepticism", author: "Richard Dawkins", rating: 5, height: "",
                   cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347220693l/14743._SX98_.jpg",
                   review: null },
                 { title: "The Psychology of Money: Timeless Lessons on Wealth, Greed, and Happiness", author: "Morgan Housel", rating: 5, height: "short",
@@ -497,7 +534,16 @@
         {
             label: "World",
             books: [
-                { title: "What Young India Wants", author: "Chetan Bhagat", rating: 4, height: "",
+                { title: "The Soros Lectures: At the Central European University", author: "George Soros", rating: 5, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1328757733l/7651910._SX98_.jpg",
+                  review: null },
+                { title: "The Golden Road: How Ancient India Transformed the World", author: "William Dalrymple", rating: 4, height: "tall",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1715854421l/201608148._SX98_.jpg",
+                  review: null },
+                { title: "Imagining India: The Idea of a Renewed Nation", author: "Nandan Nilekani", rating: 5, height: "",
+                  cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347663427l/5501276._SX98_.jpg",
+                  review: null },
+                { title: "What Young India Wants", author: "Chetan Bhagat", rating: 4, height: "short",
                   cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1341852025l/15743828._SX98_.jpg",
                   review: null },
                 { title: "Factfulness: Ten Reasons We're Wrong About the World – and Why Things Are Better Than You Think", author: "Hans Rosling", rating: 5, height: "tall",
@@ -528,6 +574,7 @@
     }
 
     const bookRegistry = {};
+    const searchItems = [];   // { el, text } for every book card (cr + shelves)
     let activeEl = null;
 
     function selectBook(book, el) {
@@ -572,6 +619,7 @@
         `;
         el.addEventListener('click', () => selectBook(book, el));
         bookRegistry[titleToSlug(book.title)] = {book, el};
+        searchItems.push({ el, text: (book.title + ' ' + book.author).toLowerCase() });
         crRow.appendChild(el);
     });
 
@@ -594,8 +642,38 @@
             el.innerHTML = `<img src="${book.cover}" alt="${book.title}" loading="lazy">`;
             el.addEventListener('click', () => selectBook(book, el));
             bookRegistry[titleToSlug(book.title)] = {book, el};
+            searchItems.push({ el, text: (book.title + ' ' + book.author).toLowerCase() });
             row.appendChild(el);
         });
+    });
+
+    // ── Search / filter ──
+    const bookSearch    = document.getElementById('bookSearch');
+    const crSection     = document.getElementById('crSection');
+    const bookNoResults = document.getElementById('bookNoResults');
+    const shelfSections = document.querySelectorAll('.shelf-section');
+
+    bookSearch.addEventListener('input', () => {
+        const q = bookSearch.value.trim().toLowerCase();
+        let totalMatches = 0;
+
+        searchItems.forEach(item => {
+            const hit = !q || item.text.includes(q);
+            item.el.classList.toggle('hidden', !hit);
+            if (hit && q) totalMatches++;
+        });
+
+        // Hide shelf sections that have no visible books
+        shelfSections.forEach(sec => {
+            const anyVisible = sec.querySelector('.book:not(.hidden)');
+            sec.classList.toggle('hidden', !!q && !anyVisible);
+        });
+
+        // Hide the "Currently Reading" block if none match
+        const crVisible = crSection.querySelector('.cr-book:not(.hidden)');
+        crSection.classList.toggle('hidden', !!q && !crVisible);
+
+        bookNoResults.style.display = (q && totalMatches === 0) ? 'block' : 'none';
     });
 
     // Open the book specified in the URL hash on load
