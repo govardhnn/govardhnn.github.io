@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Synthesis, Timing and Power</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#synthesis-timing-and-power"
+id="toc-synthesis-timing-and-power">Synthesis, Timing and Power</a>
+<ul>
+<li><a href="#logic-synthesis" id="toc-logic-synthesis">Logic
+Synthesis</a></li>
+<li><a href="#combinational-timing"
+id="toc-combinational-timing">Combinational Timing</a></li>
+<li><a href="#sequential-timing" id="toc-sequential-timing">Sequential
+Timing</a></li>
+<li><a href="#pipelining" id="toc-pipelining">Pipelining</a></li>
+<li><a href="#clock-skew" id="toc-clock-skew">Clock Skew</a></li>
+<li><a href="#metastability"
+id="toc-metastability">Metastability</a></li>
+<li><a href="#clock-domain-crossing-cdc"
+id="toc-clock-domain-crossing-cdc">Clock Domain Crossing (CDC)</a></li>
+<li><a href="#reset-strategy" id="toc-reset-strategy">Reset
+Strategy</a></li>
+<li><a href="#static-timing-analysis-in-practice"
+id="toc-static-timing-analysis-in-practice">Static Timing Analysis in
+Practice</a></li>
+<li><a href="#power-and-energy" id="toc-power-and-energy">Power and
+Energy</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="synthesis-timing-and-power">Synthesis, Timing and Power</h1>
+<h2 id="logic-synthesis">Logic Synthesis</h2>
+<p><strong>Logic synthesis</strong> turns an abstract description of
+circuit behavior, typically RTL in Verilog/SystemVerilog or VHDL, into a
+gate-level netlist targeting a specific implementation fabric. Hand
+methods (truth tables, K-maps) stop scaling around 4 to 6 variables;
+synthesis mechanized them, first with exact two-level minimization
+(Quine-McCluskey), then the Espresso heuristic minimizer, then the
+multi-level optimization systems of the 1980s (IBM’s LSS, Berkeley’s
+SIS) that became today’s commercial tools (Synopsys Design Compiler,
+Cadence Genus, and open-source Yosys). High-level synthesis pushes the
+input a level higher still, compiling C/C++/SystemC down to RTL
+first.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Flow target</th>
+<th>Maps RTL onto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ASIC</td>
+<td>standard-cell library (AND/OR/NAND/flop cells from a foundry
+PDK)</td>
+</tr>
+<tr>
+<td>FPGA</td>
+<td>LUTs, flip-flops, and hard macros (block RAM, DSP slices, clock
+managers)</td>
+</tr>
+</tbody>
+</table>
+<p>Both flows perform the same steps:</p>
+<ol type="1">
+<li><strong>Elaboration</strong>: resolve parameters,
+<code>generate</code> blocks, and module hierarchy into a design
+representation.</li>
+<li><strong>Technology-independent optimization</strong>: restructure
+the multi-level Boolean network to minimize literal count, using the
+algebra’s identities mechanized (two-level minimization, factoring,
+common-subexpression extraction).</li>
+<li><strong>Technology mapping</strong>: cover the optimized network
+with the target library’s actual cells (or LUTs), now with concrete
+area, delay, and power numbers.</li>
+<li><strong>Timing-driven optimization</strong>: resize gates,
+restructure paths, and insert buffers to close setup/hold against the
+constraints supplied (an SDC file).</li>
+<li><strong>Static timing analysis</strong>: exhaustively check every
+path against the timing equations below, no simulation vectors
+needed.</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// What you write: pure intent, no gate-level detail</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> mux2 #(<span class="kw">parameter</span> W = <span class="dv">8</span>) (</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">input</span>  <span class="kw">logic</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] a, b,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">input</span>  <span class="kw">logic</span>         sel,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">output</span> <span class="kw">logic</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] y</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>);</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">assign</span> y = sel ? b : a;</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">endmodule</span></span></code></pre></div>
+<p>The tool decides how that ternary becomes gates (AND-OR logic, a mux
+standard cell, or LUTs) from the target library and the timing
+constraints. This is why RTL is written behaviorally: you describe
+function, and synthesis plus STA guarantee it also meets timing on the
+real fabric.</p>
+<h2 id="combinational-timing">Combinational Timing</h2>
+<p>Every combinational circuit has two delay characteristics:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Propagation delay
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math></td>
+<td><strong>maximum</strong> time from an input change until the outputs
+reach their final value</td>
+</tr>
+<tr>
+<td>Contamination delay
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{cd}</annotation></semantics></math></td>
+<td><strong>minimum</strong> time from an input change until any output
+starts to change</td>
+</tr>
+</tbody>
+</table>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>
+says how long to wait before trusting the output;
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{cd}</annotation></semantics></math>
+says how soon the old value stops being trustworthy. Between them the
+output can be anything.</p>
+<h3 id="critical-path">Critical Path</h3>
+<p>Delays add along a path: the circuit’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>
+is the sum of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>
+along the longest path (the <strong>critical path</strong>), and its
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{cd}</annotation></semantics></math>
+the sum along the shortest.</p>
+<figure>
+<img src="figs/paths.svg" alt="Critical path vs short path" />
+<figcaption aria-hidden="true">Critical path vs short path</figcaption>
+</figure>
+<p>A circuit can be <em>data critical</em> (critical path through the
+data inputs, e.g. a wide mux chain) or <em>control critical</em>
+(through a select/control signal). Which one it is tells you where to
+optimize: register the control earlier, or restructure the data
+path.</p>
+<h2 id="sequential-timing">Sequential Timing</h2>
+<p>A flip-flop has its own timing aperture around the clock edge:</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">t_{setup}</annotation></semantics></math></td>
+<td>data stable at least this long <strong>before</strong> the edge</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{hold}</annotation></semantics></math></td>
+<td>data stable at least this long <strong>after</strong> the edge</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><annotation encoding="application/x-tex">t_{pcq}</annotation></semantics></math></td>
+<td>clock-to-Q propagation delay (max)</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>c</mi><mi>c</mi><mi>q</mi></mrow></msub><annotation encoding="application/x-tex">t_{ccq}</annotation></semantics></math></td>
+<td>clock-to-Q contamination delay (min)</td>
+</tr>
+</tbody>
+</table>
+<figure>
+<img src="figs/ffwave.svg"
+alt="Setup, hold, and clock-to-Q around a clock edge" />
+<figcaption aria-hidden="true">Setup, hold, and clock-to-Q around a
+clock edge</figcaption>
+</figure>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub></mrow><annotation encoding="application/x-tex">t_{setup} + t_{hold}</annotation></semantics></math>
+is the <strong>aperture time</strong>: data must hold steady through
+that whole window for a reliable capture.</p>
+<h3 id="the-setup-constraint-max-delay">The Setup Constraint
+(Max-Delay)</h3>
+<p>For two flip-flops joined by logic of delay
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>,
+sharing a clock of period
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>c</mi></msub><annotation encoding="application/x-tex">T_c</annotation></semantics></math>:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>c</mi></msub><mo>≥</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><mspace width="2.0em"></mspace><mo>⇔</mo><mspace width="2.0em"></mspace><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><mo>≤</mo><msub><mi>T</mi><mi>c</mi></msub><mo>−</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+T_c \ge t_{pcq} + t_{pd} + t_{setup}
+\qquad\Longleftrightarrow\qquad
+t_{pd} \le T_c - (t_{pcq} + t_{setup})
+</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub></mrow><annotation encoding="application/x-tex">t_{pcq} + t_{setup}</annotation></semantics></math>
+is the <strong>sequencing overhead</strong>, clock budget lost to the
+flops before any logic runs. Negative setup slack means the design
+cannot run at that frequency; the only fixes are faster logic (fewer
+levels, better structures), pipelining, or a slower clock.</p>
+<h3 id="the-hold-constraint-min-delay">The Hold Constraint
+(Min-Delay)</h3>
+<p>The same pair also imposes a lower bound, independent of clock
+period:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>c</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><mo>≥</mo><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+t_{ccq} + t_{cd} \ge t_{hold}
+</annotation></semantics></math> If the path is too fast, data launched
+by an edge races through and corrupts the capture of the
+<em>previous</em> cycle’s data at the same edge. A hold violation cannot
+be fixed by slowing the clock; the fix is adding delay (buffers) on the
+offending path. Well-designed flops have
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub><mo>≤</mo><msub><mi>t</mi><mrow><mi>c</mi><mi>c</mi><mi>q</mi></mrow></msub></mrow><annotation encoding="application/x-tex">t_{hold} \le t_{ccq}</annotation></semantics></math>,
+so a bare flop-to-flop connection is already safe; hold problems arise
+mostly from clock skew (below) and very fast paths.</p>
+<h2 id="pipelining">Pipelining</h2>
+<figure>
+<img src="figs/pipeline.svg"
+alt="Pipelined datapath: registers split a long combinational path into stages" />
+<figcaption aria-hidden="true">Pipelined datapath: registers split a
+long combinational path into stages</figcaption>
+</figure>
+<p>When a combinational block’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>
+exceeds the setup ceiling, split it with a register in the middle: two
+faster blocks, each meeting timing at a shorter period.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Before: one combinational block, too slow for the target period</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> mid = heavy_function_1(a);</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> y   = heavy_function_2(mid);</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">// After: a pipeline register splits the work across two cycles</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) mid_reg &lt;= heavy_function_1(a);</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> y = heavy_function_2(mid_reg);</span></code></pre></div>
+<p>Latency rises by one cycle; throughput (results per second, once
+full) rises with the clock. The trade has a floor: each register costs
+area and sequencing overhead, and when the logic between registers
+shrinks toward a single gate, most of each cycle is spent synchronizing
+rather than computing. Throughput is work-per-cycle times
+cycles-per-second, and ever-finer pipelining eventually loses more on
+the first term than it gains on the second.</p>
+<h3 id="worked-example-pipelining-a-32-bit-ripple-carry-adder">Worked
+Example: Pipelining a 32-bit Ripple-Carry Adder</h3>
+<p>Each full-adder stage has carry-in-to-carry-out delay
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>d</mi><mi>c</mi><mi>c</mi></mrow></msub><mo>=</mo><mn>100</mn><mspace width="0.167em"></mspace><mtext mathvariant="normal">ps</mtext></mrow><annotation encoding="application/x-tex">t_{dcc} = 100\,\text{ps}</annotation></semantics></math>,
+so a 32-bit ripple adder needs
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>a</mi><mi>d</mi><mi>d</mi></mrow></msub><mo>=</mo><mn>32</mn><mo>×</mo><msub><mi>t</mi><mrow><mi>d</mi><mi>c</mi><mi>c</mi></mrow></msub><mo>=</mo><mn>3.2</mn><mspace width="0.167em"></mspace><mtext mathvariant="normal">ns</mtext><mspace width="0.278em"></mspace><mo>⇒</mo><mspace width="0.278em"></mspace><mo>≈</mo><mn>312</mn><mspace width="0.167em"></mspace><mtext mathvariant="normal">M adds/s</mtext><mi>.</mi></mrow><annotation encoding="application/x-tex">
+t_{add} = 32 \times t_{dcc} = 3.2\,\text{ns} \;\Rightarrow\; \approx 312\,\text{M adds/s}.
+</annotation></semantics></math> For a target of 1 G adds/s (one per
+ns), split into four 8-bit slices, each followed by a register:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>8</mn><mo>×</mo><mn>100</mn><mspace width="0.167em"></mspace><mtext mathvariant="normal">ps</mtext><mo>=</mo><mn>800</mn><mspace width="0.167em"></mspace><mtext mathvariant="normal">ps</mtext></mrow><annotation encoding="application/x-tex">8 \times 100\,\text{ps} = 800\,\text{ps}</annotation></semantics></math>
+per slice, leaving 200 ps for sequencing overhead.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Four 8-bit slices, each followed by a pipeline register. The easy-to-miss</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">// detail: not-yet-processed operand bits must be registered forward at every</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">// stage too, or slice 2 pairs THIS cycle&#39;s bits 16-23 with a carry from an</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">// EARLIER input&#39;s bits 0-15.</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> pipelined_adder32 (</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">input</span>  <span class="kw">logic</span>         clk,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">input</span>  <span class="kw">logic</span> [<span class="dv">31</span>:<span class="dv">0</span>]  a, b,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">input</span>  <span class="kw">logic</span>         cin,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">output</span> <span class="kw">logic</span> [<span class="dv">31</span>:<span class="dv">0</span>]  <span class="ot">sum</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">output</span> <span class="kw">logic</span>         cout</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>);</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">logic</span> [<span class="dv">31</span>:<span class="dv">0</span>] a_r [<span class="dv">4</span>], b_r [<span class="dv">4</span>];   <span class="co">// operand bits arriving at stage i</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">logic</span> [<span class="dv">3</span>:<span class="dv">0</span>]  carry;              <span class="co">// carry INTO slice i</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">logic</span> [<span class="dv">31</span>:<span class="dv">0</span>] sum_r;</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">assign</span> a_r[<span class="dv">0</span>] = a;</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">assign</span> b_r[<span class="dv">0</span>] = b;</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">assign</span> carry[<span class="dv">0</span>] = cin;</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">genvar</span> i;</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="kw">generate</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">for</span> (i = <span class="dv">0</span>; i &lt; <span class="dv">4</span>; i++) <span class="kw">begin :</span><span class="dt"> </span><span class="kw">slice</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>      <span class="kw">logic</span> [<span class="dv">7</span>:<span class="dv">0</span>] s8;</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>      <span class="kw">logic</span>       c8;</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>      <span class="kw">assign</span> {c8, s8} = a_r[i][<span class="dv">8</span>*i+<span class="dv">7</span>:<span class="dv">8</span>*i] + b_r[i][<span class="dv">8</span>*i+<span class="dv">7</span>:<span class="dv">8</span>*i] + carry[i];</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>      <span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">begin</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        sum_r[<span class="dv">8</span>*i+<span class="dv">7</span>:<span class="dv">8</span>*i] &lt;= s8;</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> (i &lt; <span class="dv">3</span>) <span class="kw">begin</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>          carry[i+<span class="dv">1</span>] &lt;= c8;       <span class="co">// registered carry feeds the next slice</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>          a_r[i+<span class="dv">1</span>]   &lt;= a_r[i];   <span class="co">// operands forwarded unchanged, just delayed</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>          b_r[i+<span class="dv">1</span>]   &lt;= b_r[i];</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        <span class="kw">end</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>      <span class="kw">end</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    <span class="kw">end</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  <span class="kw">endgenerate</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>  <span class="kw">assign</span> <span class="ot">sum</span>  = sum_r;</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>  <span class="kw">assign</span> cout = carry[<span class="dv">3</span>];</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="kw">endmodule</span></span></code></pre></div>
+<p>A pipeline register must capture <em>everything</em> later stages
+will need, not just the signal that motivated inserting it. Mixing a
+stage-2 signal with a stage-3 signal synthesizes and simulates happily
+and computes nonsense: a stale operand paired with a carry that has
+moved on. Naming signals by pipeline stage (the
+<code>a_r</code>/<code>b_r</code> indexing above) is the standard
+discipline for catching this.</p>
+<h3 id="the-loop-carried-dependency-problem">The Loop-Carried Dependency
+Problem</h3>
+<p>Register insertion works on feedforward paths. It does not work on
+feedback:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk <span class="kw">or</span> <span class="kw">posedge</span> reset)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> (reset) acc &lt;= &#39;<span class="dv">0</span>;</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span>       acc &lt;= acc + data_in;   <span class="co">// depends on its own previous value</span></span></code></pre></div>
+<p>Splitting this adder’s carry chain with a register does not just
+delay the result, it changes the computation (two interleaved half-sums
+instead of one running sum). Feedback loops (accumulators, counters, FSM
+next-state logic) are the hard limit on clock frequency: speeding one up
+requires redesigning the arithmetic itself (e.g. a carry-save or
+lookahead structure), not inserting registers.</p>
+<h2 id="clock-skew">Clock Skew</h2>
+<p>Real clock networks do not deliver the edge everywhere at once. For a
+launch flop A and capture flop B,
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>s</mi><mi>k</mi><mi>e</mi><mi>w</mi></mrow></msub><mo>=</mo><msub><mi>t</mi><mrow><mi>c</mi><mi>l</mi><mi>k</mi><mo>→</mo><mi>B</mi></mrow></msub><mo>−</mo><msub><mi>t</mi><mrow><mi>c</mi><mi>l</mi><mi>k</mi><mo>→</mo><mi>A</mi></mrow></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
+t_{skew} = t_{clk \to B} - t_{clk \to A}.
+</annotation></semantics></math> Positive skew (capture clock late)
+<em>helps</em> setup and <em>hurts</em> hold:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>c</mi></msub><mo>≥</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><mo>−</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>k</mi><mi>e</mi><mi>w</mi></mrow></msub><mspace width="2.0em"></mspace><msub><mi>t</mi><mrow><mi>c</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><mo>≥</mo><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>k</mi><mi>e</mi><mi>w</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+T_c \ge t_{pcq} + t_{pd} + t_{setup} - t_{skew}
+\qquad
+t_{ccq} + t_{cd} \ge t_{hold} + t_{skew}
+</annotation></semantics></math> Deliberately delaying the capture clock
+to buy setup margin on one path is <strong>useful skew</strong>; the
+price is a tighter hold check on that same path, and the borrowed time
+must come from somewhere adjacent. Since sign and magnitude are hard to
+guarantee across a die, STA budgets an <em>uncertainty</em> that eats
+margin in both checks, which is why ASIC and FPGA clock trees are
+explicitly engineered (balanced H-trees, matched buffering) rather than
+routed like ordinary wires.</p>
+<h3 id="skew-vs.-jitter">Skew vs. Jitter</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th>Clock skew</th>
+<th>Clock jitter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nature</td>
+<td><strong>spatial</strong>: different flops see the edge at different
+times</td>
+<td><strong>temporal</strong>: the same clock’s edges wander cycle to
+cycle</td>
+</tr>
+<tr>
+<td>Source</td>
+<td>unequal clock-tree paths and loads</td>
+<td>PLL noise, supply (di/dt) noise, thermal</td>
+</tr>
+<tr>
+<td>Constant?</td>
+<td>roughly static for a given layout</td>
+<td>random, time-varying</td>
+</tr>
+<tr>
+<td>Useful?</td>
+<td>can be intentional (useful skew)</td>
+<td>never, pure margin loss</td>
+</tr>
+</tbody>
+</table>
+<p>STA lumps skew and jitter into a single <strong>clock
+uncertainty</strong> subtracted from the period before checking
+setup.</p>
+<h2 id="metastability">Metastability</h2>
+<p>If a flop’s input changes inside its aperture, the output can settle
+into a <strong>metastable</strong> state, between logic levels, for an
+unbounded (usually short) time before randomly resolving. This is
+unavoidable when a signal crosses clock domains or arrives
+asynchronously: nothing guarantees the receiving flop’s aperture is
+respected. The mitigation is a <strong>2-flop synchronizer</strong>: the
+first flop may go metastable, but it gets a full cycle to resolve before
+the second samples it.</p>
+<h3 id="mtbf">MTBF</h3>
+<p>The synchronizer makes a <em>propagated</em> metastable event
+astronomically unlikely, quantified as mean time between failures:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">MTBF</mtext><mo>=</mo><mfrac><msup><mi>e</mi><mrow><mspace width="0.167em"></mspace><msub><mi>t</mi><mi>r</mi></msub><mi>/</mi><mi>τ</mi></mrow></msup><mrow><msub><mi>T</mi><mn>0</mn></msub><mo>⋅</mo><msub><mi>f</mi><mrow><mi>c</mi><mi>l</mi><mi>k</mi></mrow></msub><mo>⋅</mo><msub><mi>f</mi><mrow><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi></mrow></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\text{MTBF} = \frac{e^{\,t_r/\tau}}{T_0 \cdot f_{clk} \cdot f_{data}}
+</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mi>r</mi></msub><annotation encoding="application/x-tex">t_r</annotation></semantics></math>
+is the resolution time allowed (about one period minus setup),
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mn>0</mn></msub><annotation encoding="application/x-tex">T_0</annotation></semantics></math>
+are flop metastability constants, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mrow><mi>c</mi><mi>l</mi><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">f_{clk}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mrow><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi></mrow></msub><annotation encoding="application/x-tex">f_{data}</annotation></semantics></math>
+are the sampling and input-change rates. The exponential is why adding a
+flop helps so dramatically, and why fast clocks and busy inputs hurt; at
+high frequency a 3-flop chain is sometimes needed to push MTBF to years
+or centuries.</p>
+<h2 id="clock-domain-crossing-cdc">Clock Domain Crossing (CDC)</h2>
+<p>A 2-flop synchronizer is correct for a single bit only. Synchronizing
+each bit of a bus independently lets different bits resolve on different
+edges, so the receiver can see a value that was never sent. The
+technique depends on what crosses:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>What’s crossing</th>
+<th>Technique</th>
+<th>Why it works</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>single control bit</td>
+<td>2-flop synchronizer</td>
+<td>one bit cannot be incoherent with itself</td>
+</tr>
+<tr>
+<td>multi-bit control</td>
+<td>mux-recirculation / multi-cycle path: sync a 1-bit enable, hold the
+bus stable</td>
+<td>only the enable is synchronized; the bus is stable when sampled</td>
+</tr>
+<tr>
+<td>counter / pointer</td>
+<td>Gray-code before crossing</td>
+<td>one bit changes per step, so a mis-sample yields old or new value,
+never garbage</td>
+</tr>
+<tr>
+<td>streaming data</td>
+<td>asynchronous FIFO, Gray-coded pointers</td>
+<td>decouples the domains; pointers cross safely as Gray codes</td>
+</tr>
+<tr>
+<td>handshake</td>
+<td>req/ack, each synchronized into the other domain</td>
+<td>any width, at round-trip latency cost</td>
+</tr>
+</tbody>
+</table>
+<p>The cardinal rule: never synchronize more than one bit of a related
+group independently. Either reduce the crossing to one bit, or guarantee
+only one bit changes at a time.</p>
+<h2 id="reset-strategy">Reset Strategy</h2>
+<p>Reset release has the same metastability hazard. Two disciplines:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th>Synchronous reset</th>
+<th>Asynchronous reset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Applied</td>
+<td>sampled only at the clock edge</td>
+<td>immediate,
+<code>always_ff @(posedge clk or negedge rst_n)</code></td>
+</tr>
+<tr>
+<td>+</td>
+<td>plain timing path, filters sub-cycle glitches, clean STA</td>
+<td>works with no clock running (safe at power-up)</td>
+</tr>
+<tr>
+<td>−</td>
+<td>needs a running clock; adds a term to the data path</td>
+<td>glitch-susceptible; release is a timing hazard</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recovery</strong> and <strong>removal</strong> are the
+reset-release analogues of setup and hold: reset must release a minimum
+time before the edge (recovery) or stay asserted a minimum time after
+(removal), else the flop can go metastable. The standard fix asserts
+asynchronously but releases synchronously:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Async-assert, sync-deassert reset synchronizer</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">logic</span> rff1, rff2;</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk <span class="kw">or</span> <span class="kw">negedge</span> rst_n_async) <span class="kw">begin</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> (!rst_n_async) {rff2, rff1} &lt;= <span class="bn">2&#39;b00</span>;        <span class="co">// async assert</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span>              {rff2, rff1} &lt;= {rff1, <span class="bn">1&#39;b1</span>}; <span class="co">// sync release, 2 edges</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> rst_n_sync = rff2;   <span class="co">// distribute this clean reset</span></span></code></pre></div>
+<p>Glitch-prone reset pads additionally get a glitch filter or
+Schmitt-trigger input, since an async reset fires on any pulse meeting
+the flop’s minimum reset width.</p>
+<h2 id="static-timing-analysis-in-practice">Static Timing Analysis in
+Practice</h2>
+<p>STA applies the setup/hold equations exhaustively to every path,
+across all conditions, with no simulation vectors. It is the signoff
+answer to “does the chip meet timing”.</p>
+<h3 id="slack">Slack</h3>
+<p>The per-path number STA reports:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">setup slack</mtext><mo>=</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>T</mi><mi>c</mi></msub><mo>−</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><mo>−</mo><msub><mi>t</mi><mrow><mi>u</mi><mi>n</mi><mi>c</mi><mi>e</mi><mi>r</mi><mi>t</mi><mi>a</mi><mi>i</mi><mi>n</mi><mi>t</mi><mi>y</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+\text{setup slack} = (T_c - t_{setup} - t_{uncertainty}) - (t_{pcq} + t_{pd})
+</annotation></semantics></math> Slack
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≥</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\ge 0</annotation></semantics></math>
+passes; negative slack is a violation. <strong>Worst negative slack
+(WNS)</strong> and <strong>total negative slack (TNS)</strong> summarize
+how badly and how widely a design misses. Closing timing means driving
+all slack non-negative with faster cells, fewer levels, pipelining,
+useful skew, or a lower frequency.</p>
+<h3 id="timing-paths-and-constraints-sdc">Timing Paths and Constraints
+(SDC)</h3>
+<p>Clocks and I/O timing are declared in an SDC (Synopsys Design
+Constraints) file; STA then checks four path groups:</p>
+<table>
+<thead>
+<tr>
+<th>Path group</th>
+<th>From → to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reg → reg</td>
+<td>launch flop → capture flop</td>
+</tr>
+<tr>
+<td>in → reg</td>
+<td>input port → first flop (<code>set_input_delay</code>)</td>
+</tr>
+<tr>
+<td>reg → out</td>
+<td>last flop → output port (<code>set_output_delay</code>)</td>
+</tr>
+<tr>
+<td>in → out</td>
+<td>pure combinational feed-through</td>
+</tr>
+</tbody>
+</table>
+<h3 id="timing-exceptions">Timing Exceptions</h3>
+<p>Not every topological path is a real timing path; undeclared
+exceptions cause false violations and over-constrained synthesis:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Exception</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>false path</td>
+<td>never functionally exercised, skip it</td>
+<td>paths between unrelated async domains; a static config register</td>
+</tr>
+<tr>
+<td>multicycle path</td>
+<td>data gets
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+cycles, not 1</td>
+<td>a result sampled every 4th cycle</td>
+</tr>
+<tr>
+<td><code>set_case_analysis</code></td>
+<td>pin constant in this mode, prune through it</td>
+<td>a test-mode mux select</td>
+</tr>
+</tbody>
+</table>
+<p>An exception must reflect a real functional guarantee. A path
+declared false that can actually toggle is unchecked silicon: it fails
+silently in the field.</p>
+<h3 id="corners-and-on-chip-variation">Corners and On-Chip
+Variation</h3>
+<p>Timing must hold at every manufacturing and operating condition, so
+STA runs at multiple <strong>PVT corners</strong> (process, voltage,
+temperature):</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Check</th>
+<th>Worst corner</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>setup (max delay)</td>
+<td>slow process, low V, high T</td>
+<td>gates slowest, deadline hardest</td>
+</tr>
+<tr>
+<td>hold (min delay)</td>
+<td>fast process, high V, low T</td>
+<td>gates fastest, race easiest</td>
+</tr>
+</tbody>
+</table>
+<p><strong>On-chip variation (OCV)</strong> derating adds pessimism for
+device-to-device differences on one die. Signoff is <strong>multi-corner
+multi-mode (MCMM)</strong>: every corner crossed with every functional
+mode (mission, test, low-power), which is why timing closure is a large
+part of tapeout cost.</p>
+<h2 id="power-and-energy">Power and Energy</h2>
+<p>Power is a first-class constraint alongside area and timing: it sets
+battery life in mobile, cooling cost in datacenters, and since the
+mid-2000s the ceiling on clock frequency itself; the end of frequency
+scaling was a power problem. It splits into two components:</p>
+<table>
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 29%" />
+<col style="width: 51%" />
+</colgroup>
+<thead>
+<tr>
+<th>Component</th>
+<th>Spent</th>
+<th>Scales with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dynamic</td>
+<td>only while signals switch</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>⋅</mo><mi>C</mi><mo>⋅</mo><msubsup><mi>V</mi><mrow><mi>D</mi><mi>D</mi></mrow><mn>2</mn></msubsup><mo>⋅</mo><mi>f</mi></mrow><annotation encoding="application/x-tex">\alpha \cdot C \cdot V_{DD}^2 \cdot f</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>static (leakage)</td>
+<td>continuously, even idle</td>
+<td>transistor leakage, worse as devices shrink</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dynamic-power">Dynamic Power</h3>
+<p>Switching a node charges its load capacitance from the supply and
+later dumps the charge to ground, unrecovered:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mrow><mi>d</mi><mi>y</mi><mi>n</mi></mrow></msub><mo>=</mo><mi>α</mi><mspace width="0.167em"></mspace><mi>C</mi><mspace width="0.167em"></mspace><msubsup><mi>V</mi><mrow><mi>D</mi><mi>D</mi></mrow><mn>2</mn></msubsup><mspace width="0.167em"></mspace><mi>f</mi></mrow><annotation encoding="application/x-tex">
+P_{dyn} = \alpha \, C \, V_{DD}^2 \, f
+</annotation></semantics></math></p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+<th>Lever</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math></td>
+<td>activity factor: probability a node switches per cycle (1 for the
+clock, ~0.1 typical logic, 0 gated)</td>
+<td>clock/power gating, fewer glitches</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math></td>
+<td>switched capacitance (gate + diffusion + wire)</td>
+<td>smaller cells, shorter wires, fewer levels</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>V</mi><mrow><mi>D</mi><mi>D</mi></mrow></msub><annotation encoding="application/x-tex">V_{DD}</annotation></semantics></math></td>
+<td>supply voltage</td>
+<td>the <strong>quadratic</strong> term, the strongest lever</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math></td>
+<td>clock frequency</td>
+<td>run no faster than the workload needs</td>
+</tr>
+</tbody>
+</table>
+<p>Halving
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>V</mi><mrow><mi>D</mi><mi>D</mi></mrow></msub><annotation encoding="application/x-tex">V_{DD}</annotation></semantics></math>
+quarters dynamic power, which is why voltage scaling dominates low-power
+design.</p>
+<p>For uncorrelated data a node’s activity is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><msub><mi>P</mi><mn>1</mn></msub><msub><mi>P</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">\alpha = P_1 P_0</annotation></semantics></math>;
+random data gives
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.25</mn><annotation encoding="application/x-tex">0.25</annotation></semantics></math>,
+and structured data is usually lower (upper bits of small values rarely
+switch). Glitches raise effective
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>:
+a node that should settle once may transition several times per cycle as
+unequal-delay paths resolve, so low-glitch structure saves power, not
+just correctness. A second, smaller dynamic component is
+<strong>short-circuit power</strong>: during a transition both CMOS
+networks conduct briefly; normally under ~10%, minimized by keeping edge
+rates fast and balanced.</p>
+<h3 id="static-leakage-power">Static (Leakage) Power</h3>
+<p>An idle circuit still leaks, and leakage grew from negligible to a
+major fraction of total power as devices shrank, which is why “turn the
+clock off” stopped being sufficient.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Source</th>
+<th>Cause</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>subthreshold</td>
+<td>current through an “off” transistor; exponentially worse as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>V</mi><mi>t</mi></msub><annotation encoding="application/x-tex">V_t</annotation></semantics></math>
+drops</td>
+</tr>
+<tr>
+<td>gate</td>
+<td>tunneling through the thin gate dielectric (mitigated by
+high-k)</td>
+</tr>
+<tr>
+<td>junction</td>
+<td>reverse-biased junction current (BTBT, GIDL)</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>stack effect</strong>: a series stack of off transistors
+leaks about 10x less than one off transistor, so a gate’s leakage
+depends on its input values; idle gates can be parked in low-leakage
+input states.</p>
+<h3 id="clock-gating">Clock Gating</h3>
+<p>The highest-value RTL technique. The clock has
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\alpha = 1</annotation></semantics></math>
+and huge capacitance, so it dominates dynamic power. Gating ANDs it with
+an enable, stopping it into idle blocks:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">if</span> (en) q &lt;= d;   <span class="co">// synthesis infers a clock gate</span></span></code></pre></div>
+<p>The enable must only change while the clock is low or the gated clock
+glitches, which is why <code>assign gclk = en &amp; clk</code> is never
+written directly: the correct structure is the library’s
+<strong>integrated clock gating (ICG) cell</strong>, an enable latch
+(transparent while the clock is low) feeding the AND.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Style</th>
+<th>How the ICG gets there</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>inferred</td>
+<td>write the enabled register; synthesis inserts the ICG (portable,
+preferred)</td>
+</tr>
+<tr>
+<td>instantiated</td>
+<td>instantiate the library ICG cell by hand (explicit,
+library-specific)</td>
+</tr>
+</tbody>
+</table>
+<p>Gating high in the distribution tree turns off whole branches of the
+high-activity clock network (most savings); fine-grained
+per-register-bank gating saves less each but catches more idle
+cases.</p>
+<h3 id="data-operand-gating">Data (Operand) Gating</h3>
+<p>The combinational counterpart: hold an expensive block’s inputs
+steady on cycles when its result is discarded, so its internal nodes
+never toggle.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> a_g  = use_mult ? a : a_held;   <span class="co">// or a recirculating register / AND</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> b_g  = use_mult ? b : b_held;</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> prod = a_g * b_g;               <span class="co">// toggles only when the result is used</span></span></code></pre></div>
+<p>Both gating styles exploit the same rule: if a result is not used, do
+not pay to compute it.</p>
+<h3 id="power-gating">Power Gating</h3>
+<p>A <strong>sleep transistor</strong> disconnects an idle block from
+the supply entirely, killing leakage too (a clock-gated block still
+leaks). Costs wake-up latency and area, and the block loses state, so it
+suits coarse-grained, long-idle blocks.</p>
+<h3 id="multiple-threshold-voltages-multi-vt">Multiple Threshold
+Voltages (Multi-Vt)</h3>
+<p>Libraries offer the same cells at several
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>V</mi><mi>t</mi></msub><annotation encoding="application/x-tex">V_t</annotation></semantics></math>:
+low-Vt is fast and leaky, high-Vt slow and quiet. Synthesis uses low-Vt
+only on critical paths and high-Vt everywhere with slack, getting
+near-low-Vt frequency at near-high-Vt leakage.</p>
+<h3 id="dynamic-voltage-and-frequency-scaling-dvfs">Dynamic Voltage and
+Frequency Scaling (DVFS)</h3>
+<p>Exploits the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>V</mi><mn>2</mn></msup><annotation encoding="application/x-tex">V^2</annotation></semantics></math>
+term at runtime: lower the frequency to the workload’s minimum, then
+lower the voltage to the minimum supporting that frequency. With voltage
+roughly linear in frequency,
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mrow><mi>d</mi><mi>y</mi><mi>n</mi></mrow></msub><mo>∝</mo><msup><mi>V</mi><mn>2</mn></msup><mi>f</mi><mo>∝</mo><msup><mtext mathvariant="normal">rate</mtext><mn>3</mn></msup><mo>,</mo></mrow><annotation encoding="application/x-tex">
+P_{dyn} \propto V^2 f \propto \text{rate}^3,
+</annotation></semantics></math> so half the rate costs about an eighth
+the power, which is why DVFS is so effective for bursty workloads. A
+controller monitors load and temperature and picks the (V, f) point from
+the chip’s characterized table.</p>
+<h3 id="power-intent-domains-and-upf-ieee-1801">Power Intent: Domains
+and UPF (IEEE 1801)</h3>
+<p>Power gating, multi-Vt, and DVFS require partitioning the design into
+independently controlled regions, structure the RTL does not express.
+<strong>Power intent</strong> is captured separately in UPF (Unified
+Power Format, IEEE 1801), the way SDC carries timing intent. A design
+divides into <strong>power domains</strong>, each on, off, or at its own
+voltage; crossings between domains in different states need special
+cells:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Cell</th>
+<th>Where</th>
+<th>Job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>isolation</td>
+<td>output of a domain that can power down</td>
+<td>clamp the floating output to a known 0/1</td>
+</tr>
+<tr>
+<td>level shifter</td>
+<td>between domains at different voltages</td>
+<td>translate logic levels</td>
+</tr>
+<tr>
+<td>retention register</td>
+<td>in a domain that powers down but keeps state</td>
+<td>tiny always-on shadow latch preserves the value</td>
+</tr>
+<tr>
+<td>power switch</td>
+<td>in the domain’s supply</td>
+<td>the sleep transistor, under UPF control</td>
+</tr>
+<tr>
+<td>always-on logic</td>
+<td>control, retention, isolation enables</td>
+<td>must stay powered to manage the rest</td>
+</tr>
+</tbody>
+</table>
+<p>The legal domain-state combinations live in a <strong>power state
+table (PST)</strong>; verification checks every active crossing has its
+isolation/level-shifting and that no impossible state is reachable. A
+missing isolation cell drives X into live logic, a missing level shifter
+reads a low-voltage 1 as 0, a missing retention register loses state
+across sleep: UPF makes these checkable early instead of discovered in
+silicon.</p>
+<h3 id="energy-vs.-power">Energy vs. Power</h3>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Definition</th>
+<th>Bounds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>power</td>
+<td>energy per time (W)</td>
+<td>thermal/cooling limit, supply current</td>
+</tr>
+<tr>
+<td>energy</td>
+<td>power × time (J)</td>
+<td>battery life, cost per computation</td>
+</tr>
+</tbody>
+</table>
+<p>They can move oppositely: running faster at higher voltage raises
+power but can lower total energy if the chip finishes and sleeps sooner
+(“race to sleep”), while DVFS lowers power but extends runtime. A
+thermally limited datacenter optimizes watts; a phone optimizes joules
+per task. When neither can be sacrificed alone, designers minimize the
+<strong>energy-delay product (EDP)</strong>.</p>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<tbody>
+<tr>
+<td>Reference:</td>
+</tr>
+<tr>
+<td>[1] N. Weste &amp; D. Harris, <em>CMOS VLSI Design: A Circuits and
+Systems Perspective</em></td>
+</tr>
+<tr>
+<td>[2] D. Harris &amp; S. Harris, <em>Digital Design and Computer
+Architecture</em></td>
+</tr>
+<tr>
+<td>[3] W. J. Dally &amp; R. C. Harting, <em>Digital Design: A Systems
+Approach</em></td>
+</tr>
+<tr>
+<td>[4] M. Arora, <em>The Art of Hardware Architecture</em></td>
+</tr>
+<tr>
+<td>[5] C. E. Cummings, SNUG papers on nonblocking assignments and
+clock-domain crossing</td>
+</tr>
+<tr>
+<td>[6] IEEE Std 1801 (Unified Power Format)</td>
+</tr>
+</tbody>
+</table>
+<pre class="license"><code>MIT License
+
+Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+</body>
+</html>
