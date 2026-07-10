@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Simple Instruction Pipeline</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#simple-instruction-pipeline"
+id="toc-simple-instruction-pipeline">Simple Instruction Pipeline</a>
+<ul>
+<li><a href="#unpipelined-baselines"
+id="toc-unpipelined-baselines">Unpipelined Baselines</a></li>
+<li><a href="#the-classic-5-stage-pipeline"
+id="toc-the-classic-5-stage-pipeline">The Classic 5-Stage
+Pipeline</a></li>
+<li><a href="#hazards" id="toc-hazards">Hazards</a></li>
+<li><a href="#data-hazards-stalls-and-forwarding"
+id="toc-data-hazards-stalls-and-forwarding">Data Hazards: Stalls and
+Forwarding</a></li>
+<li><a href="#control-hazards" id="toc-control-hazards">Control
+Hazards</a></li>
+<li><a href="#exceptions-in-the-pipeline"
+id="toc-exceptions-in-the-pipeline">Exceptions in the Pipeline</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="simple-instruction-pipeline">Simple Instruction Pipeline</h1>
+<p>A pipeline overlaps the execution of consecutive instructions the way
+an assembly line overlaps cars: each instruction occupies one stage per
+cycle, and every stage works on a different instruction. Pipelining is
+the single largest lever on the Iron Law from
+<a href="../../notes.html#Computer%20Architecture/History%20of%20Computing" target="_top">History
+of Computing</a>: it cuts cycle time by the pipeline depth while keeping
+CPI near 1. This note builds the classic 5-stage RISC pipeline and its
+hazards; deeper machines follow in
+<a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">Out
+of Order Execution and Register Renaming</a> and
+<a href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">Advanced
+Superscalar Architectures</a>.</p>
+<h2 id="unpipelined-baselines">Unpipelined Baselines</h2>
+<p><strong>Single-cycle.</strong> Every instruction fetches, decodes,
+executes, accesses memory, and writes back in one long combinational
+pass; the clock period must cover the slowest instruction. Budget for
+<code>lw</code> (the critical path):</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Delay</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I-mem read</td>
+<td>250 ps</td>
+</tr>
+<tr>
+<td>register file read</td>
+<td>150 ps</td>
+</tr>
+<tr>
+<td>ALU (address)</td>
+<td>200 ps</td>
+</tr>
+<tr>
+<td>D-mem read</td>
+<td>250 ps</td>
+</tr>
+<tr>
+<td>register file write</td>
+<td>150 ps</td>
+</tr>
+<tr>
+<td><strong>Total
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>c</mi></msub><annotation encoding="application/x-tex">T_c</annotation></semantics></math>)</strong></td>
+<td><strong>1000 ps</strong></td>
+</tr>
+</tbody>
+</table>
+<p>An R-type instruction needing only 600 ps still waits the full 1000
+ps: CPI = 1 but
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>c</mi></msub><annotation encoding="application/x-tex">T_c</annotation></semantics></math>
+is terrible, and the adder, memories, and register file each sit idle
+most of the cycle.</p>
+<p><strong>Multicycle.</strong> Break execution into steps (one per
+cycle), so
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>c</mi></msub><annotation encoding="application/x-tex">T_c</annotation></semantics></math>
+shrinks to the slowest <em>step</em> and each instruction takes only the
+cycles it needs (3-5). Hardware is reused across steps, but CPI rises to
+~4 and the machine still runs one instruction at a time.</p>
+<p><strong>Pipelined.</strong> Keep the multicycle stage boundaries but
+start a new instruction every cycle. Ideal: CPI = 1 <em>and</em>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>c</mi></msub><mo>≈</mo><mn>1000</mn><mi>/</mi><mn>5</mn><mo>=</mo><mn>200</mn></mrow><annotation encoding="application/x-tex">T_c \approx 1000/5 = 200</annotation></semantics></math>
+ps.</p>
+<h2 id="the-classic-5-stage-pipeline">The Classic 5-Stage Pipeline</h2>
+<figure>
+<img src="figs/pipe5.svg" alt="5-stage pipeline datapath" />
+<figcaption aria-hidden="true">5-stage pipeline datapath</figcaption>
+</figure>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Work</th>
+<th>For <code>lw x1, 8(x2)</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IF</td>
+<td>fetch instruction at PC, PC+4</td>
+<td>read I-mem</td>
+</tr>
+<tr>
+<td>ID</td>
+<td>decode, read register file</td>
+<td>read <code>x2</code></td>
+</tr>
+<tr>
+<td>EX</td>
+<td>ALU operation</td>
+<td>compute <code>x2+8</code></td>
+</tr>
+<tr>
+<td>MEM</td>
+<td>data memory access</td>
+<td>read D-mem</td>
+</tr>
+<tr>
+<td>WB</td>
+<td>write result to register file</td>
+<td>write <code>x1</code></td>
+</tr>
+</tbody>
+</table>
+<p>The shaded <strong>pipeline registers</strong> (IF/ID, ID/EX, EX/MEM,
+MEM/WB) are ordinary edge-triggered registers from Sequential Circuits;
+they carry each instruction’s data <em>and</em> control signals down the
+pipe, so five instructions coexist, one per stage. Control is decoded
+once in ID and travels with the instruction.</p>
+<p>Pipelining arithmetic. For
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+instructions on a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>-stage
+pipeline:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>+</mo><mi>k</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">N + k - 1</annotation></semantics></math>
+cycles (fill and drain cost
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k-1</annotation></semantics></math>).
+Speedup over single-cycle approaches
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+but never reaches it:</p>
+<ul>
+<li>Stages are unbalanced;
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>c</mi></msub><annotation encoding="application/x-tex">T_c</annotation></semantics></math>
+is set by the slowest stage.</li>
+<li>Each pipeline register adds sequencing overhead
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub></mrow><annotation encoding="application/x-tex">t_{pcq} + t_{setup}</annotation></semantics></math>,
+the per-stage tax in Synthesis, Timing and Power).</li>
+<li>Hazards insert bubbles, pushing CPI above 1:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>P</mi><mi>I</mi><mo>=</mo><mn>1</mn><mo>+</mo><mtext mathvariant="normal">stall cycles per instruction</mtext></mrow><annotation encoding="application/x-tex">CPI = 1 + \text{stall cycles per instruction}</annotation></semantics></math>.</li>
+</ul>
+<h2 id="hazards">Hazards</h2>
+<p>A <strong>hazard</strong> is a situation where the next instruction
+cannot safely execute in its scheduled cycle.</p>
+<p><strong>Structural</strong>: two instructions need the same hardware
+in the same cycle. A single unified memory would collide IF (instruction
+fetch) with MEM (load/store) every load; split I/D memories or caches
+(the modified Harvard organization in
+<a href="../../notes.html#Computer%20Architecture/History%20of%20Computing" target="_top">History
+of Computing</a>) remove it. The register file is read in ID and written
+in WB in the same cycle; making writes happen in the first half-cycle
+and reads in the second half (write-first) resolves it for free and
+shortens the RAW distance by one.</p>
+<p><strong>Data</strong>: an instruction needs a value that an older,
+still-in-flight instruction has not yet written (read-after-write, RAW).
+Write-after-read and write-after-write cannot happen in this in-order
+5-stage pipe (all writes are in WB, in order); they become real in
+<a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">Out
+of Order Execution and Register Renaming</a>.</p>
+<p><strong>Control</strong>: the next PC depends on a branch that has
+not resolved.</p>
+<h2 id="data-hazards-stalls-and-forwarding">Data Hazards: Stalls and
+Forwarding</h2>
+<pre><code>add x1, x2, x3    # x1 written in WB (cycle 5)
+sub x4, x1, x5    # x1 needed in EX (cycle 4): 2 cycles too early</code></pre>
+<p><strong>Interlock (stall).</strong> Hazard-detection logic in ID
+compares the source registers <code>rs1</code>/<code>rs2</code> against
+destination registers in flight (ID/EX, EX/MEM). On a match it freezes
+PC and IF/ID and injects a bubble (a NOP’s control signals) into ID/EX.
+Correct but slow: two bubbles for the case above.</p>
+<p><strong>Forwarding (bypassing).</strong> The value exists in the
+datapath (ALU output at end of EX) long before WB writes it. Route it
+back:</p>
+<figure>
+<img src="figs/forwarding.svg" alt="EX-stage forwarding paths" />
+<figcaption aria-hidden="true">EX-stage forwarding paths</figcaption>
+</figure>
+<p>Muxes at the ALU inputs select among the register-file value, the
+EX/MEM result, and the MEM/WB result; the forwarding unit picks the
+<em>youngest</em> matching producer (EX/MEM has priority over MEM/WB),
+ignoring <code>x0</code>. With full forwarding, back-to-back ALU
+dependences cost zero cycles.</p>
+<p><strong>The load-use hazard survives forwarding.</strong> A load’s
+data appears at the end of MEM, but a dependent instruction in the next
+slot needs it at the start of its EX, one stage earlier. One bubble is
+unavoidable:</p>
+<figure>
+<img src="figs/pipediag.svg" alt="load-use stall with forwarding" />
+<figcaption aria-hidden="true">load-use stall with
+forwarding</figcaption>
+</figure>
+<p>The compiler hides it by <strong>scheduling</strong> an independent
+instruction into the slot after every load; when it cannot, the
+interlock inserts the bubble (early MIPS instead <em>documented</em> the
+slot and let wrong code be wrong, hence “Microprocessor without
+Interlocked Pipeline Stages”).</p>
+<h2 id="control-hazards">Control Hazards</h2>
+<p>The branch outcome (<code>beq</code> compare) and target are known in
+EX (cycle 3), but IF needed the next PC in cycle 2. Naively every taken
+branch costs 2 bubbles (with branch resolution in EX; 3 stages of fetch
+are wrong if resolved in MEM).</p>
+<p>Mitigations, in increasing effectiveness:</p>
+<ul>
+<li><strong>Predict not-taken</strong>: keep fetching sequentially,
+squash (convert to bubbles) the fetched instructions if the branch is
+taken. Cost = penalty only on taken branches.</li>
+<li><strong>Resolve earlier</strong>: add a comparator and target adder
+in ID, cutting the taken penalty to 1 cycle at the price of tighter ID
+timing and new RAW hazards against instructions ahead of the
+branch.</li>
+<li><strong>Delay slots</strong>: architecturally declare that the
+instruction after a branch always executes (MIPS, SPARC). Fills ~70% of
+slots with useful work but bakes one specific pipeline depth into the
+ISA forever; abandoned by every modern ISA including
+<a href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V
+ISA</a>.</li>
+<li><strong>Dynamic prediction</strong>: covered in
+<a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">Branch
+Prediction</a>.</li>
+</ul>
+<p>Effective CPI example: 20% of instructions are branches, 60% taken,
+2-cycle taken penalty, plus load-use stalls on 25% of the 25% that are
+loads:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>P</mi><mi>I</mi><mo>=</mo><mn>1</mn><mo>+</mo><munder><munder><mrow><mn>0.20</mn><mo>×</mo><mn>0.60</mn><mo>×</mo><mn>2</mn></mrow><mo accent="true">⏟</mo></munder><mn>0.24</mn></munder><mo>+</mo><munder><munder><mrow><mn>0.25</mn><mo>×</mo><mn>0.25</mn><mo>×</mo><mn>1</mn></mrow><mo accent="true">⏟</mo></munder><mn>0.0625</mn></munder><mo>≈</mo><mn>1.30</mn></mrow><annotation encoding="application/x-tex">CPI = 1 + \underbrace{0.20 \times 0.60 \times 2}_{0.24} + \underbrace{0.25 \times 0.25 \times 1}_{0.0625} \approx 1.30</annotation></semantics></math></p>
+<p>A “5x speedup” pipeline delivers ~3.8x. Reducing the branch penalty
+and filling load slots is where the next 30% lives.</p>
+<h2 id="exceptions-in-the-pipeline">Exceptions in the Pipeline</h2>
+<p>A page fault in MEM, an illegal opcode in ID, and an external
+interrupt can all be pending at once, in different stages. The pipeline
+handles this by tagging, not acting: fault flags ride the pipeline
+registers and are honored only at the commit point, giving precise
+state. Mechanics are in
+<a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">Exceptions</a>.</p>
+<p>References:</p>
+<ol type="1">
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 5-6</li>
+<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
+Design, RISC-V Edition</em>, ch. 4</li>
+<li>Arvind et al., <em>Computer Architecture: A Constructive
+Approach</em></li>
+<li><h2
+id="wikipedia-classic-risc-pipeline-operand-forwarding">Wikipedia:
+Classic RISC pipeline, Operand forwarding</h2></li>
+</ol>
+<pre class="license"><code>MIT License
+
+Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+</body>
+</html>

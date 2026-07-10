@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Floating Point Architecture</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#floating-point-architecture"
+id="toc-floating-point-architecture">Floating Point Architecture</a>
+<ul>
+<li><a href="#formats" id="toc-formats">Formats</a></li>
+<li><a href="#special-values" id="toc-special-values">Special
+Values</a></li>
+<li><a href="#rounding" id="toc-rounding">Rounding</a></li>
+<li><a href="#fp-addition-and-multiplication-hardware"
+id="toc-fp-addition-and-multiplication-hardware">FP Addition and
+Multiplication Hardware</a></li>
+<li><a href="#numerical-behavior" id="toc-numerical-behavior">Numerical
+Behavior</a></li>
+<li><a href="#risc-v-floating-point"
+id="toc-risc-v-floating-point">RISC-V Floating Point</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="floating-point-architecture">Floating Point Architecture</h1>
+<p>Fixed-point (integer) arithmetic has fixed range and absolute
+precision; science needs
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mrow><mi>−</mi><mn>30</mn></mrow></msup><annotation encoding="application/x-tex">10^{-30}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mn>30</mn></msup><annotation encoding="application/x-tex">10^{30}</annotation></semantics></math>
+in the same expression. Floating point is binary scientific notation
+with a hardware contract: <strong>IEEE 754</strong> (1985, revised
+2008/2019) fixed the formats, rounding, and exceptional behavior, so the
+same program computes the same answers on every machine. Before it,
+every vendor’s FP differed and numerical code was unportable.</p>
+<p>A normalized binary float:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>1</mn><msup><mo stretchy="false" form="postfix">)</mo><mi>s</mi></msup><mo>×</mo><mn>1</mn><mi>.</mi><mi>f</mi><mo>×</mo><msup><mn>2</mn><mrow><mi>e</mi><mo>−</mo><mtext mathvariant="normal">bias</mtext></mrow></msup></mrow><annotation encoding="application/x-tex">x = (-1)^s \times 1.f \times 2^{e - \text{bias}}</annotation></semantics></math></p>
+<p>The leading 1 of a normalized significand is not stored (the
+<strong>hidden bit</strong>), buying one free bit of precision. The
+exponent is stored <strong>biased</strong> (unsigned
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>e</mi><annotation encoding="application/x-tex">e</annotation></semantics></math>
+= true exponent + bias) so floats sort like integers.</p>
+<h2 id="formats">Formats</h2>
+<figure>
+<img src="figs/fpformats.svg" alt="IEEE 754 format bit layouts" />
+<figcaption aria-hidden="true">IEEE 754 format bit layouts</figcaption>
+</figure>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Format</th>
+<th>Bits (s/e/f)</th>
+<th>Bias</th>
+<th>Range</th>
+<th>Precision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>binary16 (FP16)</td>
+<td>1/5/10</td>
+<td>15</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>±</mi><mn>6.5</mn><mo>×</mo><msup><mn>10</mn><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">\pm 6.5 \times 10^4</annotation></semantics></math></td>
+<td>~3.3 digits</td>
+</tr>
+<tr>
+<td>bfloat16</td>
+<td>1/8/7</td>
+<td>127</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>±</mi><mn>3.4</mn><mo>×</mo><msup><mn>10</mn><mn>38</mn></msup></mrow><annotation encoding="application/x-tex">\pm 3.4 \times 10^{38}</annotation></semantics></math></td>
+<td>~2.4 digits</td>
+</tr>
+<tr>
+<td>binary32 (float)</td>
+<td>1/8/23</td>
+<td>127</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>±</mi><mn>3.4</mn><mo>×</mo><msup><mn>10</mn><mn>38</mn></msup></mrow><annotation encoding="application/x-tex">\pm 3.4 \times 10^{38}</annotation></semantics></math></td>
+<td>~7.2 digits</td>
+</tr>
+<tr>
+<td>binary64 (double)</td>
+<td>1/11/52</td>
+<td>1023</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>±</mi><mn>1.8</mn><mo>×</mo><msup><mn>10</mn><mn>308</mn></msup></mrow><annotation encoding="application/x-tex">\pm 1.8 \times 10^{308}</annotation></semantics></math></td>
+<td>~15.9 digits</td>
+</tr>
+<tr>
+<td>FP8 E4M3 / E5M2</td>
+<td>1/4/3, 1/5/2</td>
+<td>7 / 15</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>±</mi><mn>448</mn></mrow><annotation encoding="application/x-tex">\pm 448</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>±</mi><mn>5.7</mn><mo>×</mo><msup><mn>10</mn><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">\pm 5.7 \times 10^4</annotation></semantics></math></td>
+<td>~1 digit</td>
+</tr>
+</tbody>
+</table>
+<p>bfloat16 is FP32 with the fraction truncated: same range, less
+precision, and conversion is a shift, which is why ML training adopted
+it; FP8 continues the trend for inference. Machine epsilon (gap between
+1 and the next float) is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mi>−</mi><mn>23</mn></mrow></msup><mo>≈</mo><mn>1.2</mn><mo>×</mo><msup><mn>10</mn><mrow><mi>−</mi><mn>7</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{-23} \approx 1.2 \times 10^{-7}</annotation></semantics></math>
+for FP32.</p>
+<h2 id="special-values">Special Values</h2>
+<p>The extreme exponent encodings are reserved:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>exp field</th>
+<th>fraction</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>all 0s</td>
+<td>0</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>±</mi><mn>0</mn></mrow><annotation encoding="application/x-tex">\pm 0</annotation></semantics></math>
+(signed zero)</td>
+</tr>
+<tr>
+<td>all 0s</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≠</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\ne 0</annotation></semantics></math></td>
+<td><strong>subnormal</strong>:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>1</mn><msup><mo stretchy="false" form="postfix">)</mo><mi>s</mi></msup><mo>×</mo><mn>0</mn><mi>.</mi><mi>f</mi><mo>×</mo><msup><mn>2</mn><mrow><mn>1</mn><mo>−</mo><mtext mathvariant="normal">bias</mtext></mrow></msup></mrow><annotation encoding="application/x-tex">(-1)^s \times 0.f \times 2^{1-\text{bias}}</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>all 1s</td>
+<td>0</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>±</mi><mi>∞</mi></mrow><annotation encoding="application/x-tex">\pm\infty</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>all 1s</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≠</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\ne 0</annotation></semantics></math></td>
+<td>NaN (quiet if MSB of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>
+set, else signaling)</td>
+</tr>
+</tbody>
+</table>
+<p>Subnormals give <strong>gradual underflow</strong>: without them the
+gap between 0 and the smallest normal number would exceed the gap
+between adjacent normals, and <code>x != y</code> could still make
+<code>x - y == 0</code>. Infinities propagate sensibly
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mn>0</mn><mo>=</mo><mi>∞</mi></mrow><annotation encoding="application/x-tex">1/0 = \infty</annotation></semantics></math>);
+NaN results from invalid operations
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mi>/</mi><mn>0</mn></mrow><annotation encoding="application/x-tex">0/0</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mrow><mi>−</mi><mn>1</mn></mrow></msqrt><annotation encoding="application/x-tex">\sqrt{-1}</annotation></semantics></math>),
+propagates through arithmetic, and compares unequal to everything
+including itself (<code>x != x</code> is the NaN test). Hardware often
+executes subnormal arithmetic in slow microcode traps, a classic
+performance cliff.</p>
+<h2 id="rounding">Rounding</h2>
+<p>Most results need more bits than the format holds; IEEE requires the
+result to be the <strong>correctly rounded</strong> infinite-precision
+value. Modes: round-to-nearest-even (RNE, default), toward
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>,
+toward
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mi>∞</mi></mrow><annotation encoding="application/x-tex">+\infty</annotation></semantics></math>,
+toward
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mi>∞</mi></mrow><annotation encoding="application/x-tex">-\infty</annotation></semantics></math>
+(the directed modes serve interval arithmetic).</p>
+<p>RNE example, keeping 4 fraction bits:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.0011</mn><msub><munder><mn>1000</mn><mo accent="true">_</mo></munder><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">1.0011\underline{1000}_2</annotation></semantics></math>
+is exactly halfway between
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0011</mn><annotation encoding="application/x-tex">1.0011</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0100</mn><annotation encoding="application/x-tex">1.0100</annotation></semantics></math>,
+so the tie goes to the even LSB:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0100</mn><annotation encoding="application/x-tex">1.0100</annotation></semantics></math>.
+But
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.0010</mn><msub><munder><mn>1000</mn><mo accent="true">_</mo></munder><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">1.0010\underline{1000}_2</annotation></semantics></math>,
+also a tie, rounds to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0010</mn><annotation encoding="application/x-tex">1.0010</annotation></semantics></math>
+(already even). Ties-to-even prevents systematic drift in long
+computations.</p>
+<p>Hardware keeps three extra bits through the datapath to round
+correctly after normalization: <strong>guard</strong> and
+<strong>round</strong> (the next two bits) and <strong>sticky</strong>
+(OR of everything below), enough to distinguish exactly-half from
+above/below half.</p>
+<p><strong>Exceptions</strong>: invalid, divide-by-zero, overflow,
+underflow, inexact. Default behavior is to deliver a well-defined result
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>∞</mi><annotation encoding="application/x-tex">\infty</annotation></semantics></math>,
+NaN, rounded value) and set a sticky <strong>flag</strong> (RISC-V: in
+<code>fcsr</code>, read with <code>frflags</code>); trapping is
+optional. Code polls flags rather than fielding
+<a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">traps</a>.</p>
+<h2 id="fp-addition-and-multiplication-hardware">FP Addition and
+Multiplication Hardware</h2>
+<p>Addition is the hard one, because operands must be aligned first:</p>
+<figure>
+<img src="figs/fpadd.svg" alt="floating point adder stages" />
+<figcaption aria-hidden="true">floating point adder stages</figcaption>
+</figure>
+<p>Worked:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mn>1.100</mn><mn>2</mn></msub><mo>×</mo><msup><mn>2</mn><mn>3</mn></msup><mo>+</mo><msub><mn>1.010</mn><mn>2</mn></msub><mo>×</mo><msup><mn>2</mn><mn>1</mn></msup></mrow><annotation encoding="application/x-tex">1.100_2 \times 2^3 + 1.010_2 \times 2^1</annotation></semantics></math>
+with 3 fraction bits. Align:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.010</mn><mo>×</mo><msup><mn>2</mn><mn>1</mn></msup><mo>=</mo><mn>0.01010</mn><mo>×</mo><msup><mn>2</mn><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">1.010 \times 2^1 = 0.01010 \times 2^3</annotation></semantics></math>.
+Add:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.100</mn><mo>+</mo><mn>0.01010</mn><mo>=</mo><mn>1.11010</mn></mrow><annotation encoding="application/x-tex">1.100 + 0.01010 = 1.11010</annotation></semantics></math>,
+already normalized. Round: the discarded bits are guard=1, round=0,
+sticky=0, an exact tie; the LSB of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.110</mn><annotation encoding="application/x-tex">1.110</annotation></semantics></math>
+is even, so the result stays
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.110</mn><mo>×</mo><msup><mn>2</mn><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">1.110 \times 2^3</annotation></semantics></math>.
+Effective <em>subtraction</em> of close values can cancel leading bits,
+requiring a big left shift found by a leading-zero counter.</p>
+<p>Multiplication is structurally simpler: add exponents (subtract one
+bias), multiply significands with the integer multiplier array from
+Combinational Circuits, normalize (at most one position), round.
+Division and square root use iterative (SRT) or Newton-Raphson
+methods.</p>
+<p>These stages make FP add/mul naturally 3-5 cycle
+<strong>pipelined</strong> units, one result per cycle; long-latency FP
+units are a main motivation for
+<a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">Out
+of Order Execution and Register Renaming</a>.</p>
+<p><strong>FMA</strong> (fused multiply-add) computes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>×</mo><mi>b</mi><mo>+</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">a \times b + c</annotation></semantics></math>
+with a single rounding at the end: one instruction, better accuracy (no
+intermediate rounding), and it is the workhorse of dot products, matrix
+multiply, and every ML accelerator’s FLOPS claim.</p>
+<h2 id="numerical-behavior">Numerical Behavior</h2>
+<p>FP arithmetic is commutative but <strong>not associative</strong>:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>+</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>z</mi><mo>≠</mo><mi>x</mi><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mi>y</mi><mo>+</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(x + y) + z \ne x + (y + z)</annotation></semantics></math>
+in general. With FP32,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msup><mn>10</mn><mn>8</mn></msup><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msup><mn>10</mn><mn>8</mn></msup><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">(10^8 + 1) - 10^8 = 0</annotation></semantics></math>
+(the 1 is below the precision of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mn>8</mn></msup><annotation encoding="application/x-tex">10^8</annotation></semantics></math>)
+but
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msup><mn>10</mn><mn>8</mn></msup><mo>−</mo><msup><mn>10</mn><mn>8</mn></msup><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>1</mn><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">(10^8 - 10^8) + 1 = 1</annotation></semantics></math>.
+Consequences: compilers cannot reorder FP without permission
+(<code>-ffast-math</code>), and parallel reductions get run-dependent
+answers.</p>
+<p><strong>Catastrophic cancellation</strong>: subtracting nearly equal
+values leaves only noise bits, e.g. the quadratic formula root
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mi>b</mi><mo>+</mo><msqrt><mrow><msup><mi>b</mi><mn>2</mn></msup><mo>−</mo><mn>4</mn><mi>a</mi><mi>c</mi></mrow></msqrt></mrow><annotation encoding="application/x-tex">-b + \sqrt{b^2 - 4ac}</annotation></semantics></math>
+when
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn><mi>a</mi><mi>c</mi><mo>≪</mo><msup><mi>b</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">4ac \ll b^2</annotation></semantics></math>;
+rewrite as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>c</mi><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>b</mi><mo>−</mo><msqrt><mrow><msup><mi>b</mi><mn>2</mn></msup><mo>−</mo><mn>4</mn><mi>a</mi><mi>c</mi></mrow></msqrt><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">2c / (-b - \sqrt{b^2-4ac})</annotation></semantics></math>.
+<strong>Kahan summation</strong> carries a running compensation term to
+recover the bits ordinary summation drops.</p>
+<h2 id="risc-v-floating-point">RISC-V Floating Point</h2>
+<p>The F (single) and D (double) extensions of the
+<a href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V
+ISA</a> add a separate register file <code>f0-f31</code> (no hidden
+flags or stack, unlike x87):</p>
+<ul>
+<li>Loads/stores <code>flw/fld/fsw/fsd</code>; compute
+<code>fadd.s</code>, <code>fmadd.d</code> (FMA), <code>fsqrt.s</code>,
+etc., each with an optional static rounding mode or the dynamic one in
+<code>fcsr</code>.</li>
+<li>With D enabled, a single in an <code>f</code> register is
+<strong>NaN-boxed</strong>: stored in the low 32 bits with all-1s upper
+bits, so stale wide reads are visibly NaN.</li>
+<li><code>fclass</code> returns a one-hot classification (subnormal,
+zero, inf, NaN kinds), letting software test specials without raising
+flags.</li>
+<li>Conversions <code>fcvt.*</code> cover int/float in both directions
+with explicit rounding.</li>
+</ul>
+<p>References:</p>
+<ol type="1">
+<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
+Design, RISC-V Edition</em>, ch. 3</li>
+<li>S. Harris &amp; D. Harris, <em>Digital Design and Computer
+Architecture, RISC-V Edition</em>, ch. 5</li>
+<li><em>The RISC-V Instruction Set Manual, Volume I</em>, F and D
+extensions</li>
+<li><h2 id="wikipedia-ieee-754-floating-point-arithmetic">Wikipedia:
+IEEE 754, Floating-point arithmetic</h2></li>
+</ol>
+<pre class="license"><code>MIT License
+
+Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+</body>
+</html>

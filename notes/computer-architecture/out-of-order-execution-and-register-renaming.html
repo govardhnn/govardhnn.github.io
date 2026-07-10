@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Out of Order Execution and Register Renaming</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#out-of-order-execution-and-register-renaming"
+id="toc-out-of-order-execution-and-register-renaming">Out of Order
+Execution and Register Renaming</a>
+<ul>
+<li><a href="#true-and-false-dependencies"
+id="toc-true-and-false-dependencies">True and False
+Dependencies</a></li>
+<li><a href="#register-renaming" id="toc-register-renaming">Register
+Renaming</a></li>
+<li><a href="#tomasulos-algorithm"
+id="toc-tomasulos-algorithm">Tomasulo’s Algorithm</a></li>
+<li><a href="#the-reorder-buffer-and-in-order-commit"
+id="toc-the-reorder-buffer-and-in-order-commit">The Reorder Buffer and
+In-Order Commit</a></li>
+<li><a href="#memory-instructions" id="toc-memory-instructions">Memory
+Instructions</a></li>
+<li><a href="#costs" id="toc-costs">Costs</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="out-of-order-execution-and-register-renaming">Out of Order
+Execution and Register Renaming</h1>
+<p>The in-order
+<a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">Simple
+Instruction Pipeline</a> stalls whenever the next instruction is not
+ready, even if the ten after it are. A cache miss (hundreds of cycles,
+<a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches
+and Virtual Memory</a>) or a long FP operation
+(<a href="../../notes.html#Computer%20Architecture/Floating%20Point%20Architecture" target="_top">Floating
+Point Architecture</a>) idles the whole machine. Out-of-order (OOO)
+execution lets ready instructions run around stalled ones: execute in
+<strong>dataflow order</strong>, but keep all effects <strong>in program
+order</strong> at commit.</p>
+<h2 id="true-and-false-dependencies">True and False Dependencies</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Hazard</th>
+<th>Pattern</th>
+<th>Nature</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RAW (true)</td>
+<td><code>add x1,...</code> then <code>sub ...,x1</code></td>
+<td>real dataflow; only faster execution helps</td>
+</tr>
+<tr>
+<td>WAR (anti)</td>
+<td><code>sub ...,x1,...</code> then <code>add x1,...</code></td>
+<td>false: a <em>name</em> is reused</td>
+</tr>
+<tr>
+<td>WAW (output)</td>
+<td><code>add x1,...</code> then <code>mul x1,...</code></td>
+<td>false: same</td>
+</tr>
+</tbody>
+</table>
+<p>WAR/WAW exist only because the ISA has finitely many register names;
+the compiler must reuse them. The dataflow limit (execute every
+instruction as soon as its true operands are ready) is the theoretical
+speed of a program; eliminating false dependencies is how hardware
+approaches it.</p>
+<p><strong>Scoreboarding</strong> (CDC 6600, 1964) was the first OOO
+issue: a central table tracks which units and registers are busy,
+issuing instructions when safe, but it must <em>stall</em> on WAR/WAW
+because values live only in the architectural registers.</p>
+<h2 id="register-renaming">Register Renaming</h2>
+<p>Renaming removes false dependencies by giving every instruction’s
+destination a fresh <strong>physical register</strong> from a free list,
+and mapping architectural names through a <strong>rename map
+table</strong>. Physical registers outnumber architectural (e.g. 200+ vs
+32) to name all in-flight values.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Program (arch regs)</th>
+<th>After rename</th>
+<th>Dependency removed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ld x1, 0(x2)</code></td>
+<td><code>ld p7, 0(p2)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>add x3, x1, x4</code></td>
+<td><code>add p8, p7, p4</code></td>
+<td>RAW on x1 kept (p7)</td>
+</tr>
+<tr>
+<td><code>sub x1, x5, x6</code></td>
+<td><code>sub p9, p5, p6</code></td>
+<td>WAW on x1 gone, runs immediately</td>
+</tr>
+<tr>
+<td><code>or x7, x1, x3</code></td>
+<td><code>or p10, p9, p8</code></td>
+<td>reads the <em>new</em> x1 (p9), correct</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>sub</code> no longer waits for the load: same registers, no
+conflict. Map after: x1→p9, x3→p8, x7→p10. A physical register is freed
+when the <em>next</em> writer of the same architectural register commits
+(no one can still read the old value).</p>
+<h2 id="tomasulos-algorithm">Tomasulo’s Algorithm</h2>
+<p>The IBM 360/91 FPU (1967) invented distributed renaming three years
+after the scoreboard:</p>
+<figure>
+<img src="figs/tomasulo.svg" alt="Tomasulo organization" />
+<figcaption aria-hidden="true">Tomasulo organization</figcaption>
+</figure>
+<ul>
+<li><strong>Reservation stations (RS)</strong> in front of each
+functional unit hold waiting instructions. Each operand is either a
+value (already available, copied in) or a <strong>tag</strong> naming
+the RS that will produce it.</li>
+<li>Register file entries carry a tag too: “the value is coming from RS
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>”.</li>
+<li>When a unit finishes, it broadcasts (tag, value) on the
+<strong>common data bus (CDB)</strong>; every RS and register entry
+snoops it and captures a matching value. Dependents can issue the next
+cycle: forwarding falls out of the design.</li>
+</ul>
+<p>Renaming lives in the tags (destinations are RS names, not register
+names), so WAR/WAW vanish. Modern machines keep the idea but move values
+into a unified <strong>physical register file</strong> (PRF);
+reservation stations shrink to an <strong>issue queue</strong> holding
+only tags, since copying wide values into every RS wastes area and the
+CDB does not scale to many results per cycle.</p>
+<h2 id="the-reorder-buffer-and-in-order-commit">The Reorder Buffer and
+In-Order Commit</h2>
+<p>Pure Tomasulo updates registers as results appear, out of order,
+which wrecks
+<a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">precise
+exceptions</a> and makes
+<a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">misspeculation</a>
+unrecoverable. The fix separates <em>execution</em> order from
+<em>commit</em> order.</p>
+<p>The <strong>reorder buffer (ROB)</strong> is a circular buffer
+allocated per instruction at dispatch, in program order:</p>
+<figure>
+<img src="figs/rob.svg" alt="reorder buffer" />
+<figcaption aria-hidden="true">reorder buffer</figcaption>
+</figure>
+<ul>
+<li>Instructions execute whenever ready and mark their ROB entry
+done.</li>
+<li><strong>Commit</strong> happens only at the head, oldest first: the
+result becomes architectural, stores are released to memory, the entry
+is freed.</li>
+<li>An exception or misprediction marked on an entry is acted on only
+when it reaches the head; everything younger is squashed and the rename
+map restored (from checkpoints taken at branches, or by walking the
+ROB). The speculative work simply never commits.</li>
+</ul>
+<p>The modern OOO pipeline end to end:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">fetch</mtext><mo>→</mo><mtext mathvariant="normal">decode</mtext><mo>→</mo><mtext mathvariant="normal">rename</mtext><mo>→</mo><mtext mathvariant="normal">dispatch (ROB + IQ)</mtext><mo>→</mo><mtext mathvariant="normal">issue/wakeup-select</mtext><mo>→</mo><mtext mathvariant="normal">execute</mtext><mo>→</mo><mtext mathvariant="normal">writeback</mtext><mo>→</mo><mtext mathvariant="normal">commit</mtext></mrow><annotation encoding="application/x-tex">\text{fetch} \to \text{decode} \to \text{rename} \to \text{dispatch (ROB + IQ)} \to \text{issue/wakeup-select} \to \text{execute} \to \text{writeback} \to \text{commit}</annotation></semantics></math></p>
+<p>The <strong>window</strong> (ROB size, 200-600+ entries in current
+cores) bounds how far ahead the machine can look for independent work;
+it is sized to keep executing across an L2-miss latency.</p>
+<h2 id="memory-instructions">Memory Instructions</h2>
+<p>Registers rename cleanly; memory does not, because addresses are
+computed at runtime: does <code>ld 0(x5)</code> depend on the older
+<code>sd 0(x3)</code>? Unknown until both addresses resolve.</p>
+<ul>
+<li>The <strong>store queue</strong> holds stores’ addresses and data
+until commit (memory must never see speculative stores). Loads search
+it: an address match means <strong>store-to-load forwarding</strong>
+(take the data directly); no match means go to cache.</li>
+<li>The <strong>load queue</strong> remembers executed loads so a
+later-resolving older store can detect it forwarded nothing to a load
+that needed it: a memory-order violation, squash and replay the
+load.</li>
+<li>Waiting for <em>all</em> older store addresses is slow, so cores use
+<strong>memory dependence prediction</strong> (e.g. store sets): predict
+which loads conflict, let the rest issue aggressively; mispredictions
+cost a replay.</li>
+</ul>
+<p>Load reordering between cores is architecturally visible; what the
+ISA permits is the Memory Model.</p>
+<h2 id="costs">Costs</h2>
+<p>OOO multiplies state (PRF, IQ, ROB, LSQ, checkpoints) and adds ~3
+pipeline stages (rename, dispatch, issue), deepening the misprediction
+penalty that
+<a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">Branch
+Prediction</a> must cover. The wakeup-select loop and load-store search
+are the scaling bottlenecks that shape
+<a href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">Advanced
+Superscalar Architectures</a>. The payoff: 2-4x IPC over in-order on
+pointer-chasing, cache-missing code, which is why every high-performance
+core since the mid-1990s pays it.</p>
+<p>References:</p>
+<ol type="1">
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 11-12</li>
+<li>A. González, F. Latorre &amp; G. Magklis, <em>Processor
+Microarchitecture: An Implementation Perspective</em></li>
+<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
+Quantitative Approach</em>, ch. 3</li>
+<li><h2
+id="r.-m.-tomasulo-an-efficient-algorithm-for-exploiting-multiple-arithmetic-units-1967">R.
+M. Tomasulo, <em>An Efficient Algorithm for Exploiting Multiple
+Arithmetic Units</em> (1967)</h2></li>
+</ol>
+<pre class="license"><code>MIT License
+
+Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Branch Prediction</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#branch-prediction" id="toc-branch-prediction">Branch
+Prediction</a>
+<ul>
+<li><a href="#what-must-be-predicted"
+id="toc-what-must-be-predicted">What Must Be Predicted</a></li>
+<li><a href="#static-prediction" id="toc-static-prediction">Static
+Prediction</a></li>
+<li><a href="#dynamic-direction-prediction"
+id="toc-dynamic-direction-prediction">Dynamic Direction
+Prediction</a></li>
+<li><a href="#correlating-predictors"
+id="toc-correlating-predictors">Correlating Predictors</a></li>
+<li><a href="#target-prediction" id="toc-target-prediction">Target
+Prediction</a></li>
+<li><a href="#living-in-the-pipeline"
+id="toc-living-in-the-pipeline">Living in the Pipeline</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="branch-prediction">Branch Prediction</h1>
+<p>Roughly one instruction in five is a branch, and the fetch stage of
+the
+<a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">Simple
+Instruction Pipeline</a> must produce a next PC every cycle, long before
+the branch resolves. A branch predictor guesses the outcome so fetch
+never waits; a wrong guess flushes speculative work. Prediction is the
+enabling technology for deep pipelines and for all speculation in
+<a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">Out
+of Order Execution and Register Renaming</a>.</p>
+<p>The cost of control flow in CPI terms:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>P</mi><msub><mi>I</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>n</mi><mi>c</mi><mi>h</mi></mrow></msub><mo>=</mo><msub><mi>f</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>n</mi><mi>c</mi><mi>h</mi></mrow></msub><mo>×</mo><msub><mi>p</mi><mrow><mi>m</mi><mi>i</mi><mi>s</mi><mi>p</mi><mi>r</mi><mi>e</mi><mi>d</mi><mi>i</mi><mi>c</mi><mi>t</mi></mrow></msub><mo>×</mo><mtext mathvariant="normal">penalty</mtext></mrow><annotation encoding="application/x-tex">CPI_{branch} = f_{branch} \times p_{mispredict} \times \text{penalty}</annotation></semantics></math></p>
+<p>At
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>=</mo><mn>0.2</mn></mrow><annotation encoding="application/x-tex">f=0.2</annotation></semantics></math>,
+a 20-cycle penalty (typical modern pipeline depth to resolution), and
+95% accuracy:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.2</mn><mo>×</mo><mn>0.05</mn><mo>×</mo><mn>20</mn><mo>=</mo><mn>0.2</mn></mrow><annotation encoding="application/x-tex">0.2 \times 0.05 \times 20 = 0.2</annotation></semantics></math>
+extra CPI, a ~20% slowdown from just 5% of branches. Accuracy must scale
+with depth and width, which is why predictors grew from 2-bit counters
+to TAGE.</p>
+<h2 id="what-must-be-predicted">What Must Be Predicted</h2>
+<p>Fetch needs three answers about the bytes it just fetched, before
+decoding them:</p>
+<ol type="1">
+<li><strong>Is any of this a branch?</strong> Answered by the BTB hit
+(or predecode bits in the I-cache).</li>
+<li><strong>Taken or not?</strong> The direction predictor.</li>
+<li><strong>Where to?</strong> The target: BTB for branches/jumps,
+return address stack for returns, indirect predictor for computed
+jumps.</li>
+</ol>
+<h2 id="static-prediction">Static Prediction</h2>
+<ul>
+<li><strong>Always not-taken</strong>: trivial (keep fetching
+sequentially); ~30-40% accurate on typical code since loops branch
+backward-taken.</li>
+<li><strong>BTFN</strong> (backward taken, forward not-taken): backward
+branches are loop bottoms, so predict them taken; ~65% accurate with
+zero state.</li>
+<li><strong>Compiler hints / profiling</strong>: ISA bits suggesting a
+direction from profile runs; static limits are ~75-80% because
+data-dependent branches cannot be predicted at compile time.</li>
+</ul>
+<h2 id="dynamic-direction-prediction">Dynamic Direction Prediction</h2>
+<p><strong>1-bit</strong>: remember the last outcome per branch. A loop
+branch mispredicts twice per loop execution (once at entry, once at
+exit): a 100-iteration loop gets 98%, a 4-iteration inner loop only
+50%.</p>
+<p><strong>2-bit saturating counter</strong>: add hysteresis so a single
+anomaly does not flip the prediction. Increment on taken, decrement on
+not-taken, saturate at both ends; predict from the high bit:</p>
+<figure>
+<img src="figs/bp2bit.svg" alt="2-bit saturating counter predictor" />
+<figcaption aria-hidden="true">2-bit saturating counter
+predictor</figcaption>
+</figure>
+<p>The loop-exit misprediction no longer flips the state, so the next
+entry predicts correctly: one misprediction per loop execution.</p>
+<p><strong>Branch history table (BHT)</strong>: an array of 2-bit
+counters indexed by low PC bits (e.g. 4K entries). Untagged, so two
+branches mapping to the same entry interfere (aliasing); usually
+tolerated because counters are cheap.</p>
+<h2 id="correlating-predictors">Correlating Predictors</h2>
+<p>Many branches correlate with <em>other</em> branches or with their
+own history pattern:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>x <span class="op">&lt;</span> <span class="dv">1</span><span class="op">)</span> <span class="op">...</span>      <span class="co">// b1</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>x <span class="op">&gt;</span> <span class="dv">1</span><span class="op">)</span> <span class="op">...</span>      <span class="co">// b2: never taken when b1 was taken</span></span></code></pre></div>
+<p>A <strong>global history register (GHR)</strong> shifts in the
+outcome of every branch (last
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>h</mi><annotation encoding="application/x-tex">h</annotation></semantics></math>
+outcomes). Two-level predictors index a pattern history table (PHT) of
+2-bit counters using history and PC together.</p>
+<p><strong>gshare</strong> is the classic hash: index = PC XOR GHR,
+spreading (branch, history) pairs across the PHT:</p>
+<figure>
+<img src="figs/gshare.svg" alt="gshare predictor" />
+<figcaption aria-hidden="true">gshare predictor</figcaption>
+</figure>
+<p><strong>Local history</strong> keeps a per-branch history register
+instead (captures patterns like taken-taken-not repeating);
+<strong>tournament</strong> predictors (Alpha 21264) run global and
+local side by side with a chooser table of 2-bit counters learning which
+to trust per branch.</p>
+<p><strong>Modern predictors</strong> in one paragraph:
+<strong>TAGE</strong> uses multiple tagged tables indexed with
+geometrically increasing history lengths (5, 10, 20, … hundreds of bits)
+and predicts from the longest history that hits, backed by a base
+bimodal table; <strong>perceptron</strong> predictors compute a weighted
+sum of history bits. Both reach ~99%+ on SPEC-like codes and are
+combined in shipping cores.</p>
+<h2 id="target-prediction">Target Prediction</h2>
+<p><strong>Branch target buffer (BTB)</strong>: a small tagged cache,
+indexed by fetch PC, holding the predicted target and branch type. A BTB
+hit simultaneously answers “this is a branch” and “fetch from here
+next”, redirecting fetch with zero bubbles:</p>
+<figure>
+<img src="figs/btb.svg" alt="BTB and return address stack in fetch" />
+<figcaption aria-hidden="true">BTB and return address stack in
+fetch</figcaption>
+</figure>
+<p><strong>Return address stack (RAS)</strong>: returns jump wherever
+the caller was, so a BTB entry is useless. A small hardware stack (8-32
+entries) pushes PC+4 on every call and pops on every return;
+near-perfect until call depth overflows it. Speculative pushes/pops must
+be repaired on misprediction.</p>
+<p><strong>Indirect branches</strong> (virtual calls, switch tables,
+interpreter dispatch) have many targets per site; predicted with
+history-indexed target tables (ITTAGE), historically the worst-behaved
+class.</p>
+<h2 id="living-in-the-pipeline">Living in the Pipeline</h2>
+<ul>
+<li><strong>Predict</strong> in IF: BTB/direction lookup happens in
+parallel with the I-cache access, producing the next fetch PC.</li>
+<li><strong>Verify</strong> when the branch executes (EX, or at commit):
+compare actual outcome/target with prediction.</li>
+<li><strong>Recover</strong> on mismatch: squash all younger
+instructions, restore fetch to the correct path, and repair predictor
+state (GHR, RAS). In-order pipes flush stages; out-of-order machines
+restore a checkpoint, the same machinery as
+<a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">Exceptions</a>
+recovery. A clean implementation tags every instruction with an
+<em>epoch</em>; instructions from stale epochs are discarded wherever
+they are.</li>
+<li><strong>Update</strong> the tables at resolve/commit with the true
+outcome.</li>
+</ul>
+<p><strong>Measuring</strong>: accuracy alone misleads across programs
+with different branch densities; <strong>MPKI</strong> (mispredictions
+per kilo-instruction) composes directly with penalty into CPI. And why
+95% is not enough: at depth 20 and width 4, one misprediction wastes up
+to 80 issue slots, so the gap between 95% and 99% is roughly a 4x
+reduction in speculation waste, which is also energy (Synthesis, Timing
+and Power).</p>
+<p><strong>Security aside</strong>: predictor state is shared
+microarchitectural state trained by one context and consumed by another;
+Spectre showed mistrained speculation leaks data through cache side
+channels, and modern cores add predictor isolation/flush controls on
+privilege switches.</p>
+<p>References:</p>
+<ol type="1">
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lecture 13</li>
+<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
+Quantitative Approach</em>, ch. 3</li>
+<li>A. Seznec, <em>A New Case for the TAGE Branch Predictor</em> (MICRO
+2011)</li>
+<li><h2 id="wikipedia-branch-predictor">Wikipedia: Branch
+predictor</h2></li>
+</ol>
+<pre class="license"><code>MIT License
+
+Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+</body>
+</html>

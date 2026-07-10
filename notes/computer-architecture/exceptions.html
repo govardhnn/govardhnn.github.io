@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Exceptions</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#exceptions" id="toc-exceptions">Exceptions</a>
+<ul>
+<li><a href="#precise-exceptions" id="toc-precise-exceptions">Precise
+Exceptions</a></li>
+<li><a href="#in-the-5-stage-pipeline"
+id="toc-in-the-5-stage-pipeline">In the 5-Stage Pipeline</a></li>
+<li><a href="#in-out-of-order-machines"
+id="toc-in-out-of-order-machines">In Out-of-Order Machines</a></li>
+<li><a href="#the-risc-v-trap-mechanism"
+id="toc-the-risc-v-trap-mechanism">The RISC-V Trap Mechanism</a></li>
+<li><a href="#interrupts" id="toc-interrupts">Interrupts</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="exceptions">Exceptions</h1>
+<p>An exception transfers control to a handler because something
+happened that the normal instruction stream cannot express: a page
+fault, an illegal opcode, a system call, a device interrupt. The
+mechanism (<strong>trap</strong>) is the same for all of them; what
+differs is the trigger. Exceptions are how the OS exists at all: system
+calls, demand paging in
+<a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches
+and Virtual Memory</a>, preemptive scheduling, and device I/O are all
+built on this machinery.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Term</th>
+<th>Trigger</th>
+<th>Sync?</th>
+<th>Resume where?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>exception (fault)</td>
+<td>the instruction itself (page fault, illegal op, misalign,
+divide)</td>
+<td>synchronous</td>
+<td>re-execute the faulting instruction</td>
+</tr>
+<tr>
+<td>trap (e.g. <code>ecall</code>)</td>
+<td>deliberate, by the instruction</td>
+<td>synchronous</td>
+<td>after the instruction</td>
+</tr>
+<tr>
+<td>interrupt</td>
+<td>external event (timer, device, IPI)</td>
+<td>asynchronous</td>
+<td>between any two instructions</td>
+</tr>
+<tr>
+<td>abort</td>
+<td>machine failure</td>
+<td>either</td>
+<td>often not resumable</td>
+</tr>
+</tbody>
+</table>
+<h2 id="precise-exceptions">Precise Exceptions</h2>
+<p>An exception is <strong>precise</strong> when the saved state matches
+a clean point in program order: every older instruction has fully
+committed, and no younger instruction has changed any architectural
+state. The reported PC identifies exactly where execution logically
+stopped.</p>
+<p>Software depends on this. A page fault handler must be able to fix
+the mapping and <em>re-execute</em> the faulting load as if nothing
+happened; a debugger must show a consistent stopped program; a context
+switch must be able to save and rebuild the exact state. Imprecise
+exceptions (some 1960s-90s FP units reported overflow “somewhere in the
+last few instructions”) made all three nearly impossible, which is why
+precision won everywhere.</p>
+<h2 id="in-the-5-stage-pipeline">In the 5-Stage Pipeline</h2>
+<p>Different stages detect different exceptions, and detection order is
+not program order: an older instruction’s page fault (MEM, cycle
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>)
+may be detected <em>after</em> a younger instruction’s illegal opcode
+(ID, cycle
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>).
+Acting immediately on the younger one would be wrong.</p>
+<p>The rule: <strong>tag, don’t act</strong>. Each instruction carries
+an exception flag and cause through the pipeline registers of the
+<a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">Simple
+Instruction Pipeline</a>; a flagged instruction is turned into a NOP for
+later stages (it must not write memory or registers). Only at the
+<strong>commit point</strong> (end of MEM, the last place an exception
+can arise) does the machine act on the <em>oldest</em> flagged
+instruction: flush all younger stages, and redirect fetch to the
+handler:</p>
+<figure>
+<img src="figs/excflush.svg"
+alt="exception flags resolved at the commit point" />
+<figcaption aria-hidden="true">exception flags resolved at the commit
+point</figcaption>
+</figure>
+<p>Asynchronous interrupts are simply injected as the flag of some
+convenient instruction at commit, giving them a precise boundary for
+free.</p>
+<h2 id="in-out-of-order-machines">In Out-of-Order Machines</h2>
+<p>The same principle scales up: an OOO core marks the exception in the
+instruction’s reorder-buffer entry, and acts only when that entry
+reaches the ROB head at commit
+(<a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">Out
+of Order Execution and Register Renaming</a>). Everything younger,
+including speculatively executed work, is squashed and the rename state
+rolled back, exactly the recovery machinery of a
+<a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">branch
+misprediction</a>. This is why “add an exception” is cheap in modern
+cores: the hard part was already built for speculation.</p>
+<h2 id="the-risc-v-trap-mechanism">The RISC-V Trap Mechanism</h2>
+<p>Machine-mode CSRs (accessed via Zicsr instructions of the
+<a href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V
+ISA</a>) implement traps:</p>
+<table>
+<thead>
+<tr>
+<th>CSR</th>
+<th>Holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mtvec</code></td>
+<td>handler base address (+ mode: direct or vectored)</td>
+</tr>
+<tr>
+<td><code>mepc</code></td>
+<td>PC of the interrupted/faulting instruction</td>
+</tr>
+<tr>
+<td><code>mcause</code></td>
+<td>interrupt bit + cause code</td>
+</tr>
+<tr>
+<td><code>mtval</code></td>
+<td>extra info (faulting address, bad instruction bits)</td>
+</tr>
+<tr>
+<td><code>mstatus</code></td>
+<td>interrupt-enable stack: MIE, MPIE, MPP</td>
+</tr>
+<tr>
+<td><code>mie</code> / <code>mip</code></td>
+<td>per-source interrupt enable / pending bits</td>
+</tr>
+</tbody>
+</table>
+<figure>
+<img src="figs/trapflow.svg" alt="trap entry and mret" />
+<figcaption aria-hidden="true">trap entry and mret</figcaption>
+</figure>
+<p>The <code>MPIE</code>/<code>MPP</code> fields make trap entry
+re-entrant-safe: entry saves the interrupt-enable bit and privilege
+mode, <code>mret</code> restores them. Common <code>mcause</code> codes:
+2 illegal instruction, 8/11 <code>ecall</code> from U/M, 12/13/15
+instruction/load/store page fault; interrupt bit set: 3 machine
+software, 7 machine timer, 11 machine external.</p>
+<p>Handler skeleton:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode asm"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">trap_handler:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    csrrw <span class="kw">sp</span><span class="op">,</span> mscratch<span class="op">,</span> <span class="kw">sp</span>     <span class="op">#</span> swap in a trusted stack pointer</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    addi  <span class="kw">sp</span><span class="op">,</span> <span class="kw">sp</span><span class="op">,</span> <span class="op">-</span><span class="dv">128</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    sd    x1<span class="op">,</span> <span class="dv">8</span><span class="op">(</span><span class="kw">sp</span><span class="op">)</span>            <span class="op">#</span> save caller<span class="op">-</span>visible state</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    # ... save x5<span class="op">-</span>x31 <span class="op">...</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    csrr  a0<span class="op">,</span> mcause           <span class="op">#</span> dispatch on cause</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    csrr  a1<span class="op">,</span> mepc</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">call</span>  dispatch             <span class="op">#</span> C code from here</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    # ... <span class="pp">restore</span> registers <span class="op">...</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    addi  <span class="kw">sp</span><span class="op">,</span> <span class="kw">sp</span><span class="op">,</span> <span class="dv">128</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    csrrw <span class="kw">sp</span><span class="op">,</span> mscratch<span class="op">,</span> <span class="kw">sp</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    mret                       <span class="op">#</span> pc <span class="op">&lt;-</span> mepc<span class="op">,</span> mode<span class="op">/</span>MIE restored</span></code></pre></div>
+<p>For a synchronous <code>ecall</code> the handler must
+<code>mepc += 4</code> before <code>mret</code>, or it will loop; for a
+page fault it must <em>not</em>, so the faulting access retries.</p>
+<h2 id="interrupts">Interrupts</h2>
+<p>An interrupt is taken when it is pending (<code>mip</code>), enabled
+(<code>mie</code>), and interrupts are globally on
+(<code>mstatus.MIE</code>), with fixed priority among sources.
+<strong>Nested</strong> interrupts need software help: entry hardware
+clears MIE, and a handler that wants to be preemptible saves
+<code>mepc</code>/<code>mcause</code> and re-enables MIE.</p>
+<ul>
+<li><strong>Timer</strong>: memory-mapped
+<code>mtime</code>/<code>mtimecmp</code> raise the timer interrupt when
+<code>mtime &gt;= mtimecmp</code>; this is the OS scheduler’s tick.</li>
+<li><strong>External</strong>: a PLIC (platform-level interrupt
+controller) fans many device lines into one external interrupt per hart,
+with per-source priority and claim/complete registers; the CLINT handles
+software and timer interrupts.</li>
+<li><strong>Delegation</strong>:
+<code>medeleg</code>/<code>mideleg</code> route chosen traps directly to
+S-mode so the OS handles its own page faults without firmware
+round-trips.</li>
+</ul>
+<p>Latency note: interrupt latency = longest uninterruptible window (one
+instruction, or one handler critical section). Real-time systems care
+about the worst case, not the mean, which argues against very
+long-running instructions.</p>
+<p>References:</p>
+<ol type="1">
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lecture 11</li>
+<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
+Design, RISC-V Edition</em>, ch. 4</li>
+<li><em>The RISC-V Instruction Set Manual, Volume II: Privileged
+Architecture</em></li>
+<li><h2
+id="j.-e.-smith-a.-r.-pleszkun-implementing-precise-interrupts-in-pipelined-processors-1988">J.
+E. Smith &amp; A. R. Pleszkun, <em>Implementing Precise Interrupts in
+Pipelined Processors</em> (1988)</h2></li>
+</ol>
+<pre class="license"><code>MIT License
+
+Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+</body>
+</html>

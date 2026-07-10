@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Flynn's Taxonomy</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#flynns-taxonomy" id="toc-flynns-taxonomy">Flynn’s
+Taxonomy</a>
+<ul>
+<li><a href="#simd-one-instruction-many-data"
+id="toc-simd-one-instruction-many-data">SIMD: One Instruction, Many
+Data</a></li>
+<li><a href="#mimd-many-streams" id="toc-mimd-many-streams">MIMD: Many
+Streams</a></li>
+<li><a href="#vliw-the-compiler-alternative"
+id="toc-vliw-the-compiler-alternative">VLIW: The Compiler
+Alternative</a></li>
+<li><a href="#choosing" id="toc-choosing">Choosing</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="flynns-taxonomy">Flynn’s Taxonomy</h1>
+<p>Flynn (1966) classified machines by how many <strong>instruction
+streams</strong> and <strong>data streams</strong> they process at once.
+It remains the standard map of parallel hardware because it separates
+the two independent ways to scale beyond one instruction at a time:
+replicate the <em>data</em> an instruction touches, or replicate the
+<em>instruction streams</em> themselves.</p>
+<figure>
+<img src="figs/flynn.svg" alt="Flynn’s taxonomy quadrants" />
+<figcaption aria-hidden="true">Flynn’s taxonomy quadrants</figcaption>
+</figure>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Class</th>
+<th>Instruction streams</th>
+<th>Data streams</th>
+<th>Reality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SISD</td>
+<td>1</td>
+<td>1</td>
+<td>classic uniprocessor, including
+<a href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">superscalar</a>
+(still <em>one</em> architectural stream)</td>
+</tr>
+<tr>
+<td>SIMD</td>
+<td>1</td>
+<td>many</td>
+<td>vector machines, AVX, GPUs</td>
+</tr>
+<tr>
+<td>MISD</td>
+<td>many</td>
+<td>1</td>
+<td>rare: systolic arrays (arguably), triple-modular redundancy</td>
+</tr>
+<tr>
+<td>MIMD</td>
+<td>many</td>
+<td>many</td>
+<td>multicore, servers, clusters</td>
+</tr>
+</tbody>
+</table>
+<p>Software-level refinements: <strong>SPMD</strong> (one program, many
+data partitions, an MIMD <em>programming style</em>: MPI, OpenMP) and
+<strong>SIMT</strong> (SIMD hardware presented as scalar threads:
+GPUs).</p>
+<h2 id="simd-one-instruction-many-data">SIMD: One Instruction, Many
+Data</h2>
+<p>Data-level parallelism (DLP) is cheaper than instruction-level
+parallelism per operation: one fetch, one decode, one dependency check
+drive
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+ALUs, amortizing exactly the frontend and control energy that limits
+superscalar width.</p>
+<p><strong>Vector processors</strong> (Cray-1, 1976; RISC-V V today)
+make DLP architectural:</p>
+<figure>
+<img src="figs/vector.svg"
+alt="vector datapath: lanes slicing the vector register file" />
+<figcaption aria-hidden="true">vector datapath: lanes slicing the vector
+register file</figcaption>
+</figure>
+<ul>
+<li><strong>Vector registers</strong> hold whole arrays (RVV: 32
+registers of implementation-chosen length VLEN);
+<code>vadd.vv v1, v2, v3</code> adds element-wise.</li>
+<li><strong>Lanes</strong> each own a slice of the register file and its
+ALUs; element
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+never leaves lane
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mrow><mspace width="0.222em"></mspace><mrow><mi mathvariant="normal">mod</mi><mo>&#8289;</mo></mrow><mspace width="0.222em"></mspace><mi>n</mi></mrow></mrow><annotation encoding="application/x-tex">i \bmod n</annotation></semantics></math>:
+no inter-lane wiring, near-perfect scaling.</li>
+<li>The <strong>vector length register</strong> handles arrays not
+divisible by the hardware length: <code>vsetvli</code> returns
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>r</mi><mi>e</mi><mi>m</mi><mi>a</mi><mi>i</mi><mi>n</mi><mi>i</mi><mi>n</mi><mi>g</mi><mo>,</mo><mi>V</mi><mi>L</mi><mi>M</mi><mi>A</mi><mi>X</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\min(remaining, VLMAX)</annotation></semantics></math>
+per iteration (<strong>strip mining</strong>), so one binary runs on any
+vector width.</li>
+<li><strong>Chaining</strong> forwards a vector result
+element-by-element into the next operation (the vector version of
+bypassing); <strong>masking</strong> predicates per-element for
+<code>if</code> bodies; <strong>gather/scatter</strong> indexes memory
+for sparse code; memory access is unit-stride, strided, or indexed.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode asm"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a># RISC<span class="op">-</span>V V<span class="op">:</span> c<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> a<span class="op">[</span>i<span class="op">]</span> <span class="op">+</span> b<span class="op">[</span>i<span class="op">],</span> any n</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">loop:</span> vsetvli t0<span class="op">,</span> a0<span class="op">,</span> e64<span class="op">,</span> m1   <span class="op">#</span> t0 <span class="op">=</span> min<span class="op">(</span>n<span class="op">,</span> VLMAX<span class="op">)</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>      vle64<span class="op">.</span>v v1<span class="op">,</span> <span class="op">(</span>a1<span class="op">)</span>          <span class="op">#</span> load a slice</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>      vle64<span class="op">.</span>v v2<span class="op">,</span> <span class="op">(</span>a2<span class="op">)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>      vadd<span class="op">.</span>vv v3<span class="op">,</span> v1<span class="op">,</span> v2</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>      vse64<span class="op">.</span>v v3<span class="op">,</span> <span class="op">(</span>a3<span class="op">)</span>          <span class="op">#</span> store c slice</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>      <span class="bu">sub</span> a0<span class="op">,</span> a0<span class="op">,</span> t0            <span class="op">#</span> n <span class="op">-=</span> vl  <span class="op">(</span>bump pointers omitted<span class="op">)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>      bnez a0<span class="op">,</span> loop</span></code></pre></div>
+<p><strong>Packed-SIMD</strong> (SSE/AVX/NEON, and SWAR tricks in plain
+registers) fixes the vector length in the ISA encoding: 128 → 256 → 512
+bits meant new instructions and recompiles each time, the pitfall true
+vector ISAs avoid. <strong>SIMT</strong> (GPUs) presents each lane as a
+“thread”; a warp of 32 executes one instruction, and divergent branches
+run both paths under masks, so control-heavy code wastes lanes.</p>
+<h2 id="mimd-many-streams">MIMD: Many Streams</h2>
+<p>Independent processors, each with its own PC, over a shared or
+distributed memory:</p>
+<ul>
+<li><strong>Shared memory</strong> (multicore): cores communicate
+through loads/stores; hardware must then answer what happens when they
+share data, which is Multicore Cache Coherence and the Memory
+Model.</li>
+<li><strong>Message passing</strong> (clusters, supercomputers):
+explicit sends/receives; scales past any coherent domain.</li>
+</ul>
+<p><strong>Multithreading</strong> is MIMD inside one core: coarse-grain
+(switch on stall), fine-grain (rotate every cycle: barrel processors),
+and SMT (issue from several threads in one cycle):</p>
+<figure>
+<img src="figs/smt.svg"
+alt="filling issue slots: superscalar vs fine-grain MT vs SMT" />
+<figcaption aria-hidden="true">filling issue slots: superscalar vs
+fine-grain MT vs SMT</figcaption>
+</figure>
+<p>What must be replicated per thread is only architectural state (PC,
+registers, CSRs); pipelines, caches, and predictors are shared, detailed
+in
+<a href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">Advanced
+Superscalar Architectures</a>.</p>
+<h2 id="vliw-the-compiler-alternative">VLIW: The Compiler
+Alternative</h2>
+<p>A <strong>VLIW</strong> (very long instruction word) machine fetches
+one wide instruction containing several operation slots that execute in
+lockstep; the <em>compiler</em> finds the parallelism, schedules around
+latencies, and guarantees independence. The hardware needs no dependence
+checks, no rename, no issue queue: near-superscalar throughput at
+in-order cost.</p>
+<p>Why Itanium (EPIC, 2001) still lost the general-purpose war:</p>
+<ul>
+<li>Static schedules cannot adapt to dynamic cache misses
+(<a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches
+and Virtual Memory</a> latencies vary 10-100x), so the compiler must
+assume the worst or stall.</li>
+<li>Empty slots become NOPs: code bloat.</li>
+<li>The schedule bakes in one machine’s latencies, resurrecting the
+delay-slot mistake at scale.</li>
+</ul>
+<p>Where latencies <em>are</em> static (DSPs, embedded media: TI C6x,
+Hexagon), VLIW thrives, and GPUs + compilers took the “smart compiler,
+dumb lockstep hardware” crown that EPIC aimed for.</p>
+<h2 id="choosing">Choosing</h2>
+<table>
+<thead>
+<tr>
+<th>Parallelism</th>
+<th>Exploited by</th>
+<th>Best when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ILP</td>
+<td>superscalar + OOO</td>
+<td>irregular, branchy, pointer code</td>
+</tr>
+<tr>
+<td>DLP</td>
+<td>vector/SIMD/GPU</td>
+<td>loops over arrays; same op, much data</td>
+</tr>
+<tr>
+<td>TLP</td>
+<td>multicore, SMT</td>
+<td>independent tasks, servers</td>
+</tr>
+</tbody>
+</table>
+<p>Real machines stack all three: a modern chip is MIMD over cores, each
+core superscalar (ILP) with vector units (DLP) and SMT (TLP), which is
+why Flynn’s clean quadrants blur in practice but the vocabulary
+survives.</p>
+<p>References:</p>
+<ol type="1">
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 21-23</li>
+<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
+Quantitative Approach</em>, ch. 4</li>
+<li><em>The RISC-V Instruction Set Manual</em>, Vector extension</li>
+<li><h2 id="wikipedia-flynns-taxonomy-vector-processor">Wikipedia:
+Flynn’s taxonomy, Vector processor</h2></li>
+</ol>
+<pre class="license"><code>MIT License
+
+Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+</body>
+</html>

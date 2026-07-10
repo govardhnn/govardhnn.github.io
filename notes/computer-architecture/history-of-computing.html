@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>History of Computing</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#history-of-computing"
+id="toc-history-of-computing">History of Computing</a>
+<ul>
+<li><a href="#mechanical-prehistory"
+id="toc-mechanical-prehistory">Mechanical Prehistory</a></li>
+<li><a href="#the-stored-program-computer"
+id="toc-the-stored-program-computer">The Stored-Program
+Computer</a></li>
+<li><a href="#the-1950s-making-programs-cheaper"
+id="toc-the-1950s-making-programs-cheaper">The 1950s: Making Programs
+Cheaper</a></li>
+<li><a href="#the-1960s-isa-vs-implementation"
+id="toc-the-1960s-isa-vs-implementation">The 1960s: ISA vs
+Implementation</a></li>
+<li><a href="#the-microprocessor-and-the-risc-revolution"
+id="toc-the-microprocessor-and-the-risc-revolution">The Microprocessor
+and the RISC Revolution</a></li>
+<li><a href="#scaling-eras-and-walls"
+id="toc-scaling-eras-and-walls">Scaling Eras and Walls</a></li>
+<li><a href="#performance-fundamentals"
+id="toc-performance-fundamentals">Performance Fundamentals</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="history-of-computing">History of Computing</h1>
+<p>Computer architecture is the science of building computers that are
+fast, cheap, and correct under a given technology. Its history is a
+loop: a technology shift enables a new machine organization, the
+organization becomes an abstraction, and the abstraction outlives the
+technology that created it. The two abstractions that survived
+everything are the stored-program computer and the instruction set
+architecture (ISA).</p>
+<h2 id="mechanical-prehistory">Mechanical Prehistory</h2>
+<p>Charles Babbage’s Difference Engine (1822) mechanized polynomial
+evaluation with fixed-function gears. His Analytical Engine (1837, never
+completed) was the first general-purpose design: a <em>mill</em> (ALU),
+a <em>store</em> (memory), punched-card program input, and conditional
+branching. Ada Lovelace’s notes on it contain the first published
+program and the insight that a machine manipulating symbols could
+compute more than numbers.</p>
+<p>Herman Hollerith’s punched-card tabulators (1890 US census) made data
+processing a business, and his company became part of IBM. Cards
+separated <em>program</em> from <em>machine</em> long before electronics
+did.</p>
+<h2 id="the-stored-program-computer">The Stored-Program Computer</h2>
+<p>Electromechanical and electronic machines of the early 1940s (Zuse Z3
+1941, Harvard Mark I 1944, Colossus 1943, ENIAC 1945) were programmed
+externally: plugboards, switches, or paper tape. Reprogramming ENIAC
+took days of rewiring even though it computed in microseconds.</p>
+<p>The fix, articulated in von Neumann’s <em>First Draft of a Report on
+the EDVAC</em> (1945), is the <strong>stored-program concept</strong>:
+instructions are data, held in the same addressable memory, so the
+machine can load, and even generate, its own programs. EDSAC (Cambridge,
+1949) was the first practical stored-program computer.</p>
+<p>Two memory organizations follow:</p>
+<figure>
+<img src="figs/vonneumann.svg"
+alt="von Neumann vs Harvard organization" />
+<figcaption aria-hidden="true">von Neumann vs Harvard
+organization</figcaption>
+</figure>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th>von Neumann</th>
+<th>Harvard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Memory</td>
+<td>one, shared program + data</td>
+<td>separate instruction and data memories</td>
+</tr>
+<tr>
+<td>Bottleneck</td>
+<td>single port (the <em>von Neumann bottleneck</em>)</td>
+<td>dual bandwidth</td>
+</tr>
+<tr>
+<td>Flexibility</td>
+<td>code as data (compilers, loaders, JIT)</td>
+<td>code fixed or loaded specially</td>
+</tr>
+</tbody>
+</table>
+<p>Every modern core is a <strong>modified Harvard</strong> machine: a
+single memory space (von Neumann contract for software) accessed through
+split instruction and data caches (Harvard structure for bandwidth).
+Caches are covered in
+<a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches
+and Virtual Memory</a>.</p>
+<figure>
+<img src="figs/timeline.svg" alt="timeline of key machines" />
+<figcaption aria-hidden="true">timeline of key machines</figcaption>
+</figure>
+<h2 id="the-1950s-making-programs-cheaper">The 1950s: Making Programs
+Cheaper</h2>
+<p>Commercial machines (IBM 650, 704) added features that moved work
+from programmer to hardware:</p>
+<ul>
+<li><strong>Index registers</strong> (Manchester Mark I): address
+modification by hardware instead of self-modifying code, enabling clean
+loops over arrays.</li>
+<li><strong>Subroutine linkage</strong> conventions, the ancestor of
+calling conventions in
+<a href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V
+ISA</a>.</li>
+<li><strong>Floating point hardware</strong> (IBM 704, 1954), the
+ancestor of
+<a href="../../notes.html#Computer%20Architecture/Floating%20Point%20Architecture" target="_top">Floating
+Point Architecture</a>.</li>
+<li>Magnetic <strong>core memory</strong>: random access, non-volatile,
+dominant until DRAM (1970s).</li>
+<li>The first high-level language (Fortran, 1957) proved compilers could
+rival hand assembly, a result that later powered the RISC argument.</li>
+</ul>
+<h2 id="the-1960s-isa-vs-implementation">The 1960s: ISA vs
+Implementation</h2>
+<p>The <strong>IBM System/360</strong> (1964) introduced the idea that
+defines architecture as a discipline: one <em>instruction set
+architecture</em>, many implementations. The 360 family spanned a 50x
+price range, from a slow byte-serial machine to a fast parallel one, all
+binary compatible. The ISA is the contract (registers, instruction
+encodings, memory model); the <strong>microarchitecture</strong> is any
+implementation honoring it. Software investment survives hardware
+generations; the S/360 lineage still runs today as z/Architecture.</p>
+<p>The key enabling technique was <strong>microprogramming</strong>
+(Wilkes, 1951): the control unit is itself a tiny stored-program
+machine, executing microinstructions from a control ROM to sequence each
+ISA instruction. Cheap 360 models interpreted the same ISA with narrow
+datapaths and more microcode steps; expensive ones used wider datapaths
+and fewer. Microcode made rich, complex instructions nearly free to
+<em>define</em>, which led directly to CISC ISAs like the DEC VAX
+(1977), where a single instruction could perform a polynomial
+evaluation.</p>
+<p>In the same years the <strong>CDC 6600</strong> (Cray, 1964) took the
+opposite path: a lean load-store instruction set, ten parallel
+functional units, and a <strong>scoreboard</strong> issuing instructions
+out of order, making it roughly 10x faster than anything else. It was
+RISC and
+<a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">out-of-order
+execution</a> before either had a name.</p>
+<h2 id="the-microprocessor-and-the-risc-revolution">The Microprocessor
+and the RISC Revolution</h2>
+<p>The Intel 4004 (1971) put a CPU on one chip; the 8080/8086 line and
+Motorola 68000 rode Moore’s law (transistor count doubling roughly every
+two years, observed 1965) into general-purpose computing.</p>
+<p>By 1980, measurements (IBM 801, Patterson’s Berkeley RISC, Hennessy’s
+Stanford MIPS) showed compilers used only a small, simple subset of CISC
+instructions, while the complex ones made every instruction slower
+(longer decode, microcode indirection). The <strong>RISC</strong>
+argument, stated with the Iron Law below: give up instructions/program
+to win cycles/instruction and cycle time.</p>
+<ul>
+<li>Fixed-length, easy-to-decode encodings</li>
+<li>Load-store architecture: only loads/stores touch memory</li>
+<li>Large general-purpose register file, compiler does the
+scheduling</li>
+<li>Hardwired control instead of microcode, enabling the pipelines in
+<a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">Simple
+Instruction Pipeline</a></li>
+</ul>
+<p>Commercial RISCs (MIPS, SPARC, POWER, ARM) followed. x86 survived by
+translating CISC instructions into RISC-like micro-ops internally
+(Pentium Pro, 1995), so every modern x86 is a RISC engine behind a CISC
+decoder. The open
+<a href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V
+ISA</a> (2010) is the current distillation of these lessons.</p>
+<h2 id="scaling-eras-and-walls">Scaling Eras and Walls</h2>
+<p><strong>Dennard scaling</strong> (1974): shrinking a transistor by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+lets voltage and delay shrink by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+too, so power density stays constant, and frequency rises for free.
+Together with Moore’s law this drove single-core performance ~50%/year
+into the 2000s, absorbed by deeper pipelines,
+<a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">Branch
+Prediction</a>,
+<a href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">superscalar
+issue</a>, and out-of-order execution.</p>
+<p>Three walls ended it around 2005:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Wall</th>
+<th>Cause</th>
+<th>Consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Power</td>
+<td>Dennard scaling broke (leakage,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>V</mi><mrow><mi>d</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">V_{dd}</annotation></semantics></math>
+stopped dropping)</td>
+<td>frequency froze near 3-5 GHz</td>
+</tr>
+<tr>
+<td>ILP</td>
+<td>diminishing returns on wider/deeper speculation</td>
+<td>issue width stalled at ~4-8</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>DRAM latency improved far slower than core speed</td>
+<td>deep cache hierarchies rule performance</td>
+</tr>
+</tbody>
+</table>
+<p>The industry pivot: spend transistors on <strong>multicore</strong>
+(bringing Multicore Cache Coherence and the Memory Model to the
+foreground), then on <strong>dark silicon</strong> and domain-specific
+<strong>accelerators</strong> (GPUs, TPUs), trading generality for
+energy efficiency. Power techniques live in Synthesis, Timing and
+Power.</p>
+<h2 id="performance-fundamentals">Performance Fundamentals</h2>
+<p>The <strong>Iron Law</strong> decomposes execution time and assigns
+each factor an owner:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mtext mathvariant="normal">time</mtext><mtext mathvariant="normal">program</mtext></mfrac><mo>=</mo><munder><munder><mfrac><mtext mathvariant="normal">instructions</mtext><mtext mathvariant="normal">program</mtext></mfrac><mo accent="true">⏟</mo></munder><mtext mathvariant="normal">algorithm, compiler, ISA</mtext></munder><mo>×</mo><munder><munder><mfrac><mtext mathvariant="normal">cycles</mtext><mtext mathvariant="normal">instruction</mtext></mfrac><mo accent="true">⏟</mo></munder><mtext mathvariant="normal">microarchitecture</mtext></munder><mo>×</mo><munder><munder><mfrac><mtext mathvariant="normal">time</mtext><mtext mathvariant="normal">cycle</mtext></mfrac><mo accent="true">⏟</mo></munder><mtext mathvariant="normal">circuits, technology</mtext></munder></mrow><annotation encoding="application/x-tex">\frac{\text{time}}{\text{program}} = \underbrace{\frac{\text{instructions}}{\text{program}}}_{\text{algorithm, compiler, ISA}} \times \underbrace{\frac{\text{cycles}}{\text{instruction}}}_{\text{microarchitecture}} \times \underbrace{\frac{\text{time}}{\text{cycle}}}_{\text{circuits, technology}}</annotation></semantics></math></p>
+<p>CPI (cycles per instruction) and its reciprocal IPC are the
+microarchitect’s score. Every technique in these notes is an attack on
+one factor that must not give back more in the others: RISC raises
+instructions/program to cut CPI and cycle time; pipelining cuts cycle
+time at a small CPI cost; superscalar cuts CPI below 1.</p>
+<p><strong>Amdahl’s law</strong> bounds any speedup by the fraction of
+time it touches. Accelerating a fraction
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>
+of execution by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">speedup</mtext><mo>=</mo><mfrac><mn>1</mn><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>f</mi><mi>/</mi><mi>s</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">\text{speedup} = \frac{1}{(1-f) + f/s}</annotation></semantics></math></p>
+<p>If 60% of runtime is parallelizable and gets 16 cores, speedup is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>0.4</mn><mo>+</mo><mn>0.6</mn><mi>/</mi><mn>16</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>2.29</mn></mrow><annotation encoding="application/x-tex">1/(0.4 + 0.6/16) = 2.29</annotation></semantics></math>,
+not 16. The corollary: make the common case fast, and the uncommon case
+correct.</p>
+<p><strong>Benchmarks.</strong> MIPS and peak FLOPS mislead (they ignore
+instruction count differences and achievable utilization); wall-clock
+time on representative suites (SPEC CPU for cores, TPC for transactions)
+is the standard. Throughput (jobs/second) and latency (seconds/job) are
+different targets: pipelining boosts throughput while slightly hurting
+single-instruction latency.</p>
+<p>References:</p>
+<ol type="1">
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 1-4, 15</li>
+<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
+Design, RISC-V Edition</em></li>
+<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
+Quantitative Approach</em></li>
+<li><h2
+id="wikipedia-stored-program-computer-history-of-general-purpose-cpus">Wikipedia:
+Stored-program computer, History of general-purpose CPUs</h2></li>
+</ol>
+<pre class="license"><code>MIT License
+
+Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+</body>
+</html>
