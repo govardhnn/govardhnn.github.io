@@ -161,10 +161,11 @@ ps.</p>
 </tbody>
 </table>
 <p>The shaded <strong>pipeline registers</strong> (IF/ID, ID/EX, EX/MEM,
-MEM/WB) are ordinary edge-triggered registers from Sequential Circuits;
-they carry each instruction’s data <em>and</em> control signals down the
-pipe, so five instructions coexist, one per stage. Control is decoded
-once in ID and travels with the instruction.</p>
+MEM/WB) are ordinary edge-triggered registers from
+<a href="../../notes.html#Digital%20Design/Sequential%20Circuits" target="_top">Sequential
+Circuits</a>; they carry each instruction’s data <em>and</em> control
+signals down the pipe, so five instructions coexist, one per stage.
+Control is decoded once in ID and travels with the instruction.</p>
 <p>Pipelining arithmetic. For
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
 instructions on a
@@ -182,7 +183,9 @@ but never reaches it:</p>
 is set by the slowest stage.</li>
 <li>Each pipeline register adds sequencing overhead
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub></mrow><annotation encoding="application/x-tex">t_{pcq} + t_{setup}</annotation></semantics></math>,
-the per-stage tax in Synthesis, Timing and Power).</li>
+the per-stage tax in
+<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
+Timing and Power</a>).</li>
 <li>Hazards insert bubbles, pushing CPI above 1:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>P</mi><mi>I</mi><mo>=</mo><mn>1</mn><mo>+</mo><mtext mathvariant="normal">stall cycles per instruction</mtext></mrow><annotation encoding="application/x-tex">CPI = 1 + \text{stall cycles per instruction}</annotation></semantics></math>.</li>
 </ul>
@@ -278,18 +281,29 @@ handles this by tagging, not acting: fault flags ride the pipeline
 registers and are honored only at the commit point, giving precise
 state. Mechanics are in
 <a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">Exceptions</a>.</p>
-<p>References:</p>
-<ol type="1">
-<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lectures 5-6</li>
-<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
-Design, RISC-V Edition</em>, ch. 4</li>
-<li>Arvind et al., <em>Computer Architecture: A Constructive
-Approach</em></li>
-<li><h2
-id="wikipedia-classic-risc-pipeline-operand-forwarding">Wikipedia:
-Classic RISC pipeline, Operand forwarding</h2></li>
-</ol>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<thead>
+<tr>
+<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
+Latex Math Library</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>References:</td>
+</tr>
+<tr>
+<td>1. MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 5-6 2. D. Patterson &amp; J. Hennessy, <em>Computer
+Organization and Design, RISC-V Edition</em>, ch. 4 3. Arvind et al.,
+<em>Computer Architecture: A Constructive Approach</em> 4. Wikipedia:
+Classic RISC pipeline, Operand forwarding</td>
+</tr>
+</tbody>
+</table>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)

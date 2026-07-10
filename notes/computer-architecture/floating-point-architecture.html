@@ -247,9 +247,9 @@ Effective <em>subtraction</em> of close values can cancel leading bits,
 requiring a big left shift found by a leading-zero counter.</p>
 <p>Multiplication is structurally simpler: add exponents (subtract one
 bias), multiply significands with the integer multiplier array from
-Combinational Circuits, normalize (at most one position), round.
-Division and square root use iterative (SRT) or Newton-Raphson
-methods.</p>
+<a href="../../notes.html#Digital%20Design/Combinational%20Circuits" target="_top">Combinational
+Circuits</a>, normalize (at most one position), round. Division and
+square root use iterative (SRT) or Newton-Raphson methods.</p>
 <p>These stages make FP add/mul naturally 3-5 cycle
 <strong>pipelined</strong> units, one result per cycle; long-latency FP
 units are a main motivation for
@@ -300,17 +300,29 @@ flags.</li>
 <li>Conversions <code>fcvt.*</code> cover int/float in both directions
 with explicit rounding.</li>
 </ul>
-<p>References:</p>
-<ol type="1">
-<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
-Design, RISC-V Edition</em>, ch. 3</li>
-<li>S. Harris &amp; D. Harris, <em>Digital Design and Computer
-Architecture, RISC-V Edition</em>, ch. 5</li>
-<li><em>The RISC-V Instruction Set Manual, Volume I</em>, F and D
-extensions</li>
-<li><h2 id="wikipedia-ieee-754-floating-point-arithmetic">Wikipedia:
-IEEE 754, Floating-point arithmetic</h2></li>
-</ol>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<thead>
+<tr>
+<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
+Latex Math Library</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>References:</td>
+</tr>
+<tr>
+<td>1. D. Patterson &amp; J. Hennessy, <em>Computer Organization and
+Design, RISC-V Edition</em>, ch. 3 2. S. Harris &amp; D. Harris,
+<em>Digital Design and Computer Architecture, RISC-V Edition</em>, ch. 5
+3. <em>The RISC-V Instruction Set Manual, Volume I</em>, F and D
+extensions 4. Wikipedia: IEEE 754, Floating-point arithmetic</td>
+</tr>
+</tbody>
+</table>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)

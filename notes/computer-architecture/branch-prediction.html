@@ -247,24 +247,37 @@ with different branch densities; <strong>MPKI</strong> (mispredictions
 per kilo-instruction) composes directly with penalty into CPI. And why
 95% is not enough: at depth 20 and width 4, one misprediction wastes up
 to 80 issue slots, so the gap between 95% and 99% is roughly a 4x
-reduction in speculation waste, which is also energy (Synthesis, Timing
-and Power).</p>
+reduction in speculation waste, which is also energy
+(<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
+Timing and Power</a>).</p>
 <p><strong>Security aside</strong>: predictor state is shared
 microarchitectural state trained by one context and consumed by another;
 Spectre showed mistrained speculation leaks data through cache side
 channels, and modern cores add predictor isolation/flush controls on
 privilege switches.</p>
-<p>References:</p>
-<ol type="1">
-<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lecture 13</li>
-<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
-Quantitative Approach</em>, ch. 3</li>
-<li>A. Seznec, <em>A New Case for the TAGE Branch Predictor</em> (MICRO
-2011)</li>
-<li><h2 id="wikipedia-branch-predictor">Wikipedia: Branch
-predictor</h2></li>
-</ol>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<thead>
+<tr>
+<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
+Latex Math Library</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>References:</td>
+</tr>
+<tr>
+<td>1. MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lecture 13 2. J. Hennessy &amp; D. Patterson, <em>Computer Architecture:
+A Quantitative Approach</em>, ch. 3 3. A. Seznec, <em>A New Case for the
+TAGE Branch Predictor</em> (MICRO 2011) 4. Wikipedia: Branch
+predictor</td>
+</tr>
+</tbody>
+</table>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)

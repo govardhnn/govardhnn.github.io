@@ -117,8 +117,9 @@ pairs <em>fuse</em> (compare+branch) into one µop.</p>
 read +
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math>
 write ports; port count grows area roughly quadratically and hurts
-access time, so wide cores bank or replicate the PRF (Sequential
-Circuits register file, multiplied).</li>
+access time, so wide cores bank or replicate the PRF
+(<a href="../../notes.html#Digital%20Design/Sequential%20Circuits" target="_top">Sequential
+Circuits</a> register file, multiplied).</li>
 <li><strong>Bypass network</strong>: every FU output to every FU input
 is
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>w</mi><mn>2</mn></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(w^2)</annotation></semantics></math>
@@ -258,19 +259,31 @@ channels; security-sensitive deployments disable it.</p>
 </table>
 <p>The P4 → Core 2 reversal is the syllabus in one row: deeper+faster
 lost to wider+cooler once power became the constraint.</p>
-<p>References:</p>
-<ol type="1">
-<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lectures 14-15, 23</li>
-<li>A. González, F. Latorre &amp; G. Magklis, <em>Processor
-Microarchitecture: An Implementation Perspective</em></li>
-<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
-Quantitative Approach</em>, ch. 3</li>
-<li><h2
-id="d.-tullsen-s.-eggers-h.-levy-simultaneous-multithreading-maximizing-on-chip-parallelism-isca-1995">D.
-Tullsen, S. Eggers &amp; H. Levy, <em>Simultaneous Multithreading:
-Maximizing On-Chip Parallelism</em> (ISCA 1995)</h2></li>
-</ol>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<thead>
+<tr>
+<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
+Latex Math Library</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>References:</td>
+</tr>
+<tr>
+<td>1. MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 14-15, 23 2. A. González, F. Latorre &amp; G. Magklis,
+<em>Processor Microarchitecture: An Implementation Perspective</em> 3.
+J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
+Quantitative Approach</em>, ch. 3 4. D. Tullsen, S. Eggers &amp; H.
+Levy, <em>Simultaneous Multithreading: Maximizing On-Chip
+Parallelism</em> (ISCA 1995)</td>
+</tr>
+</tbody>
+</table>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
