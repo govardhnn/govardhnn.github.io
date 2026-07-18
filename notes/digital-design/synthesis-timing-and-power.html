@@ -119,6 +119,7 @@ id="toc-static-timing-analysis-in-practice">Static Timing Analysis in
 Practice</a></li>
 <li><a href="#power-and-energy" id="toc-power-and-energy">Power and
 Energy</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -168,9 +169,14 @@ representation.</li>
 the multi-level Boolean network to minimize literal count, using the
 algebra’s identities mechanized (two-level minimization, factoring,
 common-subexpression extraction).</li>
-<li><strong>Technology mapping</strong>: cover the optimized network
-with the target library’s actual cells (or LUTs), now with concrete
-area, delay, and power numbers.</li>
+<li><strong>Technology mapping</strong>: decompose the optimized network
+into a base of 2-input NANDs and inverters (always possible, since NAND2
+is universal per
+<a href="../../notes.html#Digital%20Design/Combinational%20Circuits" target="_top">Combinational
+Circuits</a>), then cover that subject graph with the target library’s
+actual cells (or LUTs), now with concrete area, delay, and power
+numbers. Area is reported in <strong>gate equivalents</strong>: 1 GE =
+one NAND2 cell.</li>
 <li><strong>Timing-driven optimization</strong>: resize gates,
 restructure paths, and insert buffers to close setup/hold against the
 constraints supplied (an SDC file).</li>
@@ -242,6 +248,99 @@ data inputs, e.g. a wide mux chain) or <em>control critical</em>
 (through a select/control signal). Which one it is tells you where to
 optimize: register the control earlier, or restructure the data
 path.</p>
+<h3 id="logical-effort-reasoning-about-gate-delay">Logical Effort:
+Reasoning About Gate Delay</h3>
+<p>STA reports <em>that</em> a path fails; <strong>logical
+effort</strong> explains <em>why</em> and predicts the best fix on the
+back of an envelope. Normalize a gate’s delay to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>
+(the delay of an ideal inverter driving another):</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>=</mo><mi>g</mi><mi>h</mi><mo>+</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">d = g h + p</annotation></semantics></math></p>
+<ul>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>,
+<strong>logical effort</strong>: how much worse the gate’s topology is
+than an inverter at driving current, given equal input capacitance.
+Independent of size.</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo>=</mo><msub><mi>C</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow></msub><mi>/</mi><msub><mi>C</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub></mrow><annotation encoding="application/x-tex">h = C_{out}/C_{in}</annotation></semantics></math>,
+<strong>electrical effort</strong> (fanout): the load it drives relative
+to its own input.</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>,
+<strong>parasitic delay</strong>: the gate driving its own diffusion
+capacitance; irreducible by sizing.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>inverter</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>NAND2</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">4/3</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>NAND3</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">5/3</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>3</mn><annotation encoding="application/x-tex">3</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>NOR2</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">5/3</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math></td>
+</tr>
+</tbody>
+</table>
+<p>NAND beats NOR because its series stack is nMOS; that asymmetry is
+why synthesized netlists are NAND-heavy.</p>
+<p>For a path of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+stages, multiply the efforts:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo>=</mo><mo>∏</mo><msub><mi>g</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">G = \prod g_i</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mo>=</mo><msub><mi>C</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow></msub><mi>/</mi><msub><mi>C</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub></mrow><annotation encoding="application/x-tex">H = C_{out}/C_{in}</annotation></semantics></math>
+for the whole path,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
+for branching, giving path effort
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mi>G</mi><mi>B</mi><mi>H</mi></mrow><annotation encoding="application/x-tex">F = GBH</annotation></semantics></math>.
+Delay is minimized when every stage bears equal effort
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><mo>=</mo><msup><mi>F</mi><mrow><mn>1</mn><mi>/</mi><mi>N</mi></mrow></msup></mrow><annotation encoding="application/x-tex">\hat{f} = F^{1/N}</annotation></semantics></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>D</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub><mo>=</mo><mi>N</mi><msup><mi>F</mi><mrow><mn>1</mn><mi>/</mi><mi>N</mi></mrow></msup><mo>+</mo><mo>∑</mo><msub><mi>p</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">D_{min} = N F^{1/N} + \sum p_i</annotation></semantics></math></p>
+<p>Worked example: inverter → NAND2 → inverter driving 8x the path’s
+input capacitance.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo>=</mo><mn>1</mn><mo>⋅</mo><mstyle displaystyle="false"><mfrac><mn>4</mn><mn>3</mn></mfrac></mstyle><mo>⋅</mo><mn>1</mn><mo>=</mo><mstyle displaystyle="false"><mfrac><mn>4</mn><mn>3</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">G = 1 \cdot \tfrac{4}{3} \cdot 1 = \tfrac{4}{3}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">B = 1</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mstyle displaystyle="false"><mfrac><mn>4</mn><mn>3</mn></mfrac></mstyle><mo>⋅</mo><mn>8</mn><mo>=</mo><mn>10.7</mn></mrow><annotation encoding="application/x-tex">F = \tfrac{4}{3} \cdot 8 = 10.7</annotation></semantics></math>,
+so
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><mo>=</mo><msup><mn>10.7</mn><mrow><mn>1</mn><mi>/</mi><mn>3</mn></mrow></msup><mo>=</mo><mn>2.2</mn></mrow><annotation encoding="application/x-tex">\hat{f} = 10.7^{1/3} = 2.2</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>=</mo><mn>3</mn><mo stretchy="false" form="prefix">(</mo><mn>2.2</mn><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>10.6</mn><mspace width="0.167em"></mspace><mi>τ</mi></mrow><annotation encoding="application/x-tex">D = 3(2.2) + (1 + 2 + 1) = 10.6\,\tau</annotation></semantics></math>.
+Sizing falls out backwards from the load: each stage’s input capacitance
+is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub><mo>=</mo><mi>g</mi><mo>⋅</mo><msub><mi>C</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow></msub><mi>/</mi><mover><mi>f</mi><mo accent="true">̂</mo></mover></mrow><annotation encoding="application/x-tex">C_{in} = g \cdot C_{out} / \hat{f}</annotation></semantics></math>.</p>
+<div class="callout callout-note">
+<div class="callout-title">
+Why “fanout of 4” is everywhere
+</div>
+<p>Solving for the number of stages that minimizes delay gives a best
+stage effort of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>≈</mo><mn>3.6</mn></mrow><annotation encoding="application/x-tex">\rho \approx 3.6</annotation></semantics></math>;
+adding inverters to a path is worth it until each stage’s effort drops
+to about 4. Hence the ubiquitous rules: buffer chains taper by ~4x per
+stage, the optimal stage count is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>≈</mo><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>4</mn></msub><mi>F</mi></mrow><annotation encoding="application/x-tex">N \approx \log_4 F</annotation></semantics></math>,
+and “FO4 delay” (one inverter driving four copies of itself,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>=</mo><mn>4</mn><mo>+</mo><mn>1</mn><mo>=</mo><mn>5</mn><mi>τ</mi></mrow><annotation encoding="application/x-tex">d = 4+1 = 5\tau</annotation></semantics></math>)
+is the standard process-independent unit for comparing pipeline stage
+depths across chips.</p>
+</div>
 <h2 id="sequential-timing">Sequential Timing</h2>
 <p>A flip-flop has its own timing aperture around the clock edge:</p>
 <table>
@@ -1006,38 +1105,25 @@ power but can lower total energy if the chip finishes and sleeps sooner
 thermally limited datacenter optimizes watts; a phone optimizes joules
 per task. When neither can be sacrificed alone, designers minimize the
 <strong>energy-delay product (EDP)</strong>.</p>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<tbody>
-<tr>
-<td>Reference:</td>
-</tr>
-<tr>
-<td>[1] N. Weste &amp; D. Harris, <em>CMOS VLSI Design: A Circuits and
-Systems Perspective</em></td>
-</tr>
-<tr>
-<td>[2] D. Harris &amp; S. Harris, <em>Digital Design and Computer
-Architecture</em></td>
-</tr>
-<tr>
-<td>[3] W. J. Dally &amp; R. C. Harting, <em>Digital Design: A Systems
-Approach</em></td>
-</tr>
-<tr>
-<td>[4] M. Arora, <em>The Art of Hardware Architecture</em></td>
-</tr>
-<tr>
-<td>[5] C. E. Cummings, SNUG papers on nonblocking assignments and
-clock-domain crossing</td>
-</tr>
-<tr>
-<td>[6] IEEE Std 1801 (Unified Power Format)</td>
-</tr>
-</tbody>
-</table>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
+<h2 id="references">References</h2>
+<p><strong>Textbooks</strong></p>
+<ul>
+<li>N. Weste &amp; D. Harris, <em>CMOS VLSI Design: A Circuits and
+Systems Perspective</em>, ch. 4-5</li>
+<li>D. Harris &amp; S. Harris, <em>Digital Design and Computer
+Architecture</em></li>
+<li>W. J. Dally &amp; R. C. Harting, <em>Digital Design: A Systems
+Approach</em></li>
+<li>M. Arora, <em>The Art of Hardware Architecture</em></li>
+</ul>
+<p><strong>Standards, Papers, and Wikipedia</strong></p>
+<ul>
+<li>C. E. Cummings, SNUG papers on nonblocking assignments and
+clock-domain crossing</li>
+<li>IEEE Std 1801 (Unified Power Format)</li>
+</ul>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
@@ -1059,5 +1145,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
+<div class="note-nav">
+<a class="nav-prev" href="../../notes.html#Digital%20Design/RTL%20Design%20Guide" target="_top">&larr; RTL Design Guide</a>
+<span></span>
+</div>
 </body>
 </html>

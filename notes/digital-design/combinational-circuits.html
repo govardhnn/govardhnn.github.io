@@ -119,6 +119,7 @@ id="toc-tristate-buffers-and-buses">Tristate Buffers and Buses</a></li>
 <li><a href="#propagation-delay" id="toc-propagation-delay">Propagation
 Delay</a></li>
 <li><a href="#hazards" id="toc-hazards">Hazards</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -427,18 +428,90 @@ propagate,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo>=</mo><msub><mi>g</mi><mn>3</mn></msub><mo>∨</mo><msub><mi>p</mi><mn>3</mn></msub><msub><mi>g</mi><mn>2</mn></msub><mo>∨</mo><msub><mi>p</mi><mn>3</mn></msub><msub><mi>p</mi><mn>2</mn></msub><msub><mi>g</mi><mn>1</mn></msub><mo>∨</mo><msub><mi>p</mi><mn>3</mn></msub><msub><mi>p</mi><mn>2</mn></msub><msub><mi>p</mi><mn>1</mn></msub><msub><mi>g</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">G = g_3 \lor p_3 g_2 \lor p_3 p_2 g_1 \lor p_3 p_2 p_1 g_0</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo>=</mo><msub><mi>p</mi><mn>3</mn></msub><msub><mi>p</mi><mn>2</mn></msub><msub><mi>p</mi><mn>1</mn></msub><msub><mi>p</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">P = p_3 p_2 p_1 p_0</annotation></semantics></math>,
-and a second-level lookahead computes the block carries. Related
-speedups: a <strong>carry-select</strong> adder computes each upper
+and a second-level lookahead computes the block carries. A related
+speedup, the <strong>carry-select</strong> adder, computes each upper
 block twice (for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">c_{in}=0</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>)
-and muxes on the real carry; <strong>prefix adders</strong>
-(Kogge-Stone, Brent-Kung) organize the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>G</mi><mo>,</mo><mi>P</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(G, P)</annotation></semantics></math>
-merges as a parallel prefix tree for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mi>n</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(\log n)</annotation></semantics></math>
-delay, the standard choice for wide, fast adders.</p>
+and muxes on the real carry.</p>
+<h3 id="parallel-prefix-adders">Parallel-Prefix Adders</h3>
+<p>The lookahead idea generalizes beautifully. Define a merge operator
+on (generate, propagate) pairs:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>G</mi><mo>,</mo><mi>P</mi><mo stretchy="false" form="postfix">)</mo><mo>•</mo><mo stretchy="false" form="prefix">(</mo><msup><mi>G</mi><mo>′</mo></msup><mo>,</mo><msup><mi>P</mi><mo>′</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>G</mi><mo>∨</mo><mi>P</mi><mspace width="0.167em"></mspace><msup><mi>G</mi><mo>′</mo></msup><mo>,</mo><mspace width="0.278em"></mspace><mi>P</mi><mspace width="0.167em"></mspace><msup><mi>P</mi><mo>′</mo></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(G, P) \bullet (G&#39;, P&#39;) = (G \lor P\,G&#39;,\; P\,P&#39;)</annotation></semantics></math></p>
+<p>“The combined span generates a carry if the upper part generates one,
+or propagates one the lower part generates.” The operator is
+<strong>associative</strong>, and every carry
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>c</mi><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">c_{i+1}</annotation></semantics></math>
+is the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>G</mi><annotation encoding="application/x-tex">G</annotation></semantics></math>
+of the prefix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>g</mi><mi>i</mi></msub><mo>,</mo><msub><mi>p</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>•</mo><mi>⋯</mi><mo>•</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>g</mi><mn>0</mn></msub><mo>,</mo><msub><mi>p</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(g_i,p_i) \bullet \cdots \bullet (g_0,p_0)</annotation></semantics></math>,
+so computing all carries is a <strong>parallel prefix</strong> problem,
+the same one behind fast scans in parallel programming. Any prefix
+network is a valid adder, and the network’s shape sets the trade:</p>
+<figure>
+<img src="figs/prefixtree.svg"
+alt="Kogge-Stone vs Brent-Kung prefix networks, 8 bits" />
+<figcaption aria-hidden="true">Kogge-Stone vs Brent-Kung prefix
+networks, 8 bits</figcaption>
+</figure>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Network</th>
+<th>Stages</th>
+<th>Cells</th>
+<th>Character</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kogge-Stone</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>2</mn></msub><mi>n</mi></mrow><annotation encoding="application/x-tex">\log_2 n</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mi>n</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(n \log n)</annotation></semantics></math></td>
+<td>minimal depth, max wires: fast and hungry</td>
+</tr>
+<tr>
+<td>Brent-Kung</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>2</mn></msub><mi>n</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2\log_2 n - 1</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≈</mo><mn>2</mn><mi>n</mi></mrow><annotation encoding="application/x-tex">\approx 2n</annotation></semantics></math></td>
+<td>sparse: small and cool, two extra stages</td>
+</tr>
+<tr>
+<td>Sklansky</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>2</mn></msub><mi>n</mi></mrow><annotation encoding="application/x-tex">\log_2 n</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>n</mi><mn>2</mn></mfrac><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>2</mn></msub><mi>n</mi></mrow><annotation encoding="application/x-tex">\frac{n}{2}\log_2 n</annotation></semantics></math></td>
+<td>minimal depth, but high-fanout nodes need buffering</td>
+</tr>
+</tbody>
+</table>
+<p>Real ALU adders are usually hybrids (e.g. Kogge-Stone at the top of a
+few 4-bit ripple or lookahead blocks; Han-Carlson, Ladner-Fischer),
+picking a point between wire cost and depth. The sum stage is unchanged:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mi>i</mi></msub><mo>=</mo><msub><mi>p</mi><mi>i</mi></msub><mo>⊕</mo><msub><mi>c</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">s_i = p_i \oplus c_i</annotation></semantics></math>.</p>
+<div class="callout callout-note">
+<div class="callout-title">
+The other speed lever: dynamic logic
+</div>
+<p>The fastest adders of the GHz-race era did not just pick a better
+tree; they changed the gates. <strong>Dynamic (domino) logic</strong>
+precharges each node high on one clock phase and conditionally
+discharges it through an nMOS-only network on the other: no pMOS stack
+to drive, roughly half the input capacitance (logical effort below
+static’s), and monotonic stages that chain like falling dominoes. The
+price is a live clock in every gate, charge-sharing and noise hazards,
+and leakage that must be fought with keepers, costs that grew with
+scaling until static CMOS won back nearly all of the datapath. Domino
+survives where its speed still pays: register-file bitlines, CAMs/TLBs,
+and the occasional critical adder stage.</p>
+</div>
 <h3 id="subtraction">Subtraction</h3>
 <p>Subtraction reuses an adder:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>−</mo><mi>b</mi><mo>=</mo><mi>a</mi><mo>+</mo><mover><mi>b</mi><mo accent="true">‾</mo></mover><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">a - b = a + \bar{b} + 1</annotation></semantics></math>
@@ -665,28 +738,19 @@ at all. <strong>Dynamic hazards</strong> (multiple transitions on one
 change) arise in multi-level logic with reconverging paths. Glitches are
 harmless into synchronous logic sampled after settling, but matter for
 asynchronous inputs, clocks, and edge-sensitive enables.</p>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<thead>
-<tr>
-<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
-Latex Math Library</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>References:</td>
-</tr>
-<tr>
-<td>1. W. J. Dally &amp; R. C. Harting, <em>Digital Design: A Systems
-Approach</em> 2. D. Harris &amp; S. Harris, <em>Digital Design and
-Computer Architecture</em> 3. M. Morris Mano, <em>Digital
-Design</em></td>
-</tr>
-</tbody>
-</table>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
+<h2 id="references">References</h2>
+<p><strong>Textbooks</strong></p>
+<ul>
+<li>W. J. Dally &amp; R. C. Harting, <em>Digital Design: A Systems
+Approach</em></li>
+<li>D. Harris &amp; S. Harris, <em>Digital Design and Computer
+Architecture</em></li>
+<li>M. Morris Mano, <em>Digital Design</em></li>
+<li>N. Weste &amp; D. Harris, <em>CMOS VLSI Design: A Circuits and
+Systems Perspective</em>, ch. 9, 11</li>
+</ul>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
@@ -708,5 +772,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
+<div class="note-nav">
+<a class="nav-prev" href="../../notes.html#Digital%20Design/Boolean%20Algebra" target="_top">&larr; Boolean Algebra</a>
+<a class="nav-next" href="../../notes.html#Digital%20Design/Sequential%20Circuits" target="_top">Sequential Circuits &rarr;</a>
+</div>
 </body>
 </html>

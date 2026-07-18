@@ -49,6 +49,8 @@ id="toc-simultaneous-multithreading">Simultaneous
 Multithreading</a></li>
 <li><a href="#evolution-case-study"
 id="toc-evolution-case-study">Evolution Case Study</a></li>
+<li><a href="#reliability" id="toc-reliability">Reliability</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -134,11 +136,85 @@ instructions cannot issue back-to-back:</li>
 <img src="figs/wakeup.svg" alt="the wakeup-select loop" />
 <figcaption aria-hidden="true">the wakeup-select loop</figcaption>
 </figure>
+<h3 id="reading-operands-before-or-after-issue">Reading Operands: Before
+or After Issue</h3>
+<p>A width-independent design fork hides inside the issue queue:
+<em>when is the register file read?</em></p>
 <ul>
-<li><strong>Clustering</strong> is the escape valve (Alpha 21264): split
-the FUs and IQ into clusters with fast bypass inside and a +1 cycle
-penalty across, trading a little IPC for a much faster clock.</li>
+<li><strong>Read before issue</strong> (Tomasulo’s heritage): read
+available operands at dispatch and store the <em>values</em> in the
+issue queue; missing ones arrive over the bypass. Fewer register-file
+ports, but the queue becomes a second register file: values are written
+into it, read out of it, and copied again, all of it energy. The natural
+partner of ROB/rename-buffer renaming, where a value may otherwise have
+to be chased from buffer to architectural file mid-flight.</li>
+<li><strong>Read after issue</strong>: the queue holds only operand
+<em>identifiers</em>; the physical file is read after select. More
+ports, but each value is read once from one place. The natural partner
+of the merged register file, and the modern default.</li>
 </ul>
+<h3 id="bypass-and-the-clustering-ladder">Bypass and the Clustering
+Ladder</h3>
+<p>Deep pipelines make the bypass worse than
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>w</mi><mn>2</mn></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(w^2)</annotation></semantics></math>
+suggests: a result must be forwardable from <em>several</em> pipeline
+stages (ALU output, result drive, writeback) to catch consumers issued
+1, 2, or 3 cycles behind, so each of the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>w</mi><mn>2</mn></msup><annotation encoding="application/x-tex">w^2</annotation></semantics></math>
+paths is really several. Two standing simplifications: the FP/SIMD units
+get a bypass network of their own (integer results almost never feed FP
+directly), and the memory unit hangs off both.</p>
+<div class="callout callout-note">
+<div class="callout-title">
+The bypass you can refuse
+</div>
+<p>IBM’s POWER4 and POWER5 shipped with <em>no bypass network at
+all</em>: dependent integer ops pay a 1-cycle bubble, dependent FP ops
+six. The designers bought frequency and simplicity, and let out-of-order
+execution fill the bubbles with independent work, a reminder that every
+“mandatory” structure is actually a trade.</p>
+</div>
+<p>When the bypass or the register file does threaten the clock,
+designers climb the <strong>clustering ladder</strong>, each rung
+cutting more wire at more IPC cost:</p>
+<figure>
+<img src="figs/bypassnet.svg"
+alt="full bypass vs a clustered execution engine" />
+<figcaption aria-hidden="true">full bypass vs a clustered execution
+engine</figcaption>
+</figure>
+<ol type="1">
+<li><strong>Cluster the bypass only</strong>: full forwarding inside a
+cluster, none across; a cross-cluster value takes the long way through
+the register file.</li>
+<li><strong>Replicate the register file</strong> (Alpha 21264): each
+cluster owns a complete copy, kept coherent by broadcasting every
+result; a value born in cluster 0 is usable in cluster 1 one cycle
+later. Each copy needs only half the read ports, which is what let the
+21264 hit its clock. The issue queue stays unified, with one arbiter per
+cluster.</li>
+<li><strong>Distribute the issue queue and register file</strong>: no
+copies at all: each cluster holds half the registers and its own queue,
+instructions are <em>steered</em> to a cluster at rename, and
+cross-cluster values move by explicit copy operations. Cheapest wires,
+hardest scheduling problem: steering must keep dependent instructions
+together while keeping the load balanced.</li>
+</ol>
+<h3 id="commit-at-width">Commit at Width</h3>
+<p>Commit is the pipeline’s other in-order regime: a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math>-wide
+machine scans a whole ROB row and retires it greedily. The interesting
+design is recovery, because its two triggers have opposite frequencies.
+Branch mispredictions are common, so they get the fast path: a
+rename-map checkpoint per branch, restored in one cycle. Exceptions are
+rare, so they may take the slow path: wait until the faulting
+instruction reaches the head, then unwind. BOOM implements both ends
+configurably: rollback walking the ROB one row per cycle (R10000 style),
+or an extra committed map table that resets rename state in a single
+cycle. Its issue queues are equally concrete: separate memory/integer/FP
+queues (16 entries each at 1/2/1 issue ports in the base configuration),
+age-ordered by default because the cheaper position-based policy can
+starve old branches.</p>
 <h2 id="limits-of-ilp">Limits of ILP</h2>
 <p>Classic limit studies (Wall 1991; H&amp;P) give a perfect-machine ILP
 of dozens to hundreds, but every realism cut is brutal: finite window,
@@ -259,31 +335,61 @@ channels; security-sensitive deployments disable it.</p>
 </table>
 <p>The P4 → Core 2 reversal is the syllabus in one row: deeper+faster
 lost to wider+cooler once power became the constraint.</p>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<thead>
-<tr>
-<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
-Latex Math Library</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>References:</td>
-</tr>
-<tr>
-<td>1. MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lectures 14-15, 23 2. A. González, F. Latorre &amp; G. Magklis,
-<em>Processor Microarchitecture: An Implementation Perspective</em> 3.
-J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
-Quantitative Approach</em>, ch. 3 4. D. Tullsen, S. Eggers &amp; H.
-Levy, <em>Simultaneous Multithreading: Maximizing On-Chip
-Parallelism</em> (ISCA 1995)</td>
-</tr>
-</tbody>
-</table>
+<h2 id="reliability">Reliability</h2>
+<p>Shrinking transistors made a new failure class architectural:
+<strong>soft errors</strong>, bit flips from cosmic-ray neutrons and
+alpha particles that corrupt state without damaging hardware (rate
+measured in FIT, failures per
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mn>9</mn></msup><annotation encoding="application/x-tex">10^9</annotation></semantics></math>
+hours; it grows with transistor count, so big machines see them daily).
+The defenses are layered by cost:</p>
+<ul>
+<li><strong>Parity</strong> on structures whose contents can be
+refetched: an I-cache or clean D-cache line that fails parity is simply
+invalidated and re-read; detection alone suffices.</li>
+<li><strong>ECC</strong> (SECDED: single-error correct, double-error
+detect, 8 check bits per 64 data bits) on anything holding the only
+copy: dirty cache lines, register files, DRAM. Server DRAM adds
+<strong>chipkill</strong> to survive a whole failed chip, and
+<strong>scrubbing</strong> walks memory correcting single-bit errors
+before a second one compounds them.</li>
+<li><strong>Redundant execution</strong> where the pipeline itself must
+be trusted: lockstep cores compare retirement results cycle by cycle
+(automotive/avionics), and <strong>TMR</strong> (triple modular
+redundancy) votes three copies to <em>mask</em> an error outright, the
+same majority trick at the system level that spacecraft use.</li>
+</ul>
+<p>Speculation machinery gives OOO cores a cheap trick: an error
+detected before commit (a parity-failing µop result, a mis-voted
+structure) can often be handled by the existing
+<a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">squash-and-replay</a>
+path, turning a potential silent data corruption into a transparent
+retry.</p>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
+<h2 id="references">References</h2>
+<p><strong>Courses</strong></p>
+<ul>
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 14-15, 23-24</li>
+</ul>
+<p><strong>Textbooks</strong></p>
+<ul>
+<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
+Quantitative Approach</em>, ch. 3</li>
+</ul>
+<p><strong>Standards, Papers, and Wikipedia</strong></p>
+<ul>
+<li>A. González, F. Latorre &amp; G. Magklis, <em>Processor
+Microarchitecture: An Implementation Perspective</em>, ch. 5-8</li>
+<li>D. Tullsen, S. Eggers &amp; H. Levy, <em>Simultaneous
+Multithreading: Maximizing On-Chip Parallelism</em> (ISCA 1995)</li>
+</ul>
+<p><strong>Microarchitecture References</strong></p>
+<ul>
+<li>RISC-V BOOM documentation (issue units, reorder buffer),
+docs.boom-core.org</li>
+</ul>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
@@ -305,5 +411,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
+<div class="note-nav">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">&larr; Memory Model</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">Out of Order Execution and Register Renaming &rarr;</a>
+</div>
 </body>
 </html>

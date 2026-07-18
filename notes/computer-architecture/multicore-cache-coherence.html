@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Multicore Cache Coherence</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#multicore-cache-coherence"
+id="toc-multicore-cache-coherence">Multicore Cache Coherence</a>
+<ul>
+<li><a href="#the-coherence-invariants"
+id="toc-the-coherence-invariants">The Coherence Invariants</a></li>
+<li><a href="#cache-block-states-msi-mesi-moesi"
+id="toc-cache-block-states-msi-mesi-moesi">Cache Block States: MSI,
+MESI, MOESI</a></li>
+<li><a href="#snooping-protocols" id="toc-snooping-protocols">Snooping
+Protocols</a></li>
+<li><a href="#directory-protocols"
+id="toc-directory-protocols">Directory Protocols</a></li>
+<li><a href="#cache-hierarchies-and-inclusion"
+id="toc-cache-hierarchies-and-inclusion">Cache Hierarchies and
+Inclusion</a></li>
+<li><a href="#false-sharing" id="toc-false-sharing">False
+Sharing</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="multicore-cache-coherence">Multicore Cache Coherence</h1>
+<p>A multicore chip gives every core a private write-back cache
+(<a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches
+and Virtual Memory</a>), so the same memory block can live in several
+places at once. Without intervention, core 1 can write
+<code>A = 43</code> in its own cache while core 2 spins forever on a
+stale <code>A == 42</code> in its cache. A <strong>cache coherence
+protocol</strong> is the hardware that makes one core’s writes visible
+to all others, restoring the illusion of a single shared memory.
+Coherence is not directly visible to the programmer; it is the substrate
+on which the
+<a href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">Memory
+Model</a> is enforced, and it is what makes the “shared memory” quadrant
+of
+<a href="../../notes.html#Computer%20Architecture/Flynn's%20Taxonomy" target="_top">MIMD</a>
+work at all.</p>
+<h2 id="the-coherence-invariants">The Coherence Invariants</h2>
+<p>The Primer’s definition (Sorin, Hill, Wood) is the cleanest: think of
+each memory block’s lifetime as divided into
+<strong>epochs</strong>.</p>
+<ol type="1">
+<li><strong>Single-Writer, Multiple-Reader (SWMR)</strong>: at any
+moment, a block has either one core with read-write access or any number
+of cores with read-only access; never both.</li>
+<li><strong>Data-value invariant</strong>: the value at the start of an
+epoch equals the value at the end of the last read-write epoch (writes
+are never lost between epochs).</li>
+</ol>
+<p>Equivalently (token counting): a block has
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+tokens; writing requires all of them, reading requires at least one.
+(<strong>Token Coherence</strong> turned this framing into a real
+protocol family: tokens travel with the data, so correctness needs no
+bus order and no directory serialization: a broadcast protocol on any
+unordered network, with a slow “retry with priority” path for the rare
+races.) Every practical protocol is an <strong>invalidate
+protocol</strong>: to write, a core first invalidates every other copy,
+ending the current epoch and starting its own read-write epoch.
+(<strong>Update</strong> protocols, which broadcast new values into the
+other caches instead, cost far more bandwidth and make write atomicity
+in the
+<a href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">Memory
+Model</a> hard, so they are essentially extinct.) Coherence is enforced
+at cache-block granularity, typically 64 B, which is exactly what
+creates false sharing below.</p>
+<h2 id="cache-block-states-msi-mesi-moesi">Cache Block States: MSI,
+MESI, MOESI</h2>
+<p>A block’s state in a private cache encodes four independent
+properties: <strong>validity</strong>, <strong>dirtiness</strong>
+(differs from the copy in LLC/memory, this cache must eventually write
+it back), <strong>exclusivity</strong> (only cached copy in the system),
+and <strong>ownership</strong> (this cache, not memory, must respond to
+requests for the block). The classic states (Sweazey &amp; Smith):</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>State</th>
+<th>valid</th>
+<th>dirty</th>
+<th>exclusive</th>
+<th>owner</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M</strong>odified</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>read-write; only valid copy; memory stale</td>
+</tr>
+<tr>
+<td><strong>O</strong>wned</td>
+<td>yes</td>
+<td>yes</td>
+<td>no</td>
+<td>yes</td>
+<td>read-only, but this cache supplies data; sharers may exist</td>
+</tr>
+<tr>
+<td><strong>E</strong>xclusive</td>
+<td>yes</td>
+<td>no</td>
+<td>yes</td>
+<td>yes</td>
+<td>read-only, clean, no other copies</td>
+</tr>
+<tr>
+<td><strong>S</strong>hared</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>read-only; others may share</td>
+</tr>
+<tr>
+<td><strong>I</strong>nvalid</td>
+<td>no</td>
+<td></td>
+<td></td>
+<td></td>
+<td>no usable copy</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MSI</strong> is the minimal correct protocol. The two
+optional states each optimize one common pattern:</p>
+<ul>
+<li><strong>E</strong> (MESI, used by virtually every commercial
+protocol): a core that reads then writes private data would need two
+transactions in MSI (GetS then GetM). If a read finds no other sharers
+(detected by a wired-OR “sharer” bus signal, or by LLC state), the cache
+takes the block in E and later upgrades E to M
+<strong>silently</strong>, no bus traffic. This halves the transactions
+for the single-threaded common case.</li>
+<li><strong>O</strong> (MOESI: AMD Opterons, many ARM systems): in MESI,
+when a modified block is read by another core, the owner must either
+write it back to memory (M to S, both copies now clean) or keep
+supplying it forever. O lets the dirty owner downgrade to read-only,
+keep the dirty data, and keep answering requests, deferring the memory
+write-back until eviction. Cache-to-cache transfer without a memory
+update.</li>
+</ul>
+<p>The state diagram for MSI, with each edge labeled <em>processor event
+/ bus transaction issued</em>:</p>
+<figure>
+<img src="figs/msi.svg" alt="MSI state machine" />
+<figcaption aria-hidden="true">MSI state machine</figcaption>
+</figure>
+<p>The bus transactions are common to nearly all protocols:
+<strong>GetS</strong> (obtain read-only copy), <strong>GetM</strong>
+(obtain read-write copy, invalidating others), <strong>Upg</strong>
+(upgrade S to M without a data transfer), and <strong>PutM/PutO</strong>
+(evict a dirty or owned block, writing it back). Evictions from S or E
+are usually <strong>silent</strong>, since non-owned blocks can vanish
+without telling anyone.</p>
+<p><strong>Transient states.</strong> The clean FSM above is a lie at
+implementation time: between issuing GetM and receiving data plus
+acknowledgments, a block is neither I nor M. Real protocols add
+transient states written
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mspace width="-0.167em"></mspace><msup><mi>Y</mi><mi>Z</mi></msup></mrow><annotation encoding="application/x-tex">X\!Y^Z</annotation></semantics></math>,
+“was X, becoming Y, waiting for Z”:
+e.g. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mtext mathvariant="normal">IM</mtext><mi>D</mi></msup><annotation encoding="application/x-tex">\text{IM}^D</annotation></semantics></math>
+(invalid, going to M, awaiting Data),
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mtext mathvariant="normal">SM</mtext><mi>A</mi></msup><annotation encoding="application/x-tex">\text{SM}^A</annotation></semantics></math>
+(shared, going to M, awaiting Acks). A production protocol has a handful
+of stable states and dozens of transient ones, tracked in the cache’s
+MSHRs; this state explosion is why coherence protocols are specified as
+tables and model-checked rather than drawn as diagrams. Races between
+simultaneous requests to the same block (resolved by whichever is
+ordered first) are where all the design difficulty lives, along with
+protocol-level <strong>deadlock</strong> (avoided with separate virtual
+networks for requests and responses), <strong>livelock</strong> (a
+NACKed or invalidated-before-use requestor must retry and eventually
+win), and <strong>starvation</strong>.</p>
+<h2 id="snooping-protocols">Snooping Protocols</h2>
+<figure>
+<img src="figs/snoop.svg"
+alt="snoopy coherence: every cache watches the shared bus" />
+<figcaption aria-hidden="true">snoopy coherence: every cache watches the
+shared bus</figcaption>
+</figure>
+<p>In a <strong>snooping</strong> protocol, a cache controller
+broadcasts its request on a shared bus; every other cache’s snooper
+observes it and reacts: the owner supplies data, sharers invalidate on a
+GetM. The bus’s arbitration gives all controllers a <strong>total order
+of transactions</strong>, and that order does double duty:</p>
+<ul>
+<li>per-block ordering makes the protocol correct (all caches process
+requests for a block in the same order), and</li>
+<li>the global total order makes it easy to implement strong
+consistency: when a core sees its <em>own</em> GetM appear on the bus,
+it knows every other cache will invalidate, so its write is serialized
+(this is why
+<a href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">SC
+and TSO</a> are natural on snooping systems).</li>
+</ul>
+<p>A snooping transaction is always <strong>two hops</strong>: broadcast
+request, unicast response. Latency is low and the design is conceptually
+simple. The cost is that <em>every</em> cache must snoop <em>every</em>
+transaction, so bandwidth demand grows with core count and the shared
+bus becomes the bottleneck. Modern implementations replace the physical
+bus with a <strong>split-transaction</strong> or logically ordered
+interconnect (request phase and data response decoupled, data returning
+on an unordered network), which keeps snooping viable up to modest core
+counts but does not fix the fundamental broadcast scaling problem.</p>
+<h2 id="directory-protocols">Directory Protocols</h2>
+<p>Directories restore scalability by replacing broadcast with
+<strong>unicast plus lookup</strong>. A <strong>directory</strong> at
+each block’s <strong>home node</strong> (typically banked with the LLC
+or memory controller) records the block’s global state: who owns it, and
+a <strong>sharer list</strong> of who holds copies. A request goes only
+to the home:</p>
+<ul>
+<li>home has the data (no cache owner): <strong>two hops</strong>,
+request then data response;</li>
+<li>another cache owns it: <strong>three hops</strong>, request, forward
+to owner, owner responds to requestor;</li>
+<li>GetM with sharers: home sends invalidations, and each sharer acks
+the <em>requestor</em> directly; the write completes only when all acks
+arrive.</li>
+</ul>
+<figure>
+<img src="figs/directory.svg"
+alt="directory protocol 3-hop transaction" />
+<figcaption aria-hidden="true">directory protocol 3-hop
+transaction</figcaption>
+</figure>
+<p>Transactions are <strong>ordered at the directory</strong>, not on a
+bus: racing requests to the same block are serialized in whatever order
+they arrive at the home, and the loser is queued, redirected, or NACKed.
+Since there is no global broadcast order, a requestor learns its request
+is serialized only through explicit ack messages, which is precisely the
+extra complexity paid for scalability. The interconnect can now be any
+point-to-point network
+(<a href="../../notes.html#Computer%20Architecture/Flynn's%20Taxonomy" target="_top">MIMD</a>
+machines from tens of cores to whole racks: SGI Origin, AMD
+HyperTransport, Intel QPI/UPI, and every multi-socket server).</p>
+<p>Directory storage is its own design axis. A <strong>full
+bit-vector</strong> (one bit per core per block) is exact but grows as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">cores</mtext><mo>×</mo><mtext mathvariant="normal">blocks</mtext><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(\text{cores} \times \text{blocks})</annotation></semantics></math>;
+alternatives trade precision for space:</p>
+<ul>
+<li><strong>coarse vector</strong>: one bit per <em>cluster</em> of
+cores, invalidations go to the whole cluster;</li>
+<li><strong>limited pointer</strong>: store only the first
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+sharer IDs, fall back to broadcast (or forced invalidation) on
+overflow;</li>
+<li><strong>directory cache</strong>: keep directory entries only for
+recently used blocks, backed by DRAM or by the observation that an
+<strong>inclusive LLC</strong> already tags every cached block, so
+directory state can be embedded in LLC tags for free.</li>
+</ul>
+<h2 id="cache-hierarchies-and-inclusion">Cache Hierarchies and
+Inclusion</h2>
+<p>Coherence composes hierarchically: a multi-level hierarchy runs
+coherence between L1s and the shared LLC, and a multi-socket system runs
+a second protocol (often directory) between chips, with each chip’s LLC
+acting as a single “cache” at the outer level. The inclusion policy of
+the LLC interacts directly with coherence:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Policy</th>
+<th>LLC contains</th>
+<th>Coherence effect</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inclusive</td>
+<td>superset of all L1s</td>
+<td>LLC tags double as a snoop filter/directory: a miss in LLC means no
+L1 has it</td>
+<td>duplicated capacity; LLC eviction must back-invalidate L1
+copies</td>
+</tr>
+<tr>
+<td>Exclusive</td>
+<td>only blocks not in L1s</td>
+<td>maximizes total capacity</td>
+<td>needs a separate snoop filter; blocks swap between levels</td>
+</tr>
+<tr>
+<td>Non-inclusive</td>
+<td>no guarantee</td>
+<td>middle ground</td>
+<td>still needs sharer tracking</td>
+</tr>
+</tbody>
+</table>
+<p>Intel historically used inclusive LLCs (cheap coherence filtering),
+moving to non-inclusive as core counts made the duplicated capacity and
+back-invalidations too costly; AMD favors exclusive hierarchies with
+separate probe filters.</p>
+<h3 id="managing-a-large-shared-llc">Managing a Large Shared LLC</h3>
+<p>A many-megabyte LLC cannot be one array. It is dozens of banks on an
+on-chip network, and once latency depends on which bank you hit, the
+cache is <strong>NUCA</strong> (non-uniform cache access):</p>
+<figure>
+<img src="figs/nuca.svg"
+alt="a NUCA LLC: hit latency depends on the bank" />
+<figcaption aria-hidden="true">a NUCA LLC: hit latency depends on the
+bank</figcaption>
+</figure>
+<ul>
+<li><strong>S-NUCA</strong> (static): the address’s index bits pick the
+bank, period. Trivial to locate a block; a core’s data lands wherever
+the addresses happen to hash. This is what real chips ship, with the OS
+helping locality by <strong>page coloring</strong> (choosing physical
+pages whose bank mapping is near the using core).</li>
+<li><strong>D-NUCA</strong> (dynamic): spread the <em>ways</em> across
+banks and let a block migrate toward its users, settling at the center
+of gravity of its requests. Better placement in theory, but now nobody
+knows which bank holds a block, and the multicast
+<strong>search</strong> on every access is the cost that kept D-NUCA in
+the papers and out of products.</li>
+</ul>
+<p>Sharing a LLC among cores also raises a fairness question. Plain LRU
+allocates capacity to whoever <em>accesses</em> most, not who
+<em>benefits</em> most: a streaming thread with no reuse can strip-mine
+the cache away from a neighbor that needed it. <strong>Cache
+partitioning</strong> fixes the incentive: divide the ways among cores,
+sized by measured benefit (utility-based partitioning tracks each core’s
+hit curve vs. allocated ways), or by a QoS floor. The standard
+measurement trick, <strong>set dueling</strong>, dedicates a few dozen
+sets to each competing policy and lets miss counters on those sets pick
+the winner for the rest of the cache.</p>
+<h2 id="false-sharing">False Sharing</h2>
+<p>Because the SWMR invariant is enforced per 64 B block, two cores
+writing <em>different</em> variables that happen to share a block fight
+over it as if they shared data:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> <span class="op">{</span> <span class="dt">int</span> a<span class="op">;</span> <span class="dt">int</span> b<span class="op">;</span> <span class="op">}</span> counters<span class="op">;</span>   <span class="co">// same cache block</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// core 0 loop: counters.a++;        // GetM: invalidates core 1</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// core 1 loop: counters.b++;        // GetM: invalidates core 0</span></span></code></pre></div>
+<p>Each increment bounces the block M-to-I between the two caches (a
+<strong>coherence miss</strong>, the 4th C beyond the 3Cs of
+<a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches
+and Virtual Memory</a>), costing a full cache-to-cache transfer per
+write with zero true communication. The software fix is
+padding/alignment so hot per-core data gets its own block; hardware
+mitigations (sub-block coherence state, speculating that an invalid
+block’s data is still usable) exist but are rare. The related
+<strong>migratory sharing</strong> pattern (read-then-write under a
+lock, block hopping core to core) is the opposite case: hardware
+<em>can</em> optimize it by predicting the write and granting exclusive
+access on the initial read, generalizing the E-state trick.</p>
+<p>Coherence keeps caches invisible; what the programmer is actually
+promised about load/store ordering across cores is the consistency
+contract, covered in
+<a href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">Memory
+Model</a>.</p>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
+<h2 id="references">References</h2>
+<p><strong>Courses</strong></p>
+<ul>
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 17-19</li>
+</ul>
+<p><strong>Textbooks</strong></p>
+<ul>
+<li>D. Sorin, M. Hill &amp; D. Wood, <em>A Primer on Memory Consistency
+and Cache Coherence</em>, 2nd ed., ch. 2, 6-9</li>
+<li>R. Balasubramonian, N. Jouppi &amp; N. Muralimanohar, <em>Multi-Core
+Cache Hierarchies</em>, ch. 1-3</li>
+<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
+Quantitative Approach</em>, ch. 5</li>
+</ul>
+<p><strong>Standards, Papers, and Wikipedia</strong></p>
+<ul>
+<li>P. Sweazey &amp; A. J. Smith, <em>A Class of Compatible Cache
+Consistency Protocols and their Support by the IEEE Futurebus</em>
+(1986)</li>
+<li>Wikipedia: Cache coherence, MESI protocol, False sharing</li>
+</ul>
+<pre class="license"><code>MIT License
+
+Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+<div class="note-nav">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">&larr; Caches and Virtual Memory</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">Memory Model &rarr;</a>
+</div>
+</body>
+</html>

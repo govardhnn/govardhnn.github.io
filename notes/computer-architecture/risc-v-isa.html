@@ -108,6 +108,7 @@ id="toc-the-instruction-classes">The Instruction Classes</a></li>
 Convention</a></li>
 <li><a href="#extensions" id="toc-extensions">Extensions</a></li>
 <li><a href="#compared" id="toc-compared">Compared</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -234,8 +235,9 @@ same bit positions, so the register file can be read before the
 instruction type is even known, and the sign bit of every immediate is
 always bit 31 (one sign-extension circuit, no critical-path decode):</p>
 <figure>
-<img src="figs/rvformats.svg" alt="RISC-V instruction formats" />
-<figcaption aria-hidden="true">RISC-V instruction formats</figcaption>
+<img src="figs/rvformats.svg" alt="RISC-V instruction formats|609" />
+<figcaption aria-hidden="true">RISC-V instruction
+formats|609</figcaption>
 </figure>
 <table>
 <thead>
@@ -395,7 +397,9 @@ opt-in:</p>
 <tr>
 <td>A</td>
 <td><code>lr/sc</code>, <code>amoadd/amoswap/...</code></td>
-<td>atomics for the Memory Model</td>
+<td>atomics for the
+<a href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">Memory
+Model</a></td>
 </tr>
 <tr>
 <td>F, D</td>
@@ -499,28 +503,21 @@ hardware in
 <a href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">Advanced
 Superscalar Architectures</a>; RISC-V bets that decode simplicity plus
 the C extension gets both.</p>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<thead>
-<tr>
-<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
-Latex Math Library</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>References:</td>
-</tr>
-<tr>
-<td>1. <em>The RISC-V Instruction Set Manual, Volume I: Unprivileged
-ISA</em> 2. D. Patterson &amp; J. Hennessy, <em>Computer Organization
-and Design, RISC-V Edition</em>, ch. 2 3. D. Patterson &amp; A.
-Waterman, <em>The RISC-V Reader</em> 4. Wikipedia: RISC-V</td>
-</tr>
-</tbody>
-</table>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
+<h2 id="references">References</h2>
+<p><strong>Textbooks</strong></p>
+<ul>
+<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
+Design, RISC-V Edition</em>, ch. 2</li>
+<li>D. Patterson &amp; A. Waterman, <em>The RISC-V Reader</em></li>
+</ul>
+<p><strong>Standards, Papers, and Wikipedia</strong></p>
+<ul>
+<li><em>The RISC-V Instruction Set Manual, Volume I: Unprivileged
+ISA</em></li>
+<li>Wikipedia: RISC-V</li>
+</ul>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
@@ -542,5 +539,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
+<div class="note-nav">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">&larr; Exceptions</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Main%20Memory%20and%20Storage" target="_top">Main Memory and Storage &rarr;</a>
+</div>
 </body>
 </html>

@@ -53,6 +53,7 @@ and the RISC Revolution</a></li>
 id="toc-scaling-eras-and-walls">Scaling Eras and Walls</a></li>
 <li><a href="#performance-fundamentals"
 id="toc-performance-fundamentals">Performance Fundamentals</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -165,15 +166,91 @@ binary compatible. The ISA is the contract (registers, instruction
 encodings, memory model); the <strong>microarchitecture</strong> is any
 implementation honoring it. Software investment survives hardware
 generations; the S/360 lineage still runs today as z/Architecture.</p>
-<p>The key enabling technique was <strong>microprogramming</strong>
-(Wilkes, 1951): the control unit is itself a tiny stored-program
-machine, executing microinstructions from a control ROM to sequence each
-ISA instruction. Cheap 360 models interpreted the same ISA with narrow
-datapaths and more microcode steps; expensive ones used wider datapaths
-and fewer. Microcode made rich, complex instructions nearly free to
-<em>define</em>, which led directly to CISC ISAs like the DEC VAX
-(1977), where a single instruction could perform a polynomial
-evaluation.</p>
+<h3 id="stack-accumulator-and-register-machines">Stack, Accumulator, and
+Register Machines</h3>
+<p>Where operands live is the first ISA design decision, and the
+industry tried every answer. Compare <code>C = A + B</code>:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Style</th>
+<th>Machines</th>
+<th>Code</th>
+<th>Operands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stack</td>
+<td>Burroughs B5000, JVM bytecode</td>
+<td><code>push A; push B; add; pop C</code></td>
+<td>implicit, top of stack</td>
+</tr>
+<tr>
+<td>Accumulator</td>
+<td>EDSAC, 6502</td>
+<td><code>load A; add B; store C</code></td>
+<td>one implicit register</td>
+</tr>
+<tr>
+<td>Register-memory</td>
+<td>S/360, x86, 68000</td>
+<td><code>load r1,A; add r1,B; store r1,C</code></td>
+<td>registers + memory operands</td>
+</tr>
+<tr>
+<td>Load-store (register-register)</td>
+<td>CDC 6600, all RISCs</td>
+<td><code>ld r1,A; ld r2,B; add r3,r1,r2; st r3,C</code></td>
+<td>registers only; loads/stores move data</td>
+</tr>
+</tbody>
+</table>
+<p>Stack code is dense and trivially compilable but serializes
+everything through the stack top and hides operand reuse; accumulator
+machines make the single register a structural hazard; register-memory
+ISAs grew rich <strong>addressing modes</strong> (the VAX had 13,
+including memory-indirect) that made instruction latency wildly
+variable. General-purpose registers won because registers are faster
+than memory, compilers allocate them well (graph coloring, 1981), and
+explicit operands expose the parallelism that
+<a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">pipelines</a>
+and
+<a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">OOO
+cores</a> need. The load-store subset won within GPR designs for the
+same reason: memory access isolated into two instruction types is easy
+to pipeline. Stack machines survive as <em>virtual</em> ISAs (JVM,
+WebAssembly), where density beats parallelism because a JIT recompiles
+to registers anyway.</p>
+<h3 id="microprogramming">Microprogramming</h3>
+<p>The key technique enabling one-ISA-many-implementations was
+<strong>microprogramming</strong> (Wilkes, 1951): the control unit is
+itself a tiny stored-program machine, executing microinstructions from a
+fast control ROM to sequence each ISA instruction’s register transfers.
+Cheap 360 models interpreted the same ISA with narrow datapaths and more
+microcode steps; expensive ones used wider datapaths and fewer.
+<strong>Horizontal</strong> microcode encodes each datapath control
+signal as its own bit (wide words, one step per cycle, minimal
+decoding); <strong>vertical</strong> microcode encodes compactly and
+decodes each microword (narrower ROM, more steps), the same
+density-vs-speed trade as CISC vs RISC one level down. Because a new
+instruction was just more ROM, microcode made rich instructions nearly
+free to <em>define</em>, which led directly to CISC ISAs like the DEC
+VAX (1977), where a single instruction could evaluate a polynomial.</p>
+<p>Microcode faded as main memory caught up with control-store speed
+(interpreting from ROM lost its edge over executing simple instructions
+from cache) and hardwired control enabled pipelining. It survives in two
+places: x86 decoders translate common instructions directly into
+micro-ops but fall back to a <strong>microcode sequencer</strong> for
+the rare complex ones (string moves, transcendentals, system entry), and
+field-updatable microcode is now the patch channel for CPU bugs and
+security mitigations (Spectre-era updates shipped as microcode).</p>
 <p>In the same years the <strong>CDC 6600</strong> (Cray, 1964) took the
 opposite path: a lean load-store instruction set, ten parallel
 functional units, and a <strong>scoreboard</strong> issuing instructions
@@ -254,10 +331,13 @@ stopped dropping)</td>
 </tbody>
 </table>
 <p>The industry pivot: spend transistors on <strong>multicore</strong>
-(bringing Multicore Cache Coherence and the Memory Model to the
-foreground), then on <strong>dark silicon</strong> and domain-specific
-<strong>accelerators</strong> (GPUs, TPUs), trading generality for
-energy efficiency. Power techniques live in
+(bringing
+<a href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">Multicore
+Cache Coherence</a> and the
+<a href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">Memory
+Model</a> to the foreground), then on <strong>dark silicon</strong> and
+domain-specific <strong>accelerators</strong> (GPUs, TPUs), trading
+generality for energy efficiency. Power techniques live in
 <a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
 Timing and Power</a>.</p>
 <h2 id="performance-fundamentals">Performance Fundamentals</h2>
@@ -285,29 +365,26 @@ time on representative suites (SPEC CPU for cores, TPC for transactions)
 is the standard. Throughput (jobs/second) and latency (seconds/job) are
 different targets: pipelining boosts throughput while slightly hurting
 single-instruction latency.</p>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<thead>
-<tr>
-<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
-Latex Math Library</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>References:</td>
-</tr>
-<tr>
-<td>1. MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lectures 1-4, 15 2. D. Patterson &amp; J. Hennessy, <em>Computer
-Organization and Design, RISC-V Edition</em> 3. J. Hennessy &amp; D.
-Patterson, <em>Computer Architecture: A Quantitative Approach</em> 4.
-Wikipedia: Stored-program computer, History of general-purpose CPUs</td>
-</tr>
-</tbody>
-</table>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
+<h2 id="references">References</h2>
+<p><strong>Courses</strong></p>
+<ul>
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 1-4, 15</li>
+</ul>
+<p><strong>Textbooks</strong></p>
+<ul>
+<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
+Design, RISC-V Edition</em></li>
+<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
+Quantitative Approach</em></li>
+</ul>
+<p><strong>Standards, Papers, and Wikipedia</strong></p>
+<ul>
+<li>Wikipedia: Stored-program computer, History of general-purpose
+CPUs</li>
+</ul>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
@@ -329,5 +406,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
+<div class="note-nav">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Index" target="_top">&larr; Index</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Flynn's%20Taxonomy" target="_top">Flynn's Taxonomy &rarr;</a>
+</div>
 </body>
 </html>

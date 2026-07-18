@@ -109,6 +109,7 @@ Streams</a></li>
 id="toc-vliw-the-compiler-alternative">VLIW: The Compiler
 Alternative</a></li>
 <li><a href="#choosing" id="toc-choosing">Choosing</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -125,10 +126,11 @@ replicate the <em>data</em> an instruction touches, or replicate the
 </figure>
 <table>
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
+<col style="width: 3%" />
+<col style="width: 12%" />
+<col style="width: 7%" />
+<col style="width: 44%" />
+<col style="width: 31%" />
 </colgroup>
 <thead>
 <tr>
@@ -136,6 +138,7 @@ replicate the <em>data</em> an instruction touches, or replicate the
 <th>Instruction streams</th>
 <th>Data streams</th>
 <th>Reality</th>
+<th></th>
 </tr>
 </thead>
 <tbody>
@@ -146,24 +149,28 @@ replicate the <em>data</em> an instruction touches, or replicate the
 <td>classic uniprocessor, including
 <a href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">superscalar</a>
 (still <em>one</em> architectural stream)</td>
+<td></td>
 </tr>
 <tr>
 <td>SIMD</td>
 <td>1</td>
 <td>many</td>
 <td>vector machines, AVX, GPUs</td>
+<td></td>
 </tr>
 <tr>
 <td>MISD</td>
 <td>many</td>
 <td>1</td>
 <td>rare: systolic arrays (arguably), triple-modular redundancy</td>
+<td></td>
 </tr>
 <tr>
 <td>MIMD</td>
 <td>many</td>
 <td>many</td>
 <td>multicore, servers, clusters</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -223,14 +230,32 @@ bits meant new instructions and recompiles each time, the pitfall true
 vector ISAs avoid. <strong>SIMT</strong> (GPUs) presents each lane as a
 “thread”; a warp of 32 executes one instruction, and divergent branches
 run both paths under masks, so control-heavy code wastes lanes.</p>
+<div class="callout callout-example">
+<div class="callout-title">
+A real RVV machine: Saturn
+</div>
+<p>Berkeley’s Saturn is an open-source RVV 1.0 vector unit that attaches
+to an in-order scalar core, and its numbers make the vector story
+concrete. The evaluated build holds 512-bit vector registers over a
+256-bit datapath; the register file is banked and striped so lanes read
+without conflict; a scoreboard tracks readiness per element group,
+delivering full <strong>chaining</strong> with zero dead time; and three
+independent sequencers (load, store, arithmetic) crack each vector
+instruction into micro-ops just 3 cycles from dispatch to writeback. In
+16 nm it reaches 800 MHz in 0.41 mm² at ~121 SGFLOPS/W: DLP’s energy
+advantage, measured.</p>
+</div>
 <h2 id="mimd-many-streams">MIMD: Many Streams</h2>
 <p>Independent processors, each with its own PC, over a shared or
 distributed memory:</p>
 <ul>
 <li><strong>Shared memory</strong> (multicore): cores communicate
 through loads/stores; hardware must then answer what happens when they
-share data, which is Multicore Cache Coherence and the Memory
-Model.</li>
+share data, which is
+<a href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">Multicore
+Cache Coherence</a> and the
+<a href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">Memory
+Model</a>.</li>
 <li><strong>Message passing</strong> (clusters, supercomputers):
 explicit sends/receives; scales past any coherent domain.</li>
 </ul>
@@ -300,29 +325,29 @@ dumb lockstep hardware” crown that EPIC aimed for.</p>
 core superscalar (ILP) with vector units (DLP) and SMT (TLP), which is
 why Flynn’s clean quadrants blur in practice but the vocabulary
 survives.</p>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<thead>
-<tr>
-<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
-Latex Math Library</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>References:</td>
-</tr>
-<tr>
-<td>1. MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lectures 21-23 2. J. Hennessy &amp; D. Patterson, <em>Computer
-Architecture: A Quantitative Approach</em>, ch. 4 3. <em>The RISC-V
-Instruction Set Manual</em>, Vector extension 4. Wikipedia: Flynn’s
-taxonomy, Vector processor</td>
-</tr>
-</tbody>
-</table>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
+<h2 id="references">References</h2>
+<p><strong>Courses</strong></p>
+<ul>
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 21-23</li>
+</ul>
+<p><strong>Textbooks</strong></p>
+<ul>
+<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
+Quantitative Approach</em>, ch. 4</li>
+</ul>
+<p><strong>Standards, Papers, and Wikipedia</strong></p>
+<ul>
+<li><em>The RISC-V Instruction Set Manual</em>, Vector extension</li>
+<li>Wikipedia: Flynn’s taxonomy, Vector processor</li>
+</ul>
+<p><strong>Microarchitecture References</strong></p>
+<ul>
+<li>Zhao et al., <em>The Saturn Microarchitecture Manual</em>,
+UCB/EECS-2024-215</li>
+</ul>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
@@ -344,5 +369,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
+<div class="note-nav">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/History%20of%20Computing" target="_top">&larr; History of Computing</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Floating%20Point%20Architecture" target="_top">Floating Point Architecture &rarr;</a>
+</div>
 </body>
 </html>

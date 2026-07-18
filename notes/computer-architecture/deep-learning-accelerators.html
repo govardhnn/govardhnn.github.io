@@ -100,706 +100,382 @@
 <li><a href="#deep-learning-accelerators"
 id="toc-deep-learning-accelerators">Deep Learning Accelerators</a>
 <ul>
-<li><a href="#why-accelerators-now-the-end-of-free-scaling"
-id="toc-why-accelerators-now-the-end-of-free-scaling">Why Accelerators
-Now: The End of Free Scaling</a></li>
-<li><a href="#accelerator-level-parallelism-alp"
-id="toc-accelerator-level-parallelism-alp">Accelerator-Level Parallelism
-(ALP)</a></li>
-<li><a href="#why-deep-learning-needs-custom-hardware"
-id="toc-why-deep-learning-needs-custom-hardware">Why Deep Learning Needs
-Custom Hardware</a></li>
-<li><a href="#dataflow-architectures-and-systolic-arrays"
-id="toc-dataflow-architectures-and-systolic-arrays">Dataflow
-Architectures and Systolic Arrays</a></li>
+<li><a href="#the-workload-and-the-roofline"
+id="toc-the-workload-and-the-roofline">The Workload and the
+Roofline</a></li>
 <li><a href="#data-movement-dominates-energy"
 id="toc-data-movement-dominates-energy">Data Movement Dominates
 Energy</a></li>
-<li><a href="#quantization" id="toc-quantization">Quantization</a></li>
-<li><a href="#sparsity" id="toc-sparsity">Sparsity</a></li>
-<li><a href="#scratchpad-memory-vs.-cache"
-id="toc-scratchpad-memory-vs.-cache">Scratchpad Memory
-vs. Cache</a></li>
-<li><a href="#gpu-vs.-tpu-floorplan" id="toc-gpu-vs.-tpu-floorplan">GPU
-vs. TPU Floorplan</a></li>
-<li><a href="#safe-vs.-unsafe-optimizations"
-id="toc-safe-vs.-unsafe-optimizations">Safe vs. Unsafe
-Optimizations</a></li>
-</ul></li>
-<li><a href="#references" id="toc-references">References</a>
-<ul>
-<li><a href="#courses" id="toc-courses">Courses</a></li>
-<li><a href="#textbooks" id="toc-textbooks">Textbooks</a></li>
-<li><a href="#standards-papers-and-talks"
-id="toc-standards-papers-and-talks">Standards, Papers, and
-Talks</a></li>
+<li><a href="#systolic-arrays" id="toc-systolic-arrays">Systolic
+Arrays</a></li>
+<li><a href="#precision" id="toc-precision">Precision</a></li>
+<li><a href="#scratchpads-not-caches"
+id="toc-scratchpads-not-caches">Scratchpads, Not Caches</a></li>
+<li><a href="#gpu-vs-tpu" id="toc-gpu-vs-tpu">GPU vs TPU</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
 <h1 id="deep-learning-accelerators">Deep Learning Accelerators</h1>
-<h2 id="why-accelerators-now-the-end-of-free-scaling">Why Accelerators
-Now: The End of Free Scaling</h2>
-<p>Deep-learning accelerators are one instance of a broader shift. For
-decades, general-purpose CPUs got faster “for free” via two scaling laws
-- both of which have ended:</p>
+<p>When Dennard scaling ended and multicore’s dividend ran out
+(<a href="../../notes.html#Computer%20Architecture/History%20of%20Computing" target="_top">History
+of Computing</a>), the remaining lever for large efficiency gains became
+<strong>specialization</strong>: hardware tailored to one domain, traded
+against generality. Hennessy and Patterson call it a new golden age for
+architecture, and deep learning is its flagship domain because the
+workload is enormous, regular, and almost entirely one operation:
+multiply-accumulate over matrices.</p>
+<p>The systems framing is <strong>accelerator-level
+parallelism</strong>, the next rung on a familiar ladder:</p>
 <table>
 <colgroup>
-<col style="width: 7%" />
-<col style="width: 39%" />
-<col style="width: 53%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
 </colgroup>
 <thead>
 <tr>
-<th>Scaling law</th>
-<th>Said</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Moore’s Law</td>
-<td>Transistor count doubles ~every 2 years</td>
-<td>Slowing - and more transistors no longer help a serial program
-much</td>
-</tr>
-<tr>
-<td>Dennard scaling</td>
-<td>Power density stays constant as transistors shrink (so you could
-clock faster each generation)</td>
-<td><strong>Ended ~2005</strong> - shrinking transistors no longer get
-proportionally lower power, giving the power wall and the multicore
-turn</td>
-</tr>
-</tbody>
-</table>
-<p>With per-core frequency and the multicore dividend both tapped out
-(Amdahl limits how far more cores help - see the Performance section),
-the remaining lever for big efficiency gains is
-<strong>specialization</strong>: build hardware tailored to a specific
-domain. Hennessy &amp; Patterson call this a “new golden age for
-computer architecture,” driven by <strong>domain-specific
-accelerators</strong> (DSAs).</p>
-<h2 id="accelerator-level-parallelism-alp">Accelerator-Level Parallelism
-(ALP)</h2>
-<p>The systems framing: just as instruction-level, data-level, and
-thread-level parallelism were prior eras’ levers (see Parallel
-Programming), <strong>accelerator-level parallelism</strong> is the next
-- a system gets its work done by <strong>multiple specialized
-accelerators running concurrently</strong>, each far more efficient at
-its task than a general core.</p>
-<table>
-<colgroup>
-<col style="width: 17%" />
-<col style="width: 82%" />
-</colgroup>
-<thead>
-<tr>
-<th>Parallelism level</th>
+<th>Level</th>
 <th>Unit of concurrency</th>
+<th>Exploited by</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>ILP</td>
-<td>Independent instructions (pipelining, superscalar, OoO)</td>
+<td>instructions</td>
+<td>superscalar, OOO</td>
 </tr>
 <tr>
 <td>DLP</td>
-<td>Independent data elements (SIMD, vector, GPU)</td>
+<td>data elements</td>
+<td>vector, SIMD, GPU</td>
 </tr>
 <tr>
 <td>TLP</td>
-<td>Independent threads (multicore, SMT)</td>
+<td>threads</td>
+<td>multicore, SMT</td>
 </tr>
 <tr>
 <td><strong>ALP</strong></td>
-<td>Independent <strong>accelerators</strong> (NPU, GPU, ISP, video
-codec, DSP, modem…​ running at once)</td>
+<td>whole accelerators</td>
+<td>NPU + GPU + ISP + codec, running at once</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>[!note] ALP is already mainstream in <strong>smartphones</strong> - a
-modern SoC is mostly fixed-function/accelerator silicon (image signal
-processor, neural engine, video encode/decode, modem, GPU), with the CPU
-largely orchestrating them. The driver is <strong>energy</strong>: a
-dedicated accelerator can be 10-1000× more energy-efficient than a CPU
-for its task (the data-movement and overhead-elimination arguments later
-in this note), and energy is the binding constraint from phones to
-datacenters. The accelerators in this note (systolic/TPU-style DL
-engines) are the most prominent example, but the same logic produces the
-whole zoo of SoC accelerators.</p>
-</blockquote>
-<h2 id="why-deep-learning-needs-custom-hardware">Why Deep Learning Needs
-Custom Hardware</h2>
-<p>A deep neural network’s forward pass is overwhelmingly dominated by
-one operation: multiply-accumulate (MAC), applied billions of times per
-inference in dense matrix multiplications (fully-connected layers) and
-convolutions. General-purpose CPUs spend most of their transistor budget
-on control logic, branch prediction, and out-of-order scheduling (see
-the Microarchitecture section) - machinery that’s largely
-<strong>wasted</strong> on a workload that’s almost entirely regular,
-predictable MAC operations with very little control flow.</p>
-<table>
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 89%" />
-</colgroup>
-<thead>
-<tr>
-<th>Platform</th>
-<th>Why it’s used / not used for DL</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>CPU</td>
-<td>General-purpose, flexible, but low arithmetic density per watt -
-most of the die isn’t doing MACs</td>
-</tr>
-<tr>
-<td>GPU</td>
-<td>High arithmetic density via SIMT (see Parallel Programming section);
-the default training/inference platform today because of mature software
-ecosystems</td>
-</tr>
-<tr>
-<td>FPGA</td>
-<td>Reconfigurable dataflow, lower power than GPU for some inference
-workloads, but harder to program and lower peak throughput</td>
-</tr>
-<tr>
-<td>ASIC (TPU-style)</td>
-<td>Highest arithmetic density and energy efficiency <strong>for the
-operations it was built for</strong> - sacrifices flexibility
-entirely</td>
-</tr>
-</tbody>
-</table>
-<p>This is the “virtuous cycle” framing from the deep learning hardware
-literature: better hardware enables bigger models and datasets, which
-produce better results, which justifies investment in even more
-specialized hardware - a self-reinforcing loop that’s been the core
-driver of accelerator design since the mid-2010s.</p>
-<h2 id="dataflow-architectures-and-systolic-arrays">Dataflow
-Architectures and Systolic Arrays</h2>
-<p>A <strong>systolic array</strong> is a grid of simple processing
-elements (PEs), each doing one MAC per cycle, passing operands to
-neighboring PEs on every clock tick - data flows through the array like
-a pulse (hence “systolic”), with very little control overhead per
-PE.</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode verilog"><code class="sourceCode verilog"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// One PE in a systolic array: a single MAC, with operands flowing through</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// to neighboring PEs each cycle - no instruction fetch/decode per PE at all.</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> systolic_pe #<span class="op">(</span><span class="dt">parameter</span> W <span class="op">=</span> <span class="dv">8</span><span class="op">,</span> <span class="dt">parameter</span> ACC_W <span class="op">=</span> <span class="dv">32</span><span class="op">)</span> <span class="op">(</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">input</span>  logic                clk<span class="op">,</span> reset<span class="op">,</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">input</span>  logic <span class="dt">signed</span> <span class="op">[</span>W<span class="dv">-1</span><span class="op">:</span><span class="dv">0</span><span class="op">]</span> a_in<span class="op">,</span> b_in<span class="op">,</span>      <span class="co">// from west/north neighbors</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">output</span> logic <span class="dt">signed</span> <span class="op">[</span>W<span class="dv">-1</span><span class="op">:</span><span class="dv">0</span><span class="op">]</span> a_out<span class="op">,</span> b_out<span class="op">,</span>    <span class="co">// to east/south neighbors</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">output</span> logic <span class="dt">signed</span> <span class="op">[</span>ACC_W<span class="dv">-1</span><span class="op">:</span><span class="dv">0</span><span class="op">]</span> acc</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="op">);</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  always_ff <span class="op">@(</span><span class="kw">posedge</span> clk <span class="dt">or</span> <span class="kw">posedge</span> reset<span class="op">)</span> <span class="kw">begin</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> <span class="op">(</span>reset<span class="op">)</span> <span class="kw">begin</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      acc   <span class="op">&lt;=</span> &#39;<span class="dv">0</span><span class="op">;</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>      a_out <span class="op">&lt;=</span> &#39;<span class="dv">0</span><span class="op">;</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>      b_out <span class="op">&lt;=</span> &#39;<span class="dv">0</span><span class="op">;</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">end</span> <span class="kw">else</span> <span class="kw">begin</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>      acc   <span class="op">&lt;=</span> acc <span class="op">+</span> <span class="op">(</span>a_in * b_in<span class="op">);</span>   <span class="co">// accumulate the local MAC</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>      a_out <span class="op">&lt;=</span> a_in<span class="op">;</span>                  <span class="co">// forward operands to the next PE</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>      b_out <span class="op">&lt;=</span> b_in<span class="op">;</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">end</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="kw">end</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="kw">endmodule</span></span></code></pre></div>
-<p>Connecting many of these PEs in a 2D grid lets an entire matrix
-multiplication stream through the array with data reused across many PEs
-as it flows - this is precisely the architecture behind Google’s TPU
-(Tensor Processing Unit) MXU (Matrix Multiply Unit).</p>
-<h3 id="why-a-bigger-fixed-function-unit-wins-the-register-file-tax">Why
-a Bigger Fixed-Function Unit Wins: the Register-File Tax</h3>
-<p>Before systolic arrays, GPUs computed matrix multiplies the way an
-ordinary CPU core computes anything: a register file feeds a few
-arbitrary operands into an ALU, and the result writes back - one MAC at
-a time, with the ALU’s <strong>inputs</strong> selected from the
-register file by a multiplexer on every single operation.</p>
-<p>That mux is not free. A mux selecting 1-of-<code>n</code>
-register-file entries, each <code>p</code> bits wide, built from the
-only two primitives available (AND, OR), costs:</p>
-<pre><code>n × p   AND gates  (mask every entry against its select line)
-(n-1) × p   OR gates  (collapse the n masked entries down to 1)</code></pre>
-<p>A small, 8-entry, 32-bit register file already costs roughly
-<code>8 × 32 = 256</code> AND gates <strong>per read port</strong> - and
-a single MAC operation needs <strong>three</strong> read ports (two
-source operands, one accumulator) plus a write port. Compare that to the
-MAC’s own arithmetic: a <code>p×q</code>-bit multiply costs
-<code>p×q</code> AND gates plus <code>p×q</code> full adders (see the
-Multiplier section above) - for narrow, low-precision operands, the
-<strong>register file access</strong> can easily cost several times more
-gates than the <strong>actual computation</strong> it’s feeding.</p>
-<blockquote>
-<p>[!note] This is the literal motivating argument for Tensor Cores /
-systolic arrays, not just a contributing factor: pre-Volta GPUs (and
-ordinary CPUs) were spending the overwhelming majority of their
-multiply-accumulate circuit area on register-file muxing, with only a
-small fraction actually doing arithmetic. A systolic array fixes this by
-amortizing one expensive register-file read across an entire 2D grid of
-PEs per trip through the register file, rather than paying the full mux
-cost for every single MAC - exactly the same “do more work per
-register-file access” principle the Dataflow Taxonomy below is built
-around.</p>
-</blockquote>
-<h3 id="dataflow-taxonomy">Dataflow Taxonomy</h3>
-<p>A central design question for any DL accelerator: <strong>which
-operand stays fixed (stationary) in a PE across cycles</strong>, since
-that determines how much data movement (the dominant energy cost - see
-below) is needed.</p>
-<table>
-<colgroup>
-<col style="width: 9%" />
-<col style="width: 34%" />
-<col style="width: 56%" />
-</colgroup>
-<thead>
-<tr>
-<th>Dataflow</th>
-<th>What stays stationary in each PE</th>
-<th>Data movement implication</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Weight-stationary</td>
-<td>Weights loaded once, reused across many input activations</td>
-<td>Minimizes weight movement - good when weight reuse is high (e.g.,
-large batch sizes)</td>
-</tr>
-<tr>
-<td>Output-stationary</td>
-<td>Partial sums accumulate locally in each PE</td>
-<td>Minimizes movement of accumulator values - good when partial-sum
-traffic would otherwise dominate</td>
-</tr>
-<tr>
-<td>Input/Row-stationary</td>
-<td>Input activations (or rows of them) stay local, reused across
-multiple filters</td>
-<td>Balances reuse of both weights and activations, at some added
-control complexity (the approach used by Eyeriss-style
-accelerators)</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>[!note] There is no universally best dataflow - the right choice
-depends on the layer’s shape (batch size, channel count, spatial
-dimensions). This is exactly why many real accelerator designs support
-more than one dataflow mode, or why compiler/mapper tools exist
-specifically to choose a dataflow per layer rather than fixing one
-choice for an entire network.</p>
-</blockquote>
-<h3 id="the-communication-scaling-argument">The Communication-Scaling
-Argument</h3>
-<p>A weight-stationary systolic array’s entire value proposition can be
-stated as one scaling relationship. For an <code>x × y</code> weight
-matrix held stationary in the array, multiplied repeatedly against
-streaming input vectors:</p>
-<pre><code>Compute done per trip through the register file  ~  x * y   (one MAC per array cell)
-Data that must cross the register-file boundary  ~  x       (just the input/output vectors)</code></pre>
-<p>Compute scales with the <strong>area</strong> of the array
-(<code>x × y</code>), while the register-file traffic the design has to
-pay for only scales with one <strong>dimension</strong> (<code>x</code>)
-- because the weight matrix, once loaded, never needs to re-cross that
-boundary again for as long as it stays resident. This is exactly the
-same quadratic-vs-linear win the Multiplier section’s area analysis
-describes for arithmetic circuits, now applied one level up, to the cost
-of feeding data <strong>into</strong> the arithmetic rather than the
-arithmetic itself.</p>
-<h3 id="loading-the-stationary-operand">Loading the Stationary
-Operand</h3>
-<p>This leaves one question open: the weight matrix has to enter the
-array <strong>somehow</strong> before it can be reused for free. The
-standard answer is to pay that cost <strong>once</strong>, slowly, via a
-daisy-chained shift register running through the array:</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode verilog"><code class="sourceCode verilog"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Conceptual weight-load shift chain: one weight value enters the top of</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">// each column per cycle, and every resident value shifts down by one row -</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">// after N cycles, an NxN array is fully loaded, using only N wires of</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">// bandwidth crossing the boundary (one per column), not N^2.</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> systolic_weight_load #<span class="op">(</span><span class="dt">parameter</span> N <span class="op">=</span> <span class="dv">4</span><span class="op">,</span> <span class="dt">parameter</span> W <span class="op">=</span> <span class="dv">8</span><span class="op">)</span> <span class="op">(</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">input</span>  logic               clk<span class="op">,</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">input</span>  logic <span class="op">[</span>W<span class="dv">-1</span><span class="op">:</span><span class="dv">0</span><span class="op">]</span>       col_in <span class="op">[</span>N<span class="op">],</span>   <span class="co">// one new weight per column per cycle</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">output</span> logic <span class="op">[</span>W<span class="dv">-1</span><span class="op">:</span><span class="dv">0</span><span class="op">]</span>       grid   <span class="op">[</span>N<span class="op">][</span>N<span class="op">]</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="op">);</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  always_ff <span class="op">@(</span><span class="kw">posedge</span> clk<span class="op">)</span> <span class="kw">begin</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">for</span> <span class="op">(</span>int c <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> c <span class="op">&lt;</span> N<span class="op">;</span> c<span class="op">++)</span> <span class="kw">begin</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>      grid<span class="op">[</span><span class="dv">0</span><span class="op">][</span>c<span class="op">]</span> <span class="op">&lt;=</span> col_in<span class="op">[</span>c<span class="op">];</span>                       <span class="co">// shift in at the top</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>      <span class="kw">for</span> <span class="op">(</span>int r <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> r <span class="op">&lt;</span> N<span class="op">;</span> r<span class="op">++)</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        grid<span class="op">[</span>r<span class="op">][</span>c<span class="op">]</span> <span class="op">&lt;=</span> grid<span class="op">[</span>r<span class="dv">-1</span><span class="op">][</span>c<span class="op">];</span>                  <span class="co">// shift existing rows down</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">end</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">end</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="kw">endmodule</span></span></code></pre></div>
-<p>Loading an <code>N×N</code> array this way takes <code>N</code> clock
-cycles and only <code>N</code> wires of register-file bandwidth - never
-<code>N²</code> - because only one new row enters per cycle while
-everything already resident shifts down by one position. Since weights
-are reloaded comparatively rarely (once per layer, or once per many
-thousands of input vectors), paying this slow, narrow load cost once is
-far cheaper than ever provisioning the wide, expensive wiring that
-loading the whole matrix in one shot would require.</p>
+<div class="callout callout-note">
+<div class="callout-title">
+ALP is already in your pocket
+</div>
+<p>A modern phone SoC is mostly accelerator silicon (image signal
+processor, neural engine, video codec, modem), with the CPU largely
+orchestrating. The driver is energy: a dedicated engine can be 10-1000x
+more efficient at its task, and energy is the binding constraint from
+phones to datacenters.</p>
+</div>
+<h2 id="the-workload-and-the-roofline">The Workload and the
+Roofline</h2>
+<p>A DNN forward pass is dominated by dense matrix multiplication
+(convolutions included, reshaped to GEMM). Whether a kernel can run at a
+machine’s peak is a single ratio, its <strong>arithmetic
+intensity</strong> (FLOPs per byte moved from memory), read off the
+<strong>roofline</strong>:</p>
+<figure>
+<img src="figs/roofline.svg" alt="the roofline model" />
+<figcaption aria-hidden="true">the roofline model</figcaption>
+</figure>
+<p>Left of the ridge point, performance is bandwidth × intensity no
+matter how many FLOPs the chip has; right of it, the compute roof binds.
+Big-batch GEMM has high intensity (each weight fetched once serves many
+activations), which is why accelerators want large batches; small-batch
+inference and sparse operations sit memory-bound on the slope, which is
+why accelerators ship with
+<a href="../../notes.html#Computer%20Architecture/Main%20Memory%20and%20Storage" target="_top">HBM</a>
+and why no amount of extra MACs helps them.</p>
 <h2 id="data-movement-dominates-energy">Data Movement Dominates
 Energy</h2>
-<p>The single most important fact in DL accelerator design: moving a
-value is <strong>far</strong> more energy-expensive than computing with
-it.</p>
+<p>The most important table in accelerator design:</p>
 <table>
-<colgroup>
-<col style="width: 36%" />
-<col style="width: 63%" />
-</colgroup>
 <thead>
 <tr>
 <th>Operation</th>
-<th>Relative energy cost (illustrative, classic accelerator energy
-breakdowns)</th>
+<th>Relative energy</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>8-bit MAC (ALU operation itself)</td>
-<td>1x (baseline)</td>
+<td>8-bit MAC</td>
+<td>1x</td>
 </tr>
 <tr>
-<td>Read from local register/PE buffer</td>
+<td>local register / PE buffer read</td>
 <td>~1x</td>
 </tr>
 <tr>
-<td>Read from on-chip SRAM (scratchpad/cache)</td>
+<td>on-chip SRAM read</td>
 <td>~6x</td>
 </tr>
 <tr>
-<td>Read from off-chip DRAM</td>
+<td>off-chip DRAM read</td>
 <td>~200x</td>
 </tr>
 </tbody>
 </table>
-<p>This ordering - <strong>compute is cheap, off-chip memory access is
-catastrophically expensive</strong> - is the entire justification for
-systolic arrays’ local operand-forwarding, for large on-chip scratchpad
-buffers sized to avoid DRAM round-trips, and for every dataflow choice
-above: every one of them is fundamentally an exercise in
-<strong>minimizing the amount and distance of data movement</strong>,
-not minimizing arithmetic operation count (which is already cheap by
-comparison).</p>
-<h2 id="quantization">Quantization</h2>
-<p>Most DL accelerators compute in reduced precision (8-bit integer, or
-narrower) rather than the 32-bit floating point used during model
-training, since inference accuracy tolerates far more numerical error
-than the training process does.</p>
+<p>Compute is cheap; moving operands is not. Every structure below
+(systolic forwarding, dataflow choices, scratchpads, quantization) is an
+attack on data <em>movement</em>, not on arithmetic count.</p>
+<h2 id="systolic-arrays">Systolic Arrays</h2>
+<p>A <strong>systolic array</strong> is a 2D grid of processing
+elements, each doing one MAC per cycle and passing operands to its
+neighbors: data pulses through the array with no instruction fetch,
+decode, or register-file access per operation:</p>
+<figure>
+<img src="figs/systolic.svg" alt="weight-stationary systolic array" />
+<figcaption aria-hidden="true">weight-stationary systolic
+array</figcaption>
+</figure>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// One PE: a MAC, operands forwarded to neighbors each cycle</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">begin</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  acc   &lt;= acc + (a_in * w);   <span class="co">// local multiply-accumulate</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  a_out &lt;= a_in;               <span class="co">// activation steps east</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code></pre></div>
+<p>This is the architecture of Google’s TPU: the v1 MXU is a 256×256
+grid of 8-bit MACs (65,536 of them, 92 TOPS peak) fed from a 28 MiB
+on-chip buffer (Jouppi et al., ISCA 2017).</p>
+<div class="callout callout-question">
+<div class="callout-title">
+Why is a grid of MACs better than 65,536 independent MACs?
+</div>
+<p>Because of the register-file tax. Feeding one ALU from a register
+file costs a
+1-of-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+read mux per port, three ports per MAC; for narrow operands, more gates
+than the multiplier itself
+(<a href="../../notes.html#Digital%20Design/Combinational%20Circuits" target="_top">Combinational
+Circuits</a> puts a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>×</mo><mi>q</mi></mrow><annotation encoding="application/x-tex">p \times q</annotation></semantics></math>
+multiply at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mi>q</mi></mrow><annotation encoding="application/x-tex">pq</annotation></semantics></math>
+adders). Independent MACs pay that tax per operation. A systolic array
+pays it once at the boundary: for an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>×</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x \times y</annotation></semantics></math>
+array, one trip’s worth of operands crossing the edge
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">\sim x</annotation></semantics></math>
+values) feeds
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>⋅</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x \cdot y</annotation></semantics></math>
+MACs inside, because every value is <em>reused</em> as it hops neighbor
+to neighbor. Compute scales with the array’s area while boundary traffic
+scales with its edge: the whole value proposition in one ratio.</p>
+</div>
+<p>The stationary operand loads through a shift chain (one value per
+column per cycle,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+cycles and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+wires to fill an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times N</annotation></semantics></math>
+array, never
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>N</mi><mn>2</mn></msup><annotation encoding="application/x-tex">N^2</annotation></semantics></math>),
+a cost paid once per layer and amortized over thousands of input
+vectors.</p>
+<p><strong>Dataflows</strong> name what stays put in the PEs, the key
+mapping choice since movement is the cost:</p>
 <table>
 <colgroup>
-<col style="width: 11%" />
-<col style="width: 23%" />
-<col style="width: 65%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Dataflow</th>
+<th>Stationary</th>
+<th>Best when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>weight-stationary (TPU)</td>
+<td>weights</td>
+<td>high weight reuse: big batches</td>
+</tr>
+<tr>
+<td>output-stationary</td>
+<td>partial sums</td>
+<td>partial-sum traffic dominates</td>
+</tr>
+<tr>
+<td>row-stationary (Eyeriss)</td>
+<td>rows of activations</td>
+<td>balancing both, per layer shape</td>
+</tr>
+</tbody>
+</table>
+<p>No dataflow wins everywhere, which is why mappers/compilers pick per
+layer.</p>
+<h2 id="precision">Precision</h2>
+<p>Inference tolerates far more numerical error than training, so
+accelerators compute narrow:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
 </colgroup>
 <thead>
 <tr>
 <th>Format</th>
 <th>Used for</th>
-<th>Tradeoff</th>
+<th>Note</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>FP32</td>
-<td>Training (need precise gradients)</td>
-<td>Highest accuracy, lowest arithmetic density</td>
+<td>training baseline</td>
+<td>precise gradients</td>
 </tr>
 <tr>
-<td>FP16/BF16</td>
-<td>Training (mixed precision) / inference</td>
-<td>Halves memory traffic and roughly doubles arithmetic density
-vs. FP32, with small accuracy loss given proper scaling</td>
+<td>BF16 / FP16</td>
+<td>mixed-precision training, inference</td>
+<td>half the traffic
+(<a href="../../notes.html#Computer%20Architecture/Floating%20Point%20Architecture" target="_top">Floating
+Point Architecture</a>)</td>
 </tr>
 <tr>
 <td>INT8</td>
-<td>Inference</td>
-<td>~4x the arithmetic density of FP32 hardware in the same area;
-requires careful calibration (scale/zero-point selection) to avoid
-accuracy loss</td>
+<td>inference</td>
+<td>needs calibration (scale, zero point)</td>
 </tr>
 <tr>
-<td>INT4 / binary / ternary</td>
-<td>Aggressive, often research/edge-specific inference</td>
-<td>Maximum density, but a real accuracy cost that must be validated
-per-model</td>
+<td>FP8 / INT4</td>
+<td>aggressive inference</td>
+<td>accuracy validated per model</td>
 </tr>
 </tbody>
 </table>
-<p>Quantization is a direct lever on <strong>both</strong> halves of the
-data movement problem above: an 8-bit value is a quarter the size of a
-32-bit float, which quarters its DRAM/SRAM bandwidth cost
-<strong>and</strong> lets a fixed-size MAC array hold four times as many
-narrow MAC units in the same area.</p>
-<h3 id="why-halving-precision-buys-more-than-2x">Why Halving Precision
-Buys <strong>More</strong> Than 2x</h3>
-<p>Recall from the Multiplier section in the Building Blocks section
-that a <code>p×q</code>-bit multiplier costs <code>p×q</code> full
-adders - area scales with the <strong>product</strong> of the operand
-widths, not their sum. Halving both operand widths (e.g., FP8 → FP4)
-therefore shrinks multiplier area by <code>(1/2)×(1/2) = 1/4</code>, not
-<code>1/2</code> - meaning a fixed silicon budget should fit
-<strong>four</strong> times as many multipliers, not two, when precision
-is halved.</p>
-<blockquote>
-<p>[!note] This is a real, checkable discrepancy in publicly reported
-accelerator specs: prior to NVIDIA’s B100/B200 generation, halving
-precision was advertised as exactly doubling FLOP throughput -
-consistent with a <strong>linear</strong> area model, not the quadratic
-one above. Starting with B300, NVIDIA’s own specifications list FP4
-throughput at roughly <strong>3x</strong> FP8, not 4x - closer to (but
-still short of) what the quadratic scaling argument predicts, with the
-shortfall attributable to non-multiplier overhead (accumulator width,
-control logic, data movement) that doesn’t shrink as fast as the
-multiplier array itself.</p>
-</blockquote>
-<p>This quadratic relationship is the single biggest reason
-low-precision arithmetic has paid off so well for neural network
-inference: every precision reduction is rewarded <strong>more</strong>
-than proportionally in the multiplier array, on top of (not instead of)
-the linear data-movement savings described above.</p>
-<h2 id="sparsity">Sparsity</h2>
-<p>Many trained networks have a large fraction of near-zero weights
-(<strong>weight sparsity</strong>) and/or produce many zero activations
-at runtime (e.g., after a ReLU - <strong>activation sparsity</strong>).
-A MAC against a known-zero operand contributes nothing to the result, so
-skipping it saves both energy and time, if the hardware can detect and
-exploit it.</p>
+<p>Halving precision pays <em>more</em> than double: multiplier area
+scales with the <strong>product</strong> of operand widths, so
+half-width operands mean a quarter the multiplier and four times the
+MACs in the same silicon, on top of the linear savings in memory
+traffic. This quadratic reward is the deep reason low-precision
+arithmetic has been the most reliable win in the field.</p>
+<p><strong>Sparsity</strong> is the other free lunch: pruned weights and
+post-ReLU zero activations mean MACs that contribute nothing and can be
+skipped, with compressed formats saving the traffic too. The catch:
+unstructured zeros defeat the regular dataflow that makes the array
+efficient, so hardware-friendly designs force
+<strong>structured</strong> sparsity (fixed patterns, e.g. 2-of-4) and
+accept a lower sparsity ratio for exploitable regularity.</p>
+<h2 id="scratchpads-not-caches">Scratchpads, Not Caches</h2>
+<p>CPUs hide DRAM behind transparent
+<a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">caches</a>;
+TPU-class accelerators expose a <strong>scratchpad</strong> that
+software fills explicitly:</p>
 <table>
 <colgroup>
-<col style="width: 9%" />
-<col style="width: 90%" />
-</colgroup>
-<thead>
-<tr>
-<th>Sparsity exploitation</th>
-<th>Mechanism</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Zero-skipping</td>
-<td>Detect a zero operand and skip issuing that MAC entirely, advancing
-to the next nonzero element</td>
-</tr>
-<tr>
-<td>Compressed encoding</td>
-<td>Store only nonzero weights/activations plus their indices (e.g.,
-compressed sparse row-style formats), reducing both storage and the
-corresponding memory traffic</td>
-</tr>
-<tr>
-<td>Structured pruning</td>
-<td>Force sparsity into a hardware-friendly pattern (e.g., entire
-channels or fixed-size blocks pruned together) so the skipping logic
-stays simple and regular, at some cost in achievable sparsity ratio
-vs. unstructured pruning</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>[!warning] Unstructured sparsity (zeros scattered arbitrarily) is
-easy to achieve in software but hard to exploit efficiently in hardware
-- the irregular pattern of nonzero elements defeats the regular,
-pipelined dataflow that gives systolic arrays their efficiency in the
-first place. This tension between <strong>achievable</strong> sparsity
-ratio and <strong>hardware-exploitable</strong> sparsity structure is a
-recurring theme across accelerator designs.</p>
-</blockquote>
-<h2 id="scratchpad-memory-vs.-cache">Scratchpad Memory vs. Cache</h2>
-<p>CPUs (and GPUs) hide DRAM latency with a <strong>cache</strong>: the
-hardware transparently decides what stays on-chip, based on recent
-access history, and software simply issues ordinary loads/stores without
-knowing whether a given access will hit or miss. DL accelerators (TPUs
-in particular) instead expose a <strong>scratchpad</strong>: software
-explicitly issues a different instruction to move data between off-chip
-HBM/DRAM and the on-chip buffer, and a separate instruction to operate
-on data already resident there.</p>
-<table>
-<colgroup>
-<col style="width: 14%" />
-<col style="width: 48%" />
-<col style="width: 36%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
 </colgroup>
 <thead>
 <tr>
 <th></th>
-<th>Cache (CPU/GPU)</th>
-<th>Scratchpad (TPU-style)</th>
+<th>Cache</th>
+<th>Scratchpad</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Who decides what’s on-chip</td>
-<td>Hardware, dynamically, based on access history</td>
-<td>Software/compiler, statically, ahead of time</td>
+<td>what’s on-chip</td>
+<td>hardware decides, dynamically</td>
+<td>compiler decides, statically</td>
 </tr>
 <tr>
-<td>Latency</td>
-<td>Non-deterministic - depends on hit/miss, which depends on what else
-has run recently</td>
-<td>Deterministic - an access to the scratchpad always takes the same
-number of cycles</td>
+<td>latency</td>
+<td>hit/miss dependent</td>
+<td>deterministic</td>
 </tr>
 <tr>
-<td>Programming model</td>
-<td>Transparent - ordinary loads/stores, no separate addressing</td>
-<td>Explicit - distinct instructions/address space for scratchpad
-vs. off-chip memory</td>
-</tr>
-<tr>
-<td>Where else this tradeoff appears</td>
-<td>Same hit/miss-driven design as the multicore cache hierarchies in
-the Multicore Cache Hierarchy Design section</td>
-<td>Same explicit-management philosophy as the FPGA/ASIC dataflow design
-choices above</td>
+<td>model</td>
+<td>ordinary loads/stores</td>
+<td>explicit copy-in/copy-out</td>
 </tr>
 </tbody>
 </table>
-<p>This determinism is exactly what lets a DL compiler statically
-schedule an entire matrix multiply’s data movement in advance - when
-every access latency is known ahead of time, the scheduler can pack the
-systolic array’s input/output pipeline as tightly as the hardware
-allows, something it fundamentally cannot do if any given access might
-silently cost 100x more on a cache miss. The cost of that determinism is
-flexibility: software, not hardware, now has to get the scratchpad
-management <strong>right</strong>, since there’s no automatic fallback
-the way a cache miss provides.</p>
-<h2 id="gpu-vs.-tpu-floorplan">GPU vs. TPU Floorplan</h2>
-<p>Beyond the per-core dataflow choices above, GPUs and TPUs differ in
-<strong>how many</strong> compute units they tile across the chip and
-how coarse-grained each one is - a choice with direct consequences for
-how much wiring bandwidth is available between compute and memory.</p>
-<table>
-<colgroup>
-<col style="width: 13%" />
-<col style="width: 42%" />
-<col style="width: 43%" />
-</colgroup>
-<thead>
-<tr>
-<th></th>
-<th>GPU</th>
-<th>TPU</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Top-level structure</td>
-<td>Many small, nearly-identical units (Streaming Multiprocessors), each
-with its own small register file, warp scheduler, and small tensor
-core</td>
-<td>A few large, coarse-grained matrix units (MXUs) sharing one or a few
-vector units</td>
-</tr>
-<tr>
-<td>Granularity analogy</td>
-<td>Each SM is, structurally, a <strong>small TPU</strong> - a small
-systolic array plus local control</td>
-<td>The whole chip is like one SM scaled up enormously</td>
-</tr>
-<tr>
-<td>Data movement between vector and matrix units</td>
-<td>High - many parallel SMs, each with short, local, abundant wiring
-between its own vector/tensor units</td>
-<td>Lower - data has to cross through a comparatively narrow
-<strong>perimeter</strong> boundary into/out of each large MXU, rather
-than many short internal paths</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>[!note] This is the same register-file-tax tradeoff from earlier in
-this note, playing out at a different granularity. Many small units
-(GPU) keep wiring local and abundant but pay the register-file/control
-overhead <strong>per unit</strong>, many times over. Few large units
-(TPU) amortize that overhead across a much bigger systolic array, but
-pay for it with comparatively constrained perimeter bandwidth between
-the vector unit and the matrix unit - exactly mirroring the
-area-vs-communication tradeoff the Dataflow Architectures section above
-derives for the systolic array’s <strong>internal</strong> register-file
-access, now happening one level up, between major chip blocks instead of
-between PEs.</p>
-</blockquote>
-<p>This tradeoff is precisely why GPUs remain the more flexible, general
-target for irregular or smaller workloads (more, smaller systolic arrays
-mean better load-balancing across heterogeneous work), while TPU-style
-chips win specifically on very large, very regular matrix
-multiplications, where the lower per-unit overhead and larger systolic
-array more than compensate for the narrower perimeter bandwidth into
-each unit.</p>
-<h2 id="safe-vs.-unsafe-optimizations">Safe vs. Unsafe
-Optimizations</h2>
-<p>A useful framing (from accelerator design-space exploration
-methodology): some optimizations preserve a model’s output exactly,
-others trade some accuracy for efficiency, and the two need very
-different validation effort.</p>
-<table>
-<colgroup>
-<col style="width: 3%" />
-<col style="width: 47%" />
-<col style="width: 49%" />
-</colgroup>
-<thead>
-<tr>
-<th>Category</th>
-<th>Examples</th>
-<th>Validation needed</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Safe</td>
-<td>Architectural parallelism, pipelining, on-chip buffer sizing</td>
-<td>Standard hardware verification - output is bit-exact regardless</td>
-</tr>
-<tr>
-<td>Unsafe</td>
-<td>Quantization, pruning/sparsity, voltage overscaling, SRAM fault
-tolerance (running memory below its rated reliability margin for power
-savings)</td>
-<td>Must be validated <strong>against model accuracy on real
-data</strong>, not just functional correctness - a “passing” chip can
-still silently produce a worse model</td>
-</tr>
-</tbody>
-</table>
-<p>This distinction matters because it changes <strong>what</strong> you
-have to test: “safe” optimizations are verified the same way any other
-digital design is (the synthesis/timing-analysis methodology in the
-Synthesis and Timing Analysis section applies unchanged); “unsafe”
-optimizations additionally require re-validating end-to-end model
-accuracy, since a perfectly functioning chip can still degrade the
-network’s actual predictions if pushed too aggressively on quantization,
-pruning, or fault tolerance.</p>
-<h1 id="references">References</h1>
-<h2 id="courses">Courses</h2>
+<p>Determinism is the point: a compiler that knows every access latency
+can schedule the array’s feed pipeline exactly full, which is impossible
+if any access might silently cost 100x on a miss. The price is that
+software must get residency right: there is no graceful miss path.</p>
+<h2 id="gpu-vs-tpu">GPU vs TPU</h2>
+<p>Both are MAC farms; they differ in granularity. A GPU tiles many
+small units (each SM: warp scheduler, register file, a small tensor
+core; structurally a tiny TPU), keeping wiring short and local but
+paying control and register-file overhead per unit;
+<a href="../../notes.html#Computer%20Architecture/Flynn's%20Taxonomy" target="_top">SIMT</a>
+gives it generality across irregular work. A TPU builds a few huge MXUs,
+amortizing overhead across a giant array but squeezing all traffic
+through each unit’s perimeter. The same area-versus-boundary trade as
+inside the systolic array, one level up, and the reason GPUs stay the
+flexible default while TPU-style chips win big regular GEMMs.</p>
+<p>A last engineering distinction: <strong>safe</strong> optimizations
+(parallelism, pipelining, buffer sizing) preserve bit-exact outputs and
+verify like any design in
+<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
+Timing and Power</a>; <strong>unsafe</strong> ones (quantization,
+pruning, voltage overscaling) change the numbers and must be
+re-validated against <em>model accuracy</em>: a chip can pass every
+hardware test and still silently make the network worse.</p>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
+<h2 id="references">References</h2>
+<p><strong>Courses</strong></p>
 <ul>
-<li>PES University, ECE - <strong>Architectures for Hardware
-Acceleration</strong> (AHA)</li>
+<li>PES University, ECE, <em>Architectures for Hardware
+Acceleration</em> (AHA)</li>
 </ul>
-<h2 id="textbooks">Textbooks</h2>
+<p><strong>Textbooks</strong></p>
 <ul>
-<li><p>B. Reagen, R. Adolf, P. Whatmough, G.-Y. Wei &amp; D. Brooks,
-<strong>Deep Learning for Computer Architects</strong></p></li>
-<li><p>J. Hennessy &amp; D. Patterson, <strong>Computer Architecture: A
-Quantitative Approach</strong></p></li>
+<li>B. Reagen, R. Adolf, P. Whatmough, G.-Y. Wei &amp; D. Brooks,
+<em>Deep Learning for Computer Architects</em></li>
+<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
+Quantitative Approach</em></li>
 </ul>
-<h2 id="standards-papers-and-talks">Standards, Papers, and Talks</h2>
+<p><strong>Standards, Papers, and Wikipedia</strong></p>
 <ul>
-<li><p>J. Hennessy &amp; D. Patterson, “A New Golden Age for Computer
-Architecture” (Turing Lecture, 2019)</p></li>
-<li><p>M. D. Hill &amp; V. J. Reddi, “Accelerator-Level Parallelism”
-(CACM, 2021)</p></li>
-<li><p>R. Pope (MatX) &amp; D. Patterson [Dwarkesh Patel podcast], “Chip
-design from the bottom up”</p></li>
+<li>N. Jouppi et al., <em>In-Datacenter Performance Analysis of a Tensor
+Processing Unit</em> (ISCA 2017)</li>
+<li>J. Hennessy &amp; D. Patterson, <em>A New Golden Age for Computer
+Architecture</em> (Turing Lecture, 2019)</li>
+<li>M. D. Hill &amp; V. J. Reddi, <em>Accelerator-Level Parallelism</em>
+(CACM 2021)</li>
+<li>Wikipedia: Tensor Processing Unit, Systolic array</li>
 </ul>
+<pre class="license"><code>MIT License
+
+Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+<div class="note-nav">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Main%20Memory%20and%20Storage" target="_top">&larr; Main Memory and Storage</a>
+<span></span>
+</div>
 </body>
 </html>

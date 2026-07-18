@@ -108,6 +108,9 @@ id="toc-in-out-of-order-machines">In Out-of-Order Machines</a></li>
 <li><a href="#the-risc-v-trap-mechanism"
 id="toc-the-risc-v-trap-mechanism">The RISC-V Trap Mechanism</a></li>
 <li><a href="#interrupts" id="toc-interrupts">Interrupts</a></li>
+<li><a href="#virtual-machines" id="toc-virtual-machines">Virtual
+Machines</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -303,30 +306,101 @@ round-trips.</li>
 instruction, or one handler critical section). Real-time systems care
 about the worst case, not the mean, which argues against very
 long-running instructions.</p>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<thead>
-<tr>
-<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
-Latex Math Library</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>References:</td>
-</tr>
-<tr>
-<td>1. MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lecture 11 2. D. Patterson &amp; J. Hennessy, <em>Computer Organization
-and Design, RISC-V Edition</em>, ch. 4 3. <em>The RISC-V Instruction Set
-Manual, Volume II: Privileged Architecture</em> 4. J. E. Smith &amp; A.
-R. Pleszkun, <em>Implementing Precise Interrupts in Pipelined
-Processors</em> (1988)</td>
-</tr>
-</tbody>
-</table>
+<p>Two production cores show the spec’s flexibility.
+<strong>CV32E40P</strong> implements M-mode only, widens
+<code>mip</code>/<code>mie</code> to 32 lines (16 of them
+platform-defined “fast” interrupts above the standard three), and leaves
+nesting entirely to software: hardware clears MIE on entry, and an
+<code>irq_ack</code>/<code>irq_id</code> handshake tells the external
+controller which interrupt was taken. <strong>Ibex</strong> is
+vectored-only, adds a non-maskable interrupt at ID 31 that ignores
+<code>mstatus.MIE</code> entirely, and keeps hardware-managed shadow
+copies of <code>mepc</code>/<code>mcause</code>/<code>mstatus</code> so
+even the NMI is recoverable.</p>
+<div class="callout callout-note">
+<div class="callout-title">
+Traps as a security perimeter
+</div>
+<p>In OpenTitan’s threat model the attacker has physical access and a
+glitching rig, so Ibex’s exception machinery doubles as fault-injection
+defense: a <code>cpuctrl</code> CSR tracks whether a synchronous
+exception is already in flight and flags a <strong>double
+fault</strong>; critical CSRs (<code>mstatus</code>, <code>mtvec</code>,
+PMP registers) keep complemented shadow copies whose mismatch raises an
+alert; a second lockstep core runs a few cycles delayed and compares
+outputs; and the fetch stage checks that each PC is the predecessor’s PC
+plus the correct increment. The same “tag, don’t act; commit precisely”
+discipline that makes exceptions restartable is what makes them
+auditable.</p>
+</div>
+<h2 id="virtual-machines">Virtual Machines</h2>
+<p>The trap mechanism generalizes one level up: a
+<strong>hypervisor</strong> runs whole guest OSes the way an OS runs
+processes, and traps are again the enforcement tool. The classical
+recipe is <strong>trap-and-emulate</strong>: run the guest OS
+deprivileged; every privileged action it attempts (writing a page table
+pointer, disabling interrupts) traps to the hypervisor, which emulates
+the effect against per-guest virtual state and returns.</p>
+<p>This only works if the ISA cooperates. <strong>Popek and Goldberg
+(1974)</strong>: an ISA is classically virtualizable iff every
+<em>sensitive</em> instruction (one that reads or changes privileged
+state) is also <em>privileged</em> (traps when deprivileged). Pre-2005
+x86 famously failed this: instructions like <code>popf</code> silently
+changed behavior instead of trapping, forcing VMware-era hypervisors
+into dynamic binary translation. Hardware extensions (Intel VT-x, AMD-V,
+RISC-V’s <strong>H extension</strong>) fixed it by adding a guest mode
+in which <em>everything</em> sensitive traps to the hypervisor. RISC-V’s
+version turns S-mode into HS-mode for the hypervisor, adds VS/VU modes
+for the guest, duplicates the trap CSRs (<code>vsepc</code>,
+<code>vscause</code>, …) so the guest OS can take its own traps without
+hypervisor involvement, and delegates via
+<code>hedeleg</code>/<code>hideleg</code>, the same pattern as
+<code>medeleg</code> one level down.</p>
+<p>Memory needs the trick twice: the guest OS translates guest-virtual
+to guest-physical, and the hypervisor translates guest-physical to
+host-physical. <strong>Nested (two-stage) page tables</strong> (RISC-V
+<code>hgatp</code>, Intel EPT) let the hardware walker compose both
+translations in one
+<a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">TLB</a>
+fill, replacing the older software-maintained <strong>shadow page
+tables</strong> that required trapping every guest page-table write. The
+cost is walk length: a guest walk of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>
+levels over a host walk of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+levels touches up to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">(m+1)(n+1)-1</annotation></semantics></math>
+memory accesses, which is why virtualized TLB misses hurt and TLBs cache
+the intermediate translations.</p>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
+<h2 id="references">References</h2>
+<p><strong>Courses</strong></p>
+<ul>
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 11, 25</li>
+</ul>
+<p><strong>Textbooks</strong></p>
+<ul>
+<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
+Design, RISC-V Edition</em>, ch. 4</li>
+</ul>
+<p><strong>Standards, Papers, and Wikipedia</strong></p>
+<ul>
+<li><em>The RISC-V Instruction Set Manual, Volume II: Privileged
+Architecture</em></li>
+<li>J. E. Smith &amp; A. R. Pleszkun, <em>Implementing Precise
+Interrupts in Pipelined Processors</em> (1988)</li>
+<li>G. Popek &amp; R. Goldberg, <em>Formal Requirements for
+Virtualizable Third Generation Architectures</em> (1974)</li>
+</ul>
+<p><strong>Microarchitecture References</strong></p>
+<ul>
+<li>lowRISC, <em>Ibex Documentation</em> (exceptions/interrupts,
+security features)</li>
+<li>OpenHW Group, <em>CV32E40P User Manual</em> (exceptions and
+interrupts)</li>
+</ul>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
@@ -348,5 +422,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
+<div class="note-nav">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">&larr; Out of Order Execution and Register Renaming</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V ISA &rarr;</a>
+</div>
 </body>
 </html>

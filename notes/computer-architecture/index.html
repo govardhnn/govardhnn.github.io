@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Index</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#computer-architecture"
+id="toc-computer-architecture">Computer Architecture</a>
+<ul>
+<li><a href="#supplementary"
+id="toc-supplementary">Supplementary</a></li>
+<li><a href="#wikipedia-reference-map"
+id="toc-wikipedia-reference-map">Wikipedia Reference Map</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="computer-architecture">Computer Architecture</h1>
+<p>A twelve-part series, roughly in reading order. The MIT 6.823
+Computer System Architecture course (Arvind &amp; Emer, Fall 2005) is
+the backbone; Hennessy &amp; Patterson and the Sorin/Hill/Wood Primer
+fill in depth.</p>
+<ol type="1">
+<li><a href="../../notes.html#Computer%20Architecture/History%20of%20Computing" target="_top">History
+of Computing</a>: stored program, ISA vs implementation,
+stack/accumulator/GPR, microprogramming, RISC, scaling walls, Iron Law,
+Amdahl</li>
+<li><a href="../../notes.html#Computer%20Architecture/Flynn's%20Taxonomy" target="_top">Flynn’s
+Taxonomy</a>: SISD/SIMD/MISD/MIMD, vector machines, VLIW,
+multithreading</li>
+<li><a href="../../notes.html#Computer%20Architecture/Floating%20Point%20Architecture" target="_top">Floating
+Point Architecture</a>: IEEE 754, rounding, guard/round/sticky, FMA, FP
+in the ISA</li>
+<li><a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">Simple
+Instruction Pipeline</a>: 5 stages, hazards, forwarding, stalls</li>
+<li><a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">Branch
+Prediction</a>: 2-bit counters, gshare, TAGE, BTB, return address
+stack</li>
+<li><a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches
+and Virtual Memory</a>: tag/index/offset, 3Cs, AMAT, page tables, TLB,
+VIPT</li>
+<li><a href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">Multicore
+Cache Coherence</a>: SWMR, MSI/MESI/MOESI, snooping, directories, false
+sharing</li>
+<li><a href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">Memory
+Model</a>: sequential consistency, TSO, store buffers, RVWMO, atomics,
+DRF-SC</li>
+<li><a href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">Advanced
+Superscalar Architectures</a>: wide fetch/issue, wakeup-select, SMT,
+reliability</li>
+<li><a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">Out
+of Order Execution and Register Renaming</a>: scoreboard, Tomasulo,
+rename map, ROB, LSQ</li>
+<li><a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">Exceptions</a>:
+precise exceptions, RISC-V trap CSRs, interrupts, virtual machines</li>
+<li><a href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V
+ISA</a>: formats, calling convention, extensions</li>
+</ol>
+<p>Digital design foundations:
+<a href="../../notes.html#Digital%20Design/Boolean%20Algebra" target="_top">Boolean
+Algebra</a>,
+<a href="../../notes.html#Digital%20Design/Combinational%20Circuits" target="_top">Combinational
+Circuits</a>,
+<a href="../../notes.html#Digital%20Design/Sequential%20Circuits" target="_top">Sequential
+Circuits</a>,
+<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
+Timing and Power</a>,
+<a href="../../notes.html#Digital%20Design/RTL%20Design%20Guide" target="_top">RTL
+Design Guide</a>.</p>
+<h2 id="supplementary">Supplementary</h2>
+<p>Deep dives beyond the twelve-part core:</p>
+<ul>
+<li><a href="../../notes.html#Computer%20Architecture/Main%20Memory%20and%20Storage" target="_top">Main
+Memory and Storage</a>: DRAM organization, memory controllers, flash and
+SSDs</li>
+<li><a href="../../notes.html#Computer%20Architecture/Deep%20Learning%20Accelerators" target="_top">Deep
+Learning Accelerators</a>: rooflines, systolic arrays, TPUs,
+dataflows</li>
+</ul>
+<h2 id="wikipedia-reference-map">Wikipedia Reference Map</h2>
+<p>Entry points into the <a
+href="https://en.wikipedia.org/wiki/Processor_(computing)">processor
+technologies</a> web, grouped by the note that covers the territory:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Links</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Models &amp; architecture</td>
+<td><a
+href="https://en.wikipedia.org/wiki/Stored-program_computer">Stored-program
+computer</a>, <a
+href="https://en.wikipedia.org/wiki/Von_Neumann_architecture">Von
+Neumann</a>, <a
+href="https://en.wikipedia.org/wiki/Harvard_architecture">Harvard</a>,
+<a
+href="https://en.wikipedia.org/wiki/Microarchitecture">Microarchitecture</a>,
+<a href="https://en.wikipedia.org/wiki/Stack_machine">Stack machine</a>,
+<a href="https://en.wikipedia.org/wiki/Register_machine">Register
+machine</a></td>
+</tr>
+<tr>
+<td>ISAs</td>
+<td><a
+href="https://en.wikipedia.org/wiki/Instruction_set_architecture">ISA</a>,
+<a
+href="https://en.wikipedia.org/wiki/Complex_instruction_set_computer">CISC</a>,
+<a
+href="https://en.wikipedia.org/wiki/Reduced_instruction_set_computer">RISC</a>,
+<a href="https://en.wikipedia.org/wiki/RISC-V">RISC-V</a>, <a
+href="https://en.wikipedia.org/wiki/Addressing_mode">Addressing
+mode</a>, <a
+href="https://en.wikipedia.org/wiki/Very_long_instruction_word">VLIW</a>,
+<a href="https://en.wikipedia.org/wiki/Microcode">Microcode</a></td>
+</tr>
+<tr>
+<td>Pipelining &amp; execution</td>
+<td><a
+href="https://en.wikipedia.org/wiki/Instruction_pipelining">Instruction
+pipelining</a>, <a
+href="https://en.wikipedia.org/wiki/Classic_RISC_pipeline">Classic RISC
+pipeline</a>, <a
+href="https://en.wikipedia.org/wiki/Hazard_(computer_architecture)">Hazard</a>,
+<a href="https://en.wikipedia.org/wiki/Operand_forwarding">Operand
+forwarding</a>, <a
+href="https://en.wikipedia.org/wiki/Out-of-order_execution">Out-of-order
+execution</a>, <a
+href="https://en.wikipedia.org/wiki/Tomasulo&#39;s_algorithm">Tomasulo’s
+algorithm</a>, <a
+href="https://en.wikipedia.org/wiki/Re-order_buffer">Re-order
+buffer</a>, <a
+href="https://en.wikipedia.org/wiki/Register_renaming">Register
+renaming</a>, <a
+href="https://en.wikipedia.org/wiki/Superscalar_processor">Superscalar</a>,
+<a href="https://en.wikipedia.org/wiki/Branch_predictor">Branch
+predictor</a>, <a
+href="https://en.wikipedia.org/wiki/Speculative_execution">Speculative
+execution</a></td>
+</tr>
+<tr>
+<td>Memory hierarchy</td>
+<td><a href="https://en.wikipedia.org/wiki/CPU_cache">CPU cache</a>, <a
+href="https://en.wikipedia.org/wiki/Cache_replacement_policies">Cache
+replacement policies</a>, <a
+href="https://en.wikipedia.org/wiki/Memory_hierarchy">Memory
+hierarchy</a>, <a
+href="https://en.wikipedia.org/wiki/Virtual_memory">Virtual memory</a>,
+<a
+href="https://en.wikipedia.org/wiki/Translation_lookaside_buffer">TLB</a>,
+<a
+href="https://en.wikipedia.org/wiki/Memory_management_unit">MMU</a></td>
+</tr>
+<tr>
+<td>Parallelism</td>
+<td><a href="https://en.wikipedia.org/wiki/Flynn&#39;s_taxonomy">Flynn’s
+taxonomy</a>, <a
+href="https://en.wikipedia.org/wiki/Single_instruction,_multiple_data">SIMD</a>,
+<a href="https://en.wikipedia.org/wiki/Vector_processor">Vector
+processor</a>, <a
+href="https://en.wikipedia.org/wiki/Multi-core_processor">Multi-core</a>,
+<a
+href="https://en.wikipedia.org/wiki/Simultaneous_multithreading">SMT</a>,
+<a href="https://en.wikipedia.org/wiki/Cache_coherence">Cache
+coherence</a>, <a
+href="https://en.wikipedia.org/wiki/MESI_protocol">MESI protocol</a>, <a
+href="https://en.wikipedia.org/wiki/False_sharing">False sharing</a>, <a
+href="https://en.wikipedia.org/wiki/Memory_ordering">Memory
+ordering</a>, <a
+href="https://en.wikipedia.org/wiki/Sequential_consistency">Sequential
+consistency</a></td>
+</tr>
+<tr>
+<td>Performance</td>
+<td><a
+href="https://en.wikipedia.org/wiki/Instructions_per_cycle">IPC</a>, <a
+href="https://en.wikipedia.org/wiki/Cycles_per_instruction">CPI</a>, <a
+href="https://en.wikipedia.org/wiki/FLOPS">FLOPS</a>, <a
+href="https://en.wikipedia.org/wiki/Amdahl%27s_law">Amdahl’s law</a>, <a
+href="https://en.wikipedia.org/wiki/Performance_per_watt">Performance
+per watt</a></td>
+</tr>
+</tbody>
+</table>
+<div class="note-nav">
+<span></span>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/History%20of%20Computing" target="_top">History of Computing &rarr;</a>
+</div>
+</body>
+</html>

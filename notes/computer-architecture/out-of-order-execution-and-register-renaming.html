@@ -49,6 +49,7 @@ In-Order Commit</a></li>
 <li><a href="#memory-instructions" id="toc-memory-instructions">Memory
 Instructions</a></li>
 <li><a href="#costs" id="toc-costs">Costs</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -152,6 +153,90 @@ table</strong>. Physical registers outnumber architectural (e.g. 200+ vs
 conflict. Map after: x1→p9, x3→p8, x7→p10. A physical register is freed
 when the <em>next</em> writer of the same architectural register commits
 (no one can still read the old value).</p>
+<h3 id="three-ways-to-build-it">Three Ways to Build It</h3>
+<p>Renaming fixes <em>where a value lives</em>; three schemes answer
+that differently, and all three have shipped:</p>
+<figure>
+<img src="figs/renameschemes.svg" alt="the three rename schemes" />
+<figcaption aria-hidden="true">the three rename schemes</figcaption>
+</figure>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th>ROB renaming</th>
+<th>Rename buffer</th>
+<th>Merged register file</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>speculative values</td>
+<td>in the ROB entry</td>
+<td>separate result buffer</td>
+<td>one physical register file</td>
+</tr>
+<tr>
+<td>committed values</td>
+<td>architectural RF</td>
+<td>architectural RF</td>
+<td>the same physical file</td>
+</tr>
+<tr>
+<td>allocation</td>
+<td>FIFO with the ROB, no free list</td>
+<td>FIFO, no free list</td>
+<td>explicit free list</td>
+</tr>
+<tr>
+<td>at commit</td>
+<td>copy value ROB→ARF</td>
+<td>copy buffer→ARF</td>
+<td>update map; value never moves</td>
+</tr>
+<tr>
+<td>used by</td>
+<td>Intel Core 2 (P6 line)</td>
+<td>IBM Power3</td>
+<td>MIPS R10000, Alpha 21264, every modern core</td>
+</tr>
+</tbody>
+</table>
+<p>The ROB scheme is the simplest (allocation is just the ROB’s own
+FIFO), and the rename buffer refines it with the observation that about
+a third of instructions produce no register result, so giving every ROB
+entry a value field wastes a third of the storage. But both write every
+result twice (buffer, then architectural file) and let an operand live
+in two places during its lifetime. The merged file pays for its free
+list and stale-mapping bookkeeping with values that are written once,
+never move, and always come from one place, the deciding advantages as
+width, ports, and energy budgets grew.</p>
+<div class="callout callout-question">
+<div class="callout-title">
+When is a physical register safe to free?
+</div>
+<p>Not when its last reader commits: the hardware cannot know a reader
+is the last, because a mispredicted branch may be squashed and
+<em>new</em> readers of the old value fetched in its place. The safe
+rule: free <code>p1</code> only when the <strong>next writer of the same
+architectural register</strong> commits; from that point no future
+instruction can be renamed to <code>p1</code>. This is why each
+instruction carries its <em>stale</em> mapping (what its destination
+register previously mapped to) through the ROB: that stale register is
+what commit frees.</p>
+</div>
+<p><strong>BOOM</strong> (the Berkeley Out-of-Order Machine) is a
+documented merged-PRF core: 96 integer + 64 FP physical registers over
+32+32 architectural in its base configuration. Each branch snapshots the
+map table for single-cycle misprediction recovery, and a per-branch
+allocation list records the registers allocated on the speculative path,
+so a squash returns them to the free list in one OR operation.</p>
 <h2 id="tomasulos-algorithm">Tomasulo’s Algorithm</h2>
 <p>The IBM 360/91 FPU (1967) invented distributed renaming three years
 after the scoreboard:</p>
@@ -226,8 +311,18 @@ load.</li>
 which loads conflict, let the rest issue aggressively; mispredictions
 cost a replay.</li>
 </ul>
+<p>BOOM makes the aggression concrete: loads fire to memory the moment
+their address resolves, CAM-searching the store queue on the way
+(forward if an older matching store has data; sleep and retry if it does
+not). The safety net sits at the other end of the pipe: every
+<em>committing</em> store CAM-searches the entire load queue, and a
+match means a load ran too early: flush the pipeline and reset the
+rename maps, “an incredibly expensive operation” in the project’s own
+documentation, tolerable only because it is rare.</p>
 <p>Load reordering between cores is architecturally visible; what the
-ISA permits is the Memory Model.</p>
+ISA permits is the
+<a href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">Memory
+Model</a>.</p>
 <h2 id="costs">Costs</h2>
 <p>OOO multiplies state (PRF, IQ, ROB, LSQ, checkpoints) and adds ~3
 pipeline stages (rename, dispatch, issue), deepening the misprediction
@@ -239,30 +334,31 @@ are the scaling bottlenecks that shape
 Superscalar Architectures</a>. The payoff: 2-4x IPC over in-order on
 pointer-chasing, cache-missing code, which is why every high-performance
 core since the mid-1990s pays it.</p>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<thead>
-<tr>
-<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
-Latex Math Library</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>References:</td>
-</tr>
-<tr>
-<td>1. MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lectures 11-12 2. A. González, F. Latorre &amp; G. Magklis,
-<em>Processor Microarchitecture: An Implementation Perspective</em> 3.
-J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
-Quantitative Approach</em>, ch. 3 4. R. M. Tomasulo, <em>An Efficient
-Algorithm for Exploiting Multiple Arithmetic Units</em> (1967)</td>
-</tr>
-</tbody>
-</table>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
+<h2 id="references">References</h2>
+<p><strong>Courses</strong></p>
+<ul>
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 11-12</li>
+</ul>
+<p><strong>Textbooks</strong></p>
+<ul>
+<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
+Quantitative Approach</em>, ch. 3</li>
+</ul>
+<p><strong>Standards, Papers, and Wikipedia</strong></p>
+<ul>
+<li>A. González, F. Latorre &amp; G. Magklis, <em>Processor
+Microarchitecture: An Implementation Perspective</em>, ch. 5-6, 8</li>
+<li>R. M. Tomasulo, <em>An Efficient Algorithm for Exploiting Multiple
+Arithmetic Units</em> (1967)</li>
+</ul>
+<p><strong>Microarchitecture References</strong></p>
+<ul>
+<li>RISC-V BOOM documentation (rename stage, load/store unit),
+docs.boom-core.org</li>
+</ul>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
@@ -284,5 +380,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
+<div class="note-nav">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">&larr; Advanced Superscalar Architectures</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">Exceptions &rarr;</a>
+</div>
 </body>
 </html>

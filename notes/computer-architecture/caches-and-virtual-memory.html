@@ -109,6 +109,7 @@ Memory</a></li>
 <li><a href="#the-tlb" id="toc-the-tlb">The TLB</a></li>
 <li><a href="#caches-meet-translation"
 id="toc-caches-meet-translation">Caches Meet Translation</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -237,6 +238,25 @@ tag
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>48</mn><mo>−</mo><mn>12</mn><mo>=</mo><mn>36</mn></mrow><annotation encoding="application/x-tex">= 48-12 = 36</annotation></semantics></math>
 bits. Note the index+offset fit in 12 bits, exactly a 4 KiB page; this
 is deliberate (VIPT, below).</p>
+<h3 id="reading-the-arrays-parallel-or-serial">Reading the Arrays:
+Parallel or Serial</h3>
+<p>The tag and data arrays can be accessed two ways, and the choice is a
+latency-versus-frequency trade:</p>
+<ul>
+<li><strong>Parallel</strong>: read <em>all</em> ways of the set while
+the tags are compared, then a <strong>way multiplexor</strong> picks the
+winner. One cycle faster, but the mux sits on the critical path and
+every way’s data is read (and its energy spent) for nothing.</li>
+<li><strong>Serial</strong>: compare tags first, then enable only the
+winning way: no way mux, less energy, a faster clock, one more cycle of
+latency.</li>
+</ul>
+<p>An out-of-order core hides D-cache latency, so serial access suits
+the D-cache when the cache limits frequency. The I-cache leans the other
+way: every added fetch cycle grows the
+<a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">misprediction
+restart penalty</a>, so I-caches typically read tags and data in
+parallel.</p>
 <h2 id="performance">Performance</h2>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>M</mi><mi>A</mi><mi>T</mi><mo>=</mo><msub><mi>t</mi><mrow><mi>h</mi><mi>i</mi><mi>t</mi></mrow></msub><mo>+</mo><mtext mathvariant="normal">miss rate</mtext><mo>×</mo><mtext mathvariant="normal">miss penalty</mtext></mrow><annotation encoding="application/x-tex">AMAT = t_{hit} + \text{miss rate} \times \text{miss penalty}</annotation></semantics></math></p>
 <p>Multilevel:
@@ -302,23 +322,104 @@ too. Simple, coherent, but needs a write buffer to hide latency and
 burns bandwidth.</li>
 <li><strong>Write-back</strong>: stores dirty the line; memory is
 updated only on eviction (dirty bit). Standard everywhere beyond tiny
-L1s; the eviction write-back traffic reappears in Multicore Cache
-Coherence as the Owned state problem.</li>
+L1s; the eviction write-back traffic reappears in
+<a href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">Multicore
+Cache Coherence</a> as the Owned state problem.</li>
 <li><strong>Write-allocate</strong> (fetch line on store miss, standard
 with write-back) vs <strong>no-allocate</strong> (send the store on,
 standard with write-through).</li>
 </ul>
-<p><strong>Latency-hiding</strong>: <strong>non-blocking</strong> caches
-keep servicing hits under outstanding misses, tracking them in MSHRs
-(miss status holding registers), which is what lets
+<p><strong>Latency-hiding</strong>: <strong>non-blocking</strong>
+(lockup-free) caches keep servicing hits under outstanding misses, which
+is what lets
 <a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">out-of-order
-cores</a> overlap misses (memory-level parallelism). <strong>Victim
-caches</strong> (small fully associative side buffer of recent
-evictions) mop up conflict misses. <strong>Prefetchers</strong>
-(next-line, stride, stream) fetch ahead of demand; accurate ones hide
-most compulsory/capacity latency, inaccurate ones pollute.
-<strong>Critical-word-first</strong> returns the needed word of a line
-before the rest.</p>
+cores</a> overlap misses (memory-level parallelism). The bookkeeping
+lives in <strong>MSHRs</strong> (miss status holding registers): a
+<strong>primary miss</strong> allocates one and sends the fetch; a
+<strong>secondary miss</strong> to the same in-flight line just adds
+itself to the existing entry; a miss that finds no free MSHR stalls (a
+structural hazard, so MSHR count caps memory-level parallelism). Kroft’s
+original <strong>implicitly addressed</strong> MSHR holds one
+destination slot per word of the line; the <strong>explicitly
+addressed</strong> variant stores the block offset per slot, allowing
+several misses to one word; <strong>in-cache</strong> MSHRs go further
+and use the awaiting cache line itself as the storage, one transient bit
+in the tag marking it. <strong>Victim caches</strong> (small fully
+associative side buffer of recent evictions) mop up conflict misses.
+<strong>Prefetchers</strong> (next-line, stride, stream) fetch ahead of
+demand; accurate ones hide most compulsory/capacity latency, inaccurate
+ones pollute. <strong>Critical-word-first</strong> returns the needed
+word of a line before the rest.</p>
+<h3 id="bandwidth-ports-and-banks">Bandwidth: Ports and Banks</h3>
+<p>A wide core issues ~2 memory operations per cycle, but a <strong>true
+multiported</strong> SRAM (every cell readable twice at once) is slow
+enough that no commercial processor ships one. Three ways to fake
+it:</p>
+<figure>
+<img src="figs/cacheports.svg"
+alt="array replication vs multibanking" />
+<figcaption aria-hidden="true">array replication vs
+multibanking</figcaption>
+</figure>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Idea</th>
+<th>Cost</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>array replication</td>
+<td>two full copies, one load port each; stores write both</td>
+<td>2x area</td>
+<td>Alpha 21164</td>
+</tr>
+<tr>
+<td>virtual multiporting</td>
+<td>double-pump one array, two accesses per cycle</td>
+<td>abandoned: does not scale with GHz</td>
+<td>Power2, Alpha 21264</td>
+</tr>
+<tr>
+<td>multibanking</td>
+<td>split into single-ported banks; an index bit routes each
+request</td>
+<td>bank conflicts stall</td>
+<td>R10000, Opteron, everything modern</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-question">
+<div class="callout-title">
+Why are instruction caches single-ported and blocking?
+</div>
+<p>Fetch is sequential: one access returns a whole line of consecutive
+instructions, so a single port already feeds the machine. And a
+lockup-free I-cache would buy nothing: every instruction implicitly
+depends on fetching its predecessor, so there is no independent later
+fetch to overlap with an I-miss. The properties that justify D-cache
+complexity (random access, independent misses) are exactly the ones
+instruction streams lack.</p>
+</div>
+<p><strong>Hit-time tricks</strong>: <strong>way prediction</strong>
+guesses which way of a set-associative cache will hit and reads only
+that way first (direct-mapped speed and energy on a correct guess, an
+extra cycle on a miss); a mispredict costs little because the check is
+the normal tag compare. A <strong>sum-addressed decoder</strong> folds
+the <code>base + offset</code> addition of the
+<a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">address
+computation</a> into the SRAM row decoder itself, comparing against
+<code>base</code> and <code>offset</code> directly and shaving the adder
+off the load-to-use path.</p>
 <p>Software helps: loop <strong>blocking</strong> restructures matrix
 code so the working tile fits in cache, turning capacity misses into
 hits.</p>
@@ -389,32 +490,31 @@ is standard; <strong>inclusive</strong> LLCs duplicate all inner
 contents (wasteful, but the LLC can filter coherence traffic),
 <strong>exclusive</strong> maximize capacity,
 <strong>non-inclusive</strong> split the difference. Coherence itself is
-Multicore Cache Coherence.</p>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<thead>
-<tr>
-<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
-Latex Math Library</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>References:</td>
-</tr>
-<tr>
-<td>1. MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lectures 7-10 2. D. Patterson &amp; J. Hennessy, <em>Computer
-Organization and Design, RISC-V Edition</em>, ch. 5 3. J. Hennessy &amp;
-D. Patterson, <em>Computer Architecture: A Quantitative Approach</em>,
-App. B 4. R. Balasubramonian et al., <em>Multi-Core Cache
-Hierarchies</em> 5. Wikipedia: CPU cache, Translation lookaside
-buffer</td>
-</tr>
-</tbody>
-</table>
+<a href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">Multicore
+Cache Coherence</a>.</p>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
+<h2 id="references">References</h2>
+<p><strong>Courses</strong></p>
+<ul>
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 7-10</li>
+</ul>
+<p><strong>Textbooks</strong></p>
+<ul>
+<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
+Design, RISC-V Edition</em>, ch. 5</li>
+<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
+Quantitative Approach</em>, App. B</li>
+<li>A. González, F. Latorre &amp; G. Magklis, <em>Processor
+Microarchitecture: An Implementation Perspective</em>, ch. 2</li>
+<li>R. Balasubramonian et al., <em>Multi-Core Cache
+Hierarchies</em></li>
+</ul>
+<p><strong>Standards, Papers, and Wikipedia</strong></p>
+<ul>
+<li>Wikipedia: CPU cache, Translation lookaside buffer</li>
+</ul>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
@@ -436,5 +536,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
+<div class="note-nav">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">&larr; Branch Prediction</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">Multicore Cache Coherence &rarr;</a>
+</div>
 </body>
 </html>

@@ -46,8 +46,12 @@ id="toc-data-hazards-stalls-and-forwarding">Data Hazards: Stalls and
 Forwarding</a></li>
 <li><a href="#control-hazards" id="toc-control-hazards">Control
 Hazards</a></li>
+<li><a href="#real-pipelines-two-four-and-five-stages"
+id="toc-real-pipelines-two-four-and-five-stages">Real Pipelines: Two,
+Four, and Five Stages</a></li>
 <li><a href="#exceptions-in-the-pipeline"
 id="toc-exceptions-in-the-pipeline">Exceptions in the Pipeline</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -244,6 +248,18 @@ instruction into the slot after every load; when it cannot, the
 interlock inserts the bubble (early MIPS instead <em>documented</em> the
 slot and let wrong code be wrong, hence “Microprocessor without
 Interlocked Pipeline Stages”).</p>
+<div class="callout callout-question">
+<div class="callout-title">
+Why can’t more forwarding paths fix the load-use hazard?
+</div>
+<p>Forwarding moves a value backward in <em>space</em> (between stages),
+never backward in <em>time</em>. The load’s data physically does not
+exist until the SRAM read completes at the end of MEM; the dependent EX
+needed it one cycle before that moment. No wire can deliver a value
+before it is computed, so the bubble is fundamental; the only cures are
+scheduling around it or moving the cache access earlier (which lengthens
+the cycle).</p>
+</div>
 <h2 id="control-hazards">Control Hazards</h2>
 <p>The branch outcome (<code>beq</code> compare) and target are known in
 EX (cycle 3), but IF needed the next PC in cycle 2. Naively every taken
@@ -274,6 +290,88 @@ loads:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>P</mi><mi>I</mi><mo>=</mo><mn>1</mn><mo>+</mo><munder><munder><mrow><mn>0.20</mn><mo>×</mo><mn>0.60</mn><mo>×</mo><mn>2</mn></mrow><mo accent="true">⏟</mo></munder><mn>0.24</mn></munder><mo>+</mo><munder><munder><mrow><mn>0.25</mn><mo>×</mo><mn>0.25</mn><mo>×</mo><mn>1</mn></mrow><mo accent="true">⏟</mo></munder><mn>0.0625</mn></munder><mo>≈</mo><mn>1.30</mn></mrow><annotation encoding="application/x-tex">CPI = 1 + \underbrace{0.20 \times 0.60 \times 2}_{0.24} + \underbrace{0.25 \times 0.25 \times 1}_{0.0625} \approx 1.30</annotation></semantics></math></p>
 <p>A “5x speedup” pipeline delivers ~3.8x. Reducing the branch penalty
 and filling load slots is where the next 30% lives.</p>
+<h2 id="real-pipelines-two-four-and-five-stages">Real Pipelines: Two,
+Four, and Five Stages</h2>
+<p>Five stages is a design point, not a law. Three production
+open-source RISC-V cores show the depth knob at work:</p>
+<figure>
+<img src="figs/pipecompare.svg"
+alt="two, four, and five stage pipelines, aligned to the classic stages" />
+<figcaption aria-hidden="true">two, four, and five stage pipelines,
+aligned to the classic stages</figcaption>
+</figure>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th>Ibex</th>
+<th>CV32E40P</th>
+<th>Wally</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stages</td>
+<td>2 (IF, ID/EX) + optional WB</td>
+<td>4 (IF, ID, EX, WB)</td>
+<td>5 (F, D, E, M, W)</td>
+</tr>
+<tr>
+<td>Taken branch</td>
+<td>2 cycles (1 with a dedicated target adder in IF)</td>
+<td>3-4 cycles, every time (no predictor)</td>
+<td>1 with prediction</td>
+</tr>
+<tr>
+<td>Load-use</td>
+<td>stall in the 3-stage config</td>
+<td>1 cycle</td>
+<td>1 cycle</td>
+</tr>
+<tr>
+<td>Target</td>
+<td>secure microcontroller (OpenTitan)</td>
+<td>embedded DSP</td>
+<td>RV64GC, boots Linux</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Ibex</strong> folds decode, execute, and register write into
+a single ID/EX cycle: a longer critical path at a lower clock, but
+almost no pipeline registers, no forwarding network, and a 2-cycle taken
+branch. Its optional third stage (WB) buys back clock frequency at the
+price of exactly the machinery this note built: EX→ID and WB→ID
+forwarding paths plus a load-use stall.</li>
+<li><strong>CV32E40P</strong> has no MEM stage at all: the load-store
+unit issues its memory request from EX, and WB exists only to catch load
+data returning a cycle later. ALU results skip WB entirely, forwarding
+straight from EX into ID’s pipeline registers; jumps resolve in ID
+(JAL/JALR), conditional branches in EX.</li>
+<li><strong>Wally</strong> is the textbook machine made synthesizable: a
+literal F/D/E/M/W pipeline in which every RTL signal carries its stage
+letter (<code>StallF</code>, <code>InstrD</code>, <code>PCE</code>),
+scaling from RV32E to an RV64GC application core.</li>
+</ul>
+<div class="callout callout-note">
+<div class="callout-title">
+Depth is a price paid for clock rate
+</div>
+<p>Each stage added buys a shorter critical path and costs pipeline
+registers, forwarding paths, and branch penalty. A 2-stage secure
+microcontroller and a 20-stage laptop core sit at opposite ends of the
+same trade: the fewer the stages, the less speculation machinery is
+worth building, which is why CV32E40P carries no
+<a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">branch
+predictor</a> at all: at 4 stages, the fixed 3-cycle penalty is cheaper
+than the predictor that would remove it.</p>
+</div>
 <h2 id="exceptions-in-the-pipeline">Exceptions in the Pipeline</h2>
 <p>A page fault in MEM, an illegal opcode in ID, and an external
 interrupt can all be pending at once, in different stages. The pipeline
@@ -281,29 +379,34 @@ handles this by tagging, not acting: fault flags ride the pipeline
 registers and are honored only at the commit point, giving precise
 state. Mechanics are in
 <a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">Exceptions</a>.</p>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<thead>
-<tr>
-<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
-Latex Math Library</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>References:</td>
-</tr>
-<tr>
-<td>1. MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lectures 5-6 2. D. Patterson &amp; J. Hennessy, <em>Computer
-Organization and Design, RISC-V Edition</em>, ch. 4 3. Arvind et al.,
-<em>Computer Architecture: A Constructive Approach</em> 4. Wikipedia:
-Classic RISC pipeline, Operand forwarding</td>
-</tr>
-</tbody>
-</table>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
+<h2 id="references">References</h2>
+<p><strong>Courses</strong></p>
+<ul>
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lectures 5-6</li>
+</ul>
+<p><strong>Textbooks</strong></p>
+<ul>
+<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
+Design, RISC-V Edition</em>, ch. 4</li>
+<li>Arvind et al., <em>Computer Architecture: A Constructive
+Approach</em></li>
+</ul>
+<p><strong>Standards, Papers, and Wikipedia</strong></p>
+<ul>
+<li>Wikipedia: Classic RISC pipeline, Operand forwarding</li>
+</ul>
+<p><strong>Microarchitecture References</strong></p>
+<ul>
+<li>lowRISC, <em>Ibex Documentation</em> (pipeline details),
+ibex-core.readthedocs.io</li>
+<li>OpenHW Group, <em>CV32E40P User Manual</em> (pipeline),
+docs.openhwgroup.org</li>
+<li>OpenHW Group, <em>CORE-V Wally</em> (cvw),
+github.com/openhwgroup/cvw</li>
+</ul>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
@@ -325,5 +428,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
+<div class="note-nav">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Floating%20Point%20Architecture" target="_top">&larr; Floating Point Architecture</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">Branch Prediction &rarr;</a>
+</div>
 </body>
 </html>

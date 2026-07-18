@@ -111,8 +111,12 @@ Prediction</a></li>
 id="toc-correlating-predictors">Correlating Predictors</a></li>
 <li><a href="#target-prediction" id="toc-target-prediction">Target
 Prediction</a></li>
+<li><a href="#stacking-predictors-a-real-frontend"
+id="toc-stacking-predictors-a-real-frontend">Stacking Predictors: A Real
+Frontend</a></li>
 <li><a href="#living-in-the-pipeline"
 id="toc-living-in-the-pipeline">Living in the Pipeline</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -159,6 +163,22 @@ zero state.</li>
 direction from profile runs; static limits are ~75-80% because
 data-dependent branches cannot be predicted at compile time.</li>
 </ul>
+<div class="callout callout-note">
+<div class="callout-title">
+When the best predictor is none at all
+</div>
+<p>The CPI equation prices prediction honestly: benefit = penalty
+avoided, cost = tables, verification, and recovery logic. At shallow
+depth the deal goes bad. <strong>CV32E40P</strong> (4 stages) ships
+<em>no predictor at all</em> (no BTB, no counters) and simply pays a
+fixed 3-4 cycles per taken branch, cheaper in area and power than the
+hardware that would remove it. <strong>Ibex</strong> (2 stages) offers
+exactly two upgrades as build options: static BTFN (predict taken iff
+the offset is negative) and a dedicated target adder in IF that cuts the
+taken penalty from 2 cycles to 1. Everything below this point (counters,
+gshare, TAGE) is machinery that only earns its keep as pipelines get
+deeper and wider.</p>
+</div>
 <h2 id="dynamic-direction-prediction">Dynamic Direction Prediction</h2>
 <p><strong>1-bit</strong>: remember the last outcome per branch. A loop
 branch mispredicts twice per loop execution (once at entry, once at
@@ -225,6 +245,29 @@ be repaired on misprediction.</p>
 interpreter dispatch) have many targets per site; predicted with
 history-indexed target tables (ITTAGE), historically the worst-behaved
 class.</p>
+<h2 id="stacking-predictors-a-real-frontend">Stacking Predictors: A Real
+Frontend</h2>
+<p>A large TAGE cannot be read in one cycle, and a one-cycle predictor
+cannot be large. Real frontends stack them, and BOOM (the Berkeley
+Out-of-Order Machine) is a documented example:</p>
+<ul>
+<li>The <strong>next-line predictor</strong> answers in a single cycle
+from tiny structures: a fully associative BTB, a bimodal table for
+direction, and a 32-entry RAS. It redirects fetch with zero bubbles but
+knows “only a few dozen branches”.</li>
+<li>The <strong>backing predictor</strong> (gshare or TAGE over a 64-bit
+global history) lives in SRAM and is read in parallel with the I-cache
+across several cycles. When it disagrees with the next-line prediction,
+it redirects fetch for a small early penalty, overriding a cheap guess
+with a better one before the branch even executes.</li>
+<li>A <strong>fetch target queue</strong> holds each fetch’s prediction
+metadata until commit, when the tables are trained with the true
+outcome; mispredictions repair it along the way.</li>
+</ul>
+<p>The design generalizes: every high-performance frontend is a latency
+hierarchy of predictors, exactly as the memory system is a latency
+hierarchy of
+<a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">caches</a>.</p>
 <h2 id="living-in-the-pipeline">Living in the Pipeline</h2>
 <ul>
 <li><strong>Predict</strong> in IF: BTB/direction lookup happens in
@@ -255,29 +298,32 @@ microarchitectural state trained by one context and consumed by another;
 Spectre showed mistrained speculation leaks data through cache side
 channels, and modern cores add predictor isolation/flush controls on
 privilege switches.</p>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%" />
-</colgroup>
-<thead>
-<tr>
-<th>Author: Sai Govardhan (saigov14@gmail.com) Tools used: Obsidian,
-Latex Math Library</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>References:</td>
-</tr>
-<tr>
-<td>1. MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lecture 13 2. J. Hennessy &amp; D. Patterson, <em>Computer Architecture:
-A Quantitative Approach</em>, ch. 3 3. A. Seznec, <em>A New Case for the
-TAGE Branch Predictor</em> (MICRO 2011) 4. Wikipedia: Branch
-predictor</td>
-</tr>
-</tbody>
-</table>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
+<h2 id="references">References</h2>
+<p><strong>Courses</strong></p>
+<ul>
+<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
+Lecture 13</li>
+</ul>
+<p><strong>Textbooks</strong></p>
+<ul>
+<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
+Quantitative Approach</em>, ch. 3</li>
+<li>A. Seznec, <em>A New Case for the TAGE Branch Predictor</em> (MICRO
+2011)</li>
+</ul>
+<p><strong>Standards, Papers, and Wikipedia</strong></p>
+<ul>
+<li>Wikipedia: Branch predictor</li>
+</ul>
+<p><strong>Microarchitecture References</strong></p>
+<ul>
+<li>RISC-V BOOM documentation (branch prediction),
+docs.boom-core.org</li>
+<li>lowRISC, <em>Ibex Documentation</em>; OpenHW Group, <em>CV32E40P
+User Manual</em></li>
+</ul>
 <pre class="license"><code>MIT License
 
 Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
@@ -299,5 +345,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
+<div class="note-nav">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">&larr; Simple Instruction Pipeline</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches and Virtual Memory &rarr;</a>
+</div>
 </body>
 </html>
