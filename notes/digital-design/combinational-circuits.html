@@ -279,7 +279,7 @@ class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span> <span class="kw">endgenerate</span></span></code></pre></div>
 <h2 id="multiplexer">Multiplexer</h2>
 <p>Selects one input. The 2:1 mux computes
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mover><mi>s</mi><mo accent="true">‾</mo></mover><mspace width="0.167em"></mspace><msub><mi>d</mi><mn>0</mn></msub><mo>∨</mo><mi>s</mi><mspace width="0.167em"></mspace><msub><mi>d</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">y = \bar{s}\,d_0 \lor s\,d_1</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>s</mi></mrow><mspace width="0.167em"></mspace><msub><mi>d</mi><mn>0</mn></msub><mo>∨</mo><mi>s</mi><mspace width="0.167em"></mspace><msub><mi>d</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">y = \bar{s}\,d_0 \lor s\,d_1</annotation></semantics></math>,
 written <code>y = sel ? d1 : d0</code>.</p>
 <figure>
 <img src="figs/mux2.svg" alt="2:1 multiplexer" />
@@ -337,9 +337,9 @@ size smaller than the direct 8:1 lookup.</p>
 code into one-hot of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><mi>n</mi></msup><annotation encoding="application/x-tex">2^n</annotation></semantics></math>
 outputs. The 2:4 decoder drives the four minterms
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mn>0</mn></msub><mo>=</mo><mover><mi>a</mi><mo accent="true">‾</mo></mover><mover><mi>b</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">y_0 = \bar a\bar b</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mn>1</mn></msub><mo>=</mo><mover><mi>a</mi><mo accent="true">‾</mo></mover><mi>b</mi></mrow><annotation encoding="application/x-tex">y_1 = \bar a b</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mn>2</mn></msub><mo>=</mo><mi>a</mi><mover><mi>b</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">y_2 = a\bar b</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mn>0</mn></msub><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow></mrow><annotation encoding="application/x-tex">y_0 = \bar a\bar b</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mn>1</mn></msub><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mi>b</mi></mrow><annotation encoding="application/x-tex">y_1 = \bar a b</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mn>2</mn></msub><mo>=</mo><mi>a</mi><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow></mrow><annotation encoding="application/x-tex">y_2 = a\bar b</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mn>3</mn></msub><mo>=</mo><mi>a</mi><mi>b</mi></mrow><annotation encoding="application/x-tex">y_3 = ab</annotation></semantics></math>,
 gated by an enable.</p>
 <figure>
@@ -514,7 +514,7 @@ and the occasional critical adder stage.</p>
 </div>
 <h3 id="subtraction">Subtraction</h3>
 <p>Subtraction reuses an adder:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>−</mo><mi>b</mi><mo>=</mo><mi>a</mi><mo>+</mo><mover><mi>b</mi><mo accent="true">‾</mo></mover><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">a - b = a + \bar{b} + 1</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>−</mo><mi>b</mi><mo>=</mo><mi>a</mi><mo>+</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">a - b = a + \bar{b} + 1</annotation></semantics></math>
 (two’s complement). An adder-subtractor XORs
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
 with a <code>sub</code> control and feeds <code>sub</code> in as
@@ -526,7 +526,7 @@ and out of the sign bit:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>o</mi><mi>v</mi><mo>=</mo><msub><mi>c</mi><mi>N</mi></msub><mo>⊕</mo><msub><mi>c</mi><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">ov = c_{N} \oplus c_{N-1}</annotation></semantics></math>.</p>
 <h2 id="comparator">Comparator</h2>
 <p>Equality is a bitwise XNOR of the two operands ANDed together:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mi>q</mi><mo>=</mo><msub><mo>∏</mo><mi>i</mi></msub><mover><mrow><msub><mi>a</mi><mi>i</mi></msub><mo>⊕</mo><msub><mi>b</mi><mi>i</mi></msub></mrow><mo accent="true">¯</mo></mover></mrow><annotation encoding="application/x-tex">eq = \prod_i \overline{a_i \oplus b_i}</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mi>q</mi><mo>=</mo><msub><mo>∏</mo><mi>i</mi></msub><mrow style="border-top:0.065em solid;padding-top:0.1em"><msub><mi>a</mi><mi>i</mi></msub><mo>⊕</mo><msub><mi>b</mi><mi>i</mi></msub></mrow></mrow><annotation encoding="application/x-tex">eq = \prod_i \overline{a_i \oplus b_i}</annotation></semantics></math>.
 Magnitude
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>&lt;</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a &lt; b</annotation></semantics></math>)
 is a subtractor whose borrow/sign output is examined, or a chain
@@ -659,7 +659,7 @@ on an output that should stay
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>
 (static-0 the reverse) when a single input change crosses between two
 product terms. Take
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>a</mi><mi>b</mi><mo>∨</mo><mover><mi>b</mi><mo accent="true">‾</mo></mover><mi>c</mi></mrow><annotation encoding="application/x-tex">y = ab \lor \bar{b}c</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>a</mi><mi>b</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mi>c</mi></mrow><annotation encoding="application/x-tex">y = ab \lor \bar{b}c</annotation></semantics></math>
 with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mi>c</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">a = c = 1</annotation></semantics></math>
 and
@@ -667,7 +667,7 @@ and
 falling: the term
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>b</mi></mrow><annotation encoding="application/x-tex">ab</annotation></semantics></math>
 turns off through one gate while
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>b</mi><mo accent="true">‾</mo></mover><mi>c</mi></mrow><annotation encoding="application/x-tex">\bar{b}c</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mi>c</mi></mrow><annotation encoding="application/x-tex">\bar{b}c</annotation></semantics></math>
 turns on through the inverter plus a gate, so for one inverter delay
 neither term holds the output up.</p>
 <figure>
@@ -706,7 +706,7 @@ covers both cells the transition moves between:</p>
 <p>The fix is the redundant <strong>consensus term</strong>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">ac</annotation></semantics></math>
 bridging the adjacent groups:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>a</mi><mi>b</mi><mo>∨</mo><mover><mi>b</mi><mo accent="true">‾</mo></mover><mi>c</mi><mo>∨</mo><mi>a</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">y = ab \lor \bar{b}c \lor ac</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>a</mi><mi>b</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mi>c</mi><mo>∨</mo><mi>a</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">y = ab \lor \bar{b}c \lor ac</annotation></semantics></math>
 stays
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>
 through the transition because

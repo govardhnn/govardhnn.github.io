@@ -147,7 +147,7 @@ if <strong>either</strong> input is
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>.</li>
 <li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">NOT</mtext><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\text{NOT}(x)</annotation></semantics></math>,
 denoted
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>x</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar{x}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><annotation encoding="application/x-tex">\bar{x}</annotation></semantics></math>
 (also
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>x</mi><mo>′</mo></msup><annotation encoding="application/x-tex">x&#39;</annotation></semantics></math>),
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>
@@ -168,10 +168,10 @@ if <strong>exactly one</strong> input is
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>.</li>
 <li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">NAND</mtext><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\text{NAND}(x, y)</annotation></semantics></math>,
 denoted
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mrow><mi>x</mi><mo>∧</mo><mi>y</mi></mrow><mo accent="true">¯</mo></mover><annotation encoding="application/x-tex">\overline{x \land y}</annotation></semantics></math></li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi><mo>∧</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">\overline{x \land y}</annotation></semantics></math></li>
 <li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">NOR</mtext><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\text{NOR}(x, y)</annotation></semantics></math>,
 denoted
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mrow><mi>x</mi><mo>∨</mo><mi>y</mi></mrow><mo accent="true">¯</mo></mover><annotation encoding="application/x-tex">\overline{x \lor y}</annotation></semantics></math></li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">\overline{x \lor y}</annotation></semantics></math></li>
 </ul>
 <p>Below is a Truth Table for the above operators:</p>
 <table>
@@ -231,7 +231,7 @@ denoted
 </tbody>
 </table>
 <p>XNOR
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mrow><mi>x</mi><mo>⊕</mo><mi>y</mi></mrow><mo accent="true">¯</mo></mover><annotation encoding="application/x-tex">\overline{x \oplus y}</annotation></semantics></math>,
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi><mo>⊕</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">\overline{x \oplus y}</annotation></semantics></math>,
 aka <strong>equivalence</strong>) completes the compound set, 1 if both
 inputs are the same.</p>
 <blockquote>
@@ -244,11 +244,11 @@ interchangeably in circuit design).</p>
 </blockquote>
 <p>A variable or its complement in an expression is a
 <strong>literal</strong>
-(e.g. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>∧</mo><mover><mi>b</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">a \land \bar{b}</annotation></semantics></math>
+(e.g. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow></mrow><annotation encoding="application/x-tex">a \land \bar{b}</annotation></semantics></math>
 has two:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>b</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar{b}</annotation></semantics></math>).
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><annotation encoding="application/x-tex">\bar{b}</annotation></semantics></math>).
 The algebra lets us <strong>simplify</strong> expressions, put them in
 <strong>normal form</strong>, and test two expressions for
 <strong>equivalence</strong>.</p>
@@ -262,7 +262,7 @@ stated as axioms for all
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>∧</mo><mi>x</mi><mo>=</mo><mi>x</mi><mspace width="2.0em"></mspace><mn>0</mn><mo>∨</mo><mi>x</mi><mo>=</mo><mi>x</mi><mspace width="2.0em"></mspace><mtext mathvariant="normal">(identity)</mtext></mrow><annotation encoding="application/x-tex">
 1 \land x = x \qquad 0 \lor x = x \qquad\text{(identity)}
 </annotation></semantics></math>
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mn>0</mn><mo accent="true">‾</mo></mover><mo>=</mo><mn>1</mn><mspace width="2.0em"></mspace><mover><mn>1</mn><mo accent="true">‾</mo></mover><mo>=</mo><mn>0</mn><mspace width="2.0em"></mspace><mtext mathvariant="normal">(negation)</mtext></mrow><annotation encoding="application/x-tex">
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mn>0</mn></mrow><mo>=</mo><mn>1</mn><mspace width="2.0em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mn>1</mn></mrow><mo>=</mo><mn>0</mn><mspace width="2.0em"></mspace><mtext mathvariant="normal">(negation)</mtext></mrow><annotation encoding="application/x-tex">
 \bar{0} = 1 \qquad \bar{1} = 0 \qquad\text{(negation)}
 </annotation></semantics></math></p>
 <h3 id="duality">Duality</h3>
@@ -313,12 +313,12 @@ compositions of self-dual operations stay self-dual.</p>
 </tr>
 <tr>
 <td>Complement</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x \land \bar{x} = 0</annotation></semantics></math></td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">x \lor \bar{x} = 1</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x \land \bar{x} = 0</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">x \lor \bar{x} = 1</annotation></semantics></math></td>
 </tr>
 <tr>
 <td>Involution</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo accent="true">¯</mo></mover><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">\overline{\bar{x}} = x</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow></mrow><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">\overline{\bar{x}} = x</annotation></semantics></math></td>
 <td><em>(self-dual)</em></td>
 </tr>
 <tr>
@@ -343,18 +343,18 @@ compositions of self-dual operations stay self-dual.</p>
 </tr>
 <tr>
 <td>Combining</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∧</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∧</mo><mover><mi>y</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">(x \land y) \lor (x \land \bar{y}) = x</annotation></semantics></math></td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>∧</mo><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mover><mi>y</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">(x \lor y) \land (x \lor \bar{y}) = x</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∧</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">(x \land y) \lor (x \land \bar{y}) = x</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>∧</mo><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">(x \lor y) \land (x \lor \bar{y}) = x</annotation></semantics></math></td>
 </tr>
 <tr>
 <td>Consensus</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mi>y</mi><mo>∨</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mi>z</mi><mo>∨</mo><mi>y</mi><mi>z</mi><mo>=</mo><mi>x</mi><mi>y</mi><mo>∨</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mi>z</mi></mrow><annotation encoding="application/x-tex">xy \lor \bar{x}z \lor yz = xy \lor \bar{x}z</annotation></semantics></math></td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mi>y</mi><mo>∨</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(x{\lor}y)(\bar{x}{\lor}z)(y{\lor}z) = (x{\lor}y)(\bar{x}{\lor}z)</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mi>y</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mi>z</mi><mo>∨</mo><mi>y</mi><mi>z</mi><mo>=</mo><mi>x</mi><mi>y</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mi>z</mi></mrow><annotation encoding="application/x-tex">xy \lor \bar{x}z \lor yz = xy \lor \bar{x}z</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mi>y</mi><mo>∨</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(x{\lor}y)(\bar{x}{\lor}z)(y{\lor}z) = (x{\lor}y)(\bar{x}{\lor}z)</annotation></semantics></math></td>
 </tr>
 <tr>
 <td>DeMorgan’s</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mrow><mi>x</mi><mo>∧</mo><mi>y</mi></mrow><mo accent="true">¯</mo></mover><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mover><mi>y</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline{x \land y} = \bar{x} \lor \bar{y}</annotation></semantics></math></td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mrow><mi>x</mi><mo>∨</mo><mi>y</mi></mrow><mo accent="true">¯</mo></mover><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∧</mo><mover><mi>y</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline{x \lor y} = \bar{x} \land \bar{y}</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi><mo>∧</mo><mi>y</mi></mrow><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow></mrow><annotation encoding="application/x-tex">\overline{x \land y} = \bar{x} \lor \bar{y}</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi><mo>∨</mo><mi>y</mi></mrow><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow></mrow><annotation encoding="application/x-tex">\overline{x \lor y} = \bar{x} \land \bar{y}</annotation></semantics></math></td>
 </tr>
 </tbody>
 </table>
@@ -377,7 +377,7 @@ to
 All nonmonotonicity enters through negation, which the two complement
 laws define completely.</li>
 <li><strong>Consensus</strong>: in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mi>y</mi><mo>∨</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mi>z</mi><mo>∨</mo><mi>y</mi><mi>z</mi></mrow><annotation encoding="application/x-tex">xy \lor \bar{x}z \lor yz</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mi>y</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mi>z</mi><mo>∨</mo><mi>y</mi><mi>z</mi></mrow><annotation encoding="application/x-tex">xy \lor \bar{x}z \lor yz</annotation></semantics></math>,
 the term
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mi>z</mi></mrow><annotation encoding="application/x-tex">yz</annotation></semantics></math>
 is <strong>redundant</strong> (whenever
@@ -385,7 +385,7 @@ is <strong>redundant</strong> (whenever
 either
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mi>y</mi></mrow><annotation encoding="application/x-tex">xy</annotation></semantics></math>
 or
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mi>z</mi></mrow><annotation encoding="application/x-tex">\bar{x}z</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mi>z</mi></mrow><annotation encoding="application/x-tex">\bar{x}z</annotation></semantics></math>
 is already
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>),
 so it drops out.</li>
@@ -399,8 +399,8 @@ input combinations. DeMorgan, for instance:</li>
 <tr>
 <th>x</th>
 <th>y</th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mrow><mi>x</mi><mo>∧</mo><mi>y</mi></mrow><mo accent="true">¯</mo></mover><annotation encoding="application/x-tex">\overline{x \land y}</annotation></semantics></math></th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mover><mi>y</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\bar{x} \lor \bar{y}</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi><mo>∧</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">\overline{x \land y}</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow></mrow><annotation encoding="application/x-tex">\bar{x} \lor \bar{y}</annotation></semantics></math></th>
 </tr>
 </thead>
 <tbody>
@@ -435,7 +435,7 @@ input combinations. DeMorgan, for instance:</li>
 is intersection,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>∨</mi><annotation encoding="application/x-tex">\lor</annotation></semantics></math>
 is union,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>x</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar{x}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><annotation encoding="application/x-tex">\bar{x}</annotation></semantics></math>
 is the outside. Absorption, DeMorgan, and the complement laws can all be
 read off the shaded regions.</p>
 <figure>
@@ -446,7 +446,7 @@ NOT</figcaption>
 <h3 id="worked-example-simplifying-implication">Worked Example:
 Simplifying Implication</h3>
 <p>Material implication
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x \rightarrow y = \bar{x} \lor y</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x \rightarrow y = \bar{x} \lor y</annotation></semantics></math>
 (it reappears in SVA assertions as <code>|-&gt;</code>, false only when
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>y</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x=1, y=0</annotation></semantics></math>).
 Deriving that form from its truth table shows the standard recipe the
@@ -467,13 +467,13 @@ then simplify.</p>
 <td>0</td>
 <td>0</td>
 <td>1</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mspace width="0.167em"></mspace><mover><mi>y</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\bar{x}\,\bar{y}</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mspace width="0.167em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow></mrow><annotation encoding="application/x-tex">\bar{x}\,\bar{y}</annotation></semantics></math></td>
 </tr>
 <tr>
 <td>0</td>
 <td>1</td>
 <td>1</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mspace width="0.167em"></mspace><mi>y</mi></mrow><annotation encoding="application/x-tex">\bar{x}\,y</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mspace width="0.167em"></mspace><mi>y</mi></mrow><annotation encoding="application/x-tex">\bar{x}\,y</annotation></semantics></math></td>
 </tr>
 <tr>
 <td>1</td>
@@ -489,7 +489,7 @@ then simplify.</p>
 </tr>
 </tbody>
 </table>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mover><mi>y</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mi>y</mi><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="prefix">(</mo><mover><mi>y</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mi>y</mi><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">
 x \rightarrow y = \bar{x}\bar{y} \lor \bar{x}y \lor xy
 = \bar{x}(\bar{y} \lor y) \lor xy
 = \bar{x} \lor xy
@@ -498,7 +498,7 @@ x \rightarrow y = \bar{x}\bar{y} \lor \bar{x}y \lor xy
 </annotation></semantics></math></p>
 <p>(distribute, complement, distribute again; the last two steps are the
 identity
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>∨</mo><mover><mi>a</mi><mo accent="true">‾</mo></mover><mi>b</mi><mo>=</mo><mi>a</mi><mo>∨</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a \lor \bar{a}b = a \lor b</annotation></semantics></math>).</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mi>b</mi><mo>=</mo><mi>a</mi><mo>∨</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a \lor \bar{a}b = a \lor b</annotation></semantics></math>).</p>
 <h2 id="dual-and-complement-of-a-function">Dual and Complement of a
 Function</h2>
 <p>The <strong>dual</strong>
@@ -513,12 +513,12 @@ f = (a \land b) \lor (b \land c) \;\implies\; f^D = (a \lor b) \land (b \lor c).
 <p>The dual applied to complemented inputs equals the complement of the
 function, the generalized DeMorgan’s theorem, and the basis for building
 a CMOS pull-up network as the dual of its pull-down:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>f</mi><mi>D</mi></msup><mo stretchy="false" form="prefix">(</mo><mover><mi>a</mi><mo accent="true">‾</mo></mover><mo>,</mo><mover><mi>b</mi><mo accent="true">‾</mo></mover><mo>,</mo><mi>…</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mover><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo>,</mo><mi>…</mi><mo stretchy="false" form="postfix">)</mo></mrow><mo accent="true">¯</mo></mover><mi>.</mi></mrow><annotation encoding="application/x-tex">
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>f</mi><mi>D</mi></msup><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>,</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo>,</mo><mi>…</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo>,</mo><mi>…</mi><mo stretchy="false" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
 f^D(\bar{a}, \bar{b}, \ldots) = \overline{f(a, b, \ldots)}.
 </annotation></semantics></math></p>
 <p>To <strong>complement</strong> an expression directly: take the dual,
 then complement each literal. E.g.
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mrow><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>∧</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mover><mi>a</mi><mo accent="true">‾</mo></mover><mo>∧</mo><mi>c</mi><mo stretchy="false" form="postfix">)</mo></mrow><mo accent="true">¯</mo></mover><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mover><mi>a</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mover><mi>b</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="postfix">)</mo><mo>∧</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>∨</mo><mover><mi>c</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\overline{(a \land b) \lor (\bar{a} \land c)} = (\bar{a} \lor \bar{b}) \land (a \lor \bar{c})</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>∧</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>∧</mo><mi>c</mi><mo stretchy="false" form="postfix">)</mo></mrow><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo stretchy="false" form="postfix">)</mo><mo>∧</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>c</mi></mrow><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\overline{(a \land b) \lor (\bar{a} \land c)} = (\bar{a} \lor \bar{b}) \land (a \lor \bar{c})</annotation></semantics></math>.</p>
 <h2 id="normal-form">Normal Form</h2>
 <p>To compare two expressions, put both in <strong>normal form</strong>,
 a <em>sum of products</em> (ORed AND-terms). Each product term matches
@@ -526,12 +526,12 @@ one truth-table row where the output is
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>.
 For the 3-input <strong>majority</strong> function (true when ≥2 inputs
 are high):
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo>,</mo><mi>c</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mover><mi>a</mi><mo accent="true">‾</mo></mover><mi>b</mi><mi>c</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mover><mi>b</mi><mo accent="true">‾</mo></mover><mi>c</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mi>b</mi><mover><mi>c</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mi>b</mi><mi>c</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo>,</mo><mi>c</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mi>b</mi><mi>c</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mi>c</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mi>b</mi><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>c</mi></mrow><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mi>b</mi><mi>c</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
 f(a, b, c) = (\bar{a}bc) \lor (a\bar{b}c) \lor (ab\bar{c}) \lor (abc)
 </annotation></semantics></math></p>
 <p>Any expression reaches normal form by <strong>Shannon
 expansion</strong> about each variable:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>i</mi></msub><mo>,</mo><mi>…</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>∧</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>…</mi><mo>,</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mo>∨</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><mover><msub><mi>x</mi><mi>i</mi></msub><mo accent="true">‾</mo></mover><mo>∧</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>…</mi><mo>,</mo><mn>0</mn><mo>,</mo><mi>…</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>i</mi></msub><mo>,</mo><mi>…</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>∧</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>…</mi><mo>,</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mo>∨</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><msub><mi>x</mi><mi>i</mi></msub></mrow><mo>∧</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>…</mi><mo>,</mo><mn>0</mn><mo>,</mo><mi>…</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
 f(\ldots, x_i, \ldots) = \big(x_i \land f(\ldots, 1, \ldots)\big) \lor \big(\bar{x_i} \land f(\ldots, 0, \ldots)\big).
 </annotation></semantics></math></p>
 <h3 id="minterms-maxterms-canonical-forms">Minterms, maxterms, canonical
@@ -559,14 +559,14 @@ of them:</p>
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>a</mi><mo accent="true">‾</mo></mover><mspace width="0.167em"></mspace><mover><mi>b</mi><mo accent="true">‾</mo></mover><mspace width="0.167em"></mspace><mover><mi>c</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\bar{a}\,\bar{b}\,\bar{c}</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mspace width="0.167em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mspace width="0.167em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>c</mi></mrow></mrow><annotation encoding="application/x-tex">\bar{a}\,\bar{b}\,\bar{c}</annotation></semantics></math></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>m</mi><mn>0</mn></msub><annotation encoding="application/x-tex">m_0</annotation></semantics></math></td>
 </tr>
 <tr>
 <td>1</td>
 <td>0</td>
 <td>1</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mspace width="0.167em"></mspace><mover><mi>b</mi><mo accent="true">‾</mo></mover><mspace width="0.167em"></mspace><mi>c</mi></mrow><annotation encoding="application/x-tex">a\,\bar{b}\,c</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mspace width="0.167em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mspace width="0.167em"></mspace><mi>c</mi></mrow><annotation encoding="application/x-tex">a\,\bar{b}\,c</annotation></semantics></math></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>m</mi><mn>5</mn></msub><annotation encoding="application/x-tex">m_5</annotation></semantics></math></td>
 </tr>
 <tr>
@@ -585,7 +585,7 @@ output is
 Majority is true on rows 3,5,6,7:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mspace width="0.278em"></mspace><mi>f</mi><mo>=</mo><mo>∑</mo><mi>m</mi><mo stretchy="false" form="prefix">(</mo><mn>3</mn><mo>,</mo><mn>5</mn><mo>,</mo><mn>6</mn><mo>,</mo><mn>7</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\;f = \sum m(3,5,6,7)</annotation></semantics></math>.</li>
 <li><strong>Canonical POS</strong> = AND of <strong>maxterms</strong>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>M</mi><mi>j</mi></msub><mo>=</mo><mover><msub><mi>m</mi><mi>j</mi></msub><mo accent="true">¯</mo></mover></mrow><annotation encoding="application/x-tex">M_j = \overline{m_j}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>M</mi><mi>j</mi></msub><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><msub><mi>m</mi><mi>j</mi></msub></mrow></mrow><annotation encoding="application/x-tex">M_j = \overline{m_j}</annotation></semantics></math>
 for rows where output is
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mspace width="0.278em"></mspace><mi>f</mi><mo>=</mo><mo>∏</mo><mi>M</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>4</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\;f = \prod M(0,1,2,4)</annotation></semantics></math>.</li>
@@ -604,7 +604,7 @@ SOP/POS (fewest terms, fewest literals) is <strong>logic
 minimization</strong>.</p>
 <h2 id="logic-minimization">Logic Minimization</h2>
 <p>The core move is the combining theorem applied repeatedly:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi>Q</mi><mo>∨</mo><mi>P</mi><mover><mi>Q</mi><mo accent="true">‾</mo></mover><mo>=</mo><mi>P</mi></mrow><annotation encoding="application/x-tex">PQ \lor P\bar{Q} = P</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi>Q</mi><mo>∨</mo><mi>P</mi><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>Q</mi></mrow><mo>=</mo><mi>P</mi></mrow><annotation encoding="application/x-tex">PQ \lor P\bar{Q} = P</annotation></semantics></math>.
 Each application drops a literal. An <strong>implicant</strong> is a
 product term that implies the function; a <strong>prime
 implicant</strong> is one that cannot lose any further literal. A
@@ -617,7 +617,7 @@ are adjacent, including wraparound. Combining adjacent minterms becomes
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>s
 and drop the variable that changes”. Columns and rows follow Gray-code
 order. For
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>=</mo><mi>a</mi><mi>b</mi><mi>c</mi><mo>∨</mo><mover><mi>a</mi><mo accent="true">‾</mo></mover><mi>b</mi><mi>c</mi><mo>∨</mo><mi>a</mi><mi>b</mi><mover><mi>c</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">f = abc \lor \bar{a}bc \lor ab\bar{c}</annotation></semantics></math>:</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>=</mo><mi>a</mi><mi>b</mi><mi>c</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mi>b</mi><mi>c</mi><mo>∨</mo><mi>a</mi><mi>b</mi><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>c</mi></mrow></mrow><annotation encoding="application/x-tex">f = abc \lor \bar{a}bc \lor ab\bar{c}</annotation></semantics></math>:</p>
 <table>
 <thead>
 <tr>
@@ -717,10 +717,10 @@ bubbles</h3>
 replaces an explicit inverter.</p>
 <ul>
 <li><strong>NAND</strong> = AND + inverter,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mrow><mi>a</mi><mo>∧</mo><mi>b</mi></mrow><mo accent="true">¯</mo></mover><annotation encoding="application/x-tex">\overline{a \land b}</annotation></semantics></math>;
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi><mo>∧</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">\overline{a \land b}</annotation></semantics></math>;
 by DeMorgan, an OR with bubbled inputs.</li>
 <li><strong>NOR</strong> = OR + inverter,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mrow><mi>a</mi><mo>∨</mo><mi>b</mi></mrow><mo accent="true">¯</mo></mover><annotation encoding="application/x-tex">\overline{a \lor b}</annotation></semantics></math>;
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi><mo>∨</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">\overline{a \lor b}</annotation></semantics></math>;
 by DeMorgan, an AND with bubbled inputs.</li>
 </ul>
 <figure>
@@ -740,16 +740,16 @@ can build any function.
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mi>∧</mi><mo>,</mo><mi>∨</mi><mo>,</mo><mi>¬</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{\land, \lor, \lnot\}</annotation></semantics></math>
 is complete (canonical SOP uses only these). Crucially, <strong>NAND
 alone and NOR alone are each universal</strong>,
-e.g. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>=</mo><mover><mrow><mi>x</mi><mo>∧</mo><mi>x</mi></mrow><mo accent="true">¯</mo></mover></mrow><annotation encoding="application/x-tex">\bar{x} = \overline{x \land x}</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mi>y</mi><mo>=</mo><mover><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∧</mo><mover><mi>y</mi><mo accent="true">‾</mo></mover></mrow><mo accent="true">¯</mo></mover></mrow><annotation encoding="application/x-tex">x \lor y = \overline{\bar{x} \land \bar{y}}</annotation></semantics></math>,
+e.g. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi><mo>∧</mo><mi>x</mi></mrow></mrow><annotation encoding="application/x-tex">\bar{x} = \overline{x \land x}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow></mrow></mrow><annotation encoding="application/x-tex">x \lor y = \overline{\bar{x} \land \bar{y}}</annotation></semantics></math>,
 which is why a single gate type can implement any logic in silicon.</p>
 <h3 id="xor-xnor">XOR / XNOR</h3>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>⊕</mo><mi>b</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>∧</mo><mover><mi>b</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mover><mi>a</mi><mo accent="true">‾</mo></mover><mo>∧</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><mover><mrow><mi>a</mi><mo>⊕</mo><mi>b</mi></mrow><mo accent="true">¯</mo></mover><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>∧</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mover><mi>a</mi><mo accent="true">‾</mo></mover><mo>∧</mo><mover><mi>b</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>⊕</mo><mi>b</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>∧</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi><mo>⊕</mo><mi>b</mi></mrow><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>∧</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
 a \oplus b = (a \land \bar{b}) \lor (\bar{a} \land b), \qquad \overline{a \oplus b} = (a \land b) \lor (\bar{a} \land \bar{b}).
 </annotation></semantics></math></p>
 <p>XOR is commutative and associative, with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>⊕</mo><mn>0</mn><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">x \oplus 0 = x</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mspace width="0.278em"></mspace><mi>x</mi><mo>⊕</mo><mn>1</mn><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\;x \oplus 1 = \bar{x}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mspace width="0.278em"></mspace><mi>x</mi><mo>⊕</mo><mn>1</mn><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow></mrow><annotation encoding="application/x-tex">\;x \oplus 1 = \bar{x}</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mspace width="0.278em"></mspace><mi>x</mi><mo>⊕</mo><mi>x</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\;x \oplus x = 0</annotation></semantics></math>.
 A chain
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>⊕</mo><mi>⋯</mi><mo>⊕</mo><msub><mi>x</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">x_1 \oplus \cdots \oplus x_n</annotation></semantics></math>
@@ -763,7 +763,7 @@ XNOR is <strong>equivalence</strong>, true iff the inputs match.</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>,</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">0, 1</annotation></semantics></math>
 as integers gives arithmetic equivalents, useful in proofs and in
 software without native bit operations:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mi>y</mi><mo>=</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mspace width="2.0em"></mspace><mi>x</mi><mo>∨</mo><mi>y</mi><mo>=</mo><mi>x</mi><mo>+</mo><mi>y</mi><mo>−</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow><mi mathvariant="normal">max</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mspace width="2.0em"></mspace><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>1</mn><mo>−</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mi>y</mi><mo>=</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mspace width="2.0em"></mspace><mi>x</mi><mo>∨</mo><mi>y</mi><mo>=</mo><mi>x</mi><mo>+</mo><mi>y</mi><mo>−</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow><mi mathvariant="normal">max</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mspace width="2.0em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>=</mo><mn>1</mn><mo>−</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">
 x \land y = xy = \min(x,y) \qquad x \lor y = x + y - xy = \max(x,y) \qquad \bar{x} = 1 - x
 </annotation></semantics></math> XOR is addition modulo 2: add the bits
 as integers and keep the remainder mod 2, so
@@ -829,7 +829,7 @@ instead of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><msup><mn>2</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">+2^{N-1}</annotation></semantics></math>.
 Its decisive property is that ordinary binary addition works for any
 signs, with no special casing.</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mo>=</mo><mn>0101</mn><mo>,</mo><mspace width="2.0em"></mspace><mo>−</mo><mn>5</mn><mo>=</mo><mover><mn>0101</mn><mo accent="true">¯</mo></mover><mo>+</mo><mn>1</mn><mo>=</mo><mn>1010</mn><mo>+</mo><mn>1</mn><mo>=</mo><mn>1011</mn></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mo>=</mo><mn>0101</mn><mo>,</mo><mspace width="2.0em"></mspace><mo>−</mo><mn>5</mn><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mn>0101</mn></mrow><mo>+</mo><mn>1</mn><mo>=</mo><mn>1010</mn><mo>+</mo><mn>1</mn><mo>=</mo><mn>1011</mn></mrow><annotation encoding="application/x-tex">
 5 = 0101, \qquad -5 = \overline{0101} + 1 = 1010 + 1 = 1011
 </annotation></semantics></math>
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>5</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0101</mn><mo>+</mo><mn>1011</mn><mo>=</mo><mn>10000</mn><mo>→</mo><mtext mathvariant="normal">drop carry</mtext><mo>→</mo><mn>0000</mn><mi>✓</mi></mrow><annotation encoding="application/x-tex">

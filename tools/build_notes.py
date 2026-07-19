@@ -105,6 +105,48 @@ def isolate_hr_lines(text):
         out.append(line)
     return "\n".join(out)
 
+OVER_ACCENTS = ('<mo accent="true">¯</mo>',   # U+00AF from \overline
+                '<mo accent="true">‾</mo>')   # U+203E from \bar
+
+def convert_overlines(h):
+    # Pandoc renders \overline / \bar as <mover> with a macron accent, which
+    # browsers draw as a fixed-width mark instead of stretching it across the
+    # base. Rewrite those movers as an mrow with a CSS top border, which
+    # always spans the whole expression. Handles nested overlines.
+    out = []
+    i = 0
+    while True:
+        j = h.find('<mover>', i)
+        if j == -1:
+            out.append(h[i:])
+            return ''.join(out)
+        out.append(h[i:j])
+        # find the matching </mover>, accounting for nesting
+        depth, pos = 1, j + len('<mover>')
+        while depth > 0:
+            no = h.find('<mover>', pos)
+            nc = h.find('</mover>', pos)
+            if nc == -1:
+                out.append(h[j:])
+                return ''.join(out)
+            if no != -1 and no < nc:
+                depth += 1
+                pos = no + len('<mover>')
+            else:
+                depth -= 1
+                pos = nc + len('</mover>')
+        inner = h[j + len('<mover>'):nc]
+        acc = next((a for a in OVER_ACCENTS if inner.endswith(a)), None)
+        if acc:
+            base = inner[:-len(acc)]
+            if base.startswith('<mrow>') and base.endswith('</mrow>'):
+                base = base[len('<mrow>'):-len('</mrow>')]
+            out.append('<mrow style="border-top:0.065em solid;padding-top:0.1em">'
+                       + convert_overlines(base) + '</mrow>')
+        else:
+            out.append('<mover>' + convert_overlines(inner) + '</mover>')
+        i = pos
+
 def nav_href(section, title):
     return f"../../notes.html#{section}/{title}".replace(" ", "%20")
 
@@ -166,6 +208,7 @@ def main():
 
         with open(out_html, "r", encoding="utf-8") as f:
             html = f.read()
+        html = convert_overlines(html)
         html = html.replace("</body>", nav_footer(idx) + "\n</body>", 1)
         with open(out_html, "w", encoding="utf-8") as f:
             f.write(html)

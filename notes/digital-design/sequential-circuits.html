@@ -157,7 +157,7 @@ resets
 both low holds, both high is illegal
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>Q</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar{Q}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>Q</mi></mrow><annotation encoding="application/x-tex">\bar{Q}</annotation></semantics></math>
 both driven low, and releasing
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
 and
@@ -208,7 +208,7 @@ gates</figcaption>
 <p>Its characteristic equation (next state as a function of inputs and
 present state, assuming
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>R</mi><mo>≠</mo><mn>11</mn></mrow><annotation encoding="application/x-tex">SR \ne 11</annotation></semantics></math>):
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>S</mi><mo>∨</mo><mover><mi>R</mi><mo accent="true">‾</mo></mover><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^+ = S \lor \bar{R}Q</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>S</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>R</mi></mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^+ = S \lor \bar{R}Q</annotation></semantics></math>.
 Gating
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
 and
@@ -217,7 +217,7 @@ with an enable gives the clocked SR latch, active only while the enable
 is high.</p>
 <p>A D latch removes the illegal state by deriving
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>=</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">S = D</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>=</mo><mover><mi>D</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">R = \bar{D}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>D</mi></mrow></mrow><annotation encoding="application/x-tex">R = \bar{D}</annotation></semantics></math>
 behind the enable, so
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">Q^+ = D</annotation></semantics></math>.
 It is level-sensitive: while <code>EN</code> is high it is transparent
@@ -274,7 +274,7 @@ equation:</p>
 </tr>
 <tr>
 <td>JK</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>J</mi><mover><mi>Q</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mover><mi>K</mi><mo accent="true">‾</mo></mover><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^+ = J\bar{Q} \lor \bar{K}Q</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>J</mi><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>Q</mi></mrow><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>K</mi></mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^+ = J\bar{Q} \lor \bar{K}Q</annotation></semantics></math></td>
 <td>set on
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>J</mi><annotation encoding="application/x-tex">J</annotation></semantics></math>,
 reset on
