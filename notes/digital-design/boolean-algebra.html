@@ -112,7 +112,6 @@ id="toc-from-equations-to-gates">From Equations to Gates</a></li>
 a Field: GF(2)</a></li>
 <li><a href="#number-systems" id="toc-number-systems">Number
 Systems</a></li>
-<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -887,6 +886,11 @@ the result sign differs. Carry-out of the MSB is not a reliable
 signed-overflow indicator.</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode verilog"><code class="sourceCode verilog"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> overflow <span class="op">=</span> <span class="op">(</span>a<span class="op">[</span>W<span class="dv">-1</span><span class="op">]</span> <span class="op">==</span> b<span class="op">[</span>W<span class="dv">-1</span><span class="op">])</span> <span class="op">&amp;&amp;</span> <span class="op">(</span>sum<span class="op">[</span>W<span class="dv">-1</span><span class="op">]</span> <span class="op">!=</span> a<span class="op">[</span>W<span class="dv">-1</span><span class="op">]);</span></span></code></pre></div>
+<ul>
+<li>We can use XNOR to indicate two inputs are equivalent</li>
+<li>We can use XOR to incidate that the two inputs are not
+equivalent</li>
+</ul>
 <figure>
 <img src="figs/overflow.svg"
 alt="signed-overflow detector: XNOR the operand signs, XOR the result sign, AND|484" />
@@ -953,8 +957,7 @@ to
 <p>Gray conversion is pure XOR:
 <code>gray = bin ^ (bin &gt;&gt; 1)</code>, inverse is a prefix XOR.</p>
 <hr />
-<p>Author: Sai Govardhan (saigov14@gmail.com)</p>
-<h2 id="references">References</h2>
+<p>Author: Sai Govardhan (saigov14@gmail.com) ## References</p>
 <p><strong>Textbooks</strong></p>
 <ul>
 <li>W. J. Dally &amp; R. C. Harting, <em>Digital Design: A Systems

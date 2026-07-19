@@ -375,13 +375,72 @@ prevented them:</p>
 misses while spatial locality lasts, then waste bandwidth and evict
 useful data (fewer lines for the same capacity).</p>
 <h2 id="policies">Policies</h2>
-<p><strong>Replacement</strong> (which way to evict): LRU is ideal for
-small associativity; 8-way and above use <strong>tree
-pseudo-LRU</strong>
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">N-1</annotation></semantics></math>
-bits per set, one bit per binary decision) or random. The LLC often uses
-smarter policies (RRIP) resistant to scans.</p>
-<p><strong>Writes</strong>:</p>
+<h3 id="replacement">Replacement</h3>
+<p>Which way to evict? The candidates, cheapest to smartest:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Policy</th>
+<th>State per set</th>
+<th>Idea</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>random</td>
+<td>none</td>
+<td>surprisingly close to LRU at high associativity</td>
+</tr>
+<tr>
+<td>FIFO / round-robin</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>2</mn></msub><mi>N</mi></mrow><annotation encoding="application/x-tex">\log_2 N</annotation></semantics></math>
+bits</td>
+<td>evict oldest <em>filled</em>, ignores reuse</td>
+</tr>
+<tr>
+<td>true LRU</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>N</mi><mi>!</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log_2(N!)</annotation></semantics></math>
+bits</td>
+<td>evict least recently <em>used</em>; exact but costly past 4-way</td>
+</tr>
+<tr>
+<td>tree pseudo-LRU</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">N-1</annotation></semantics></math>
+bits</td>
+<td>binary tree of “which half was used less” bits</td>
+</tr>
+<tr>
+<td>RRIP family</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>N</mi></mrow><annotation encoding="application/x-tex">2N</annotation></semantics></math>
+bits</td>
+<td>predict <em>re-reference distance</em>, not recency</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tree pseudo-LRU</strong> is the workhorse: one bit per
+internal node of a binary tree over the ways, each pointing toward the
+less-recently-used half. Finding the victim is following the bits;
+recording an access is flipping the bits on the path to point away:</p>
+<figure>
+<img src="figs/treeplru.svg" alt="4-way tree pseudo-LRU" />
+<figcaption aria-hidden="true">4-way tree pseudo-LRU</figcaption>
+</figure>
+<p>LRU’s weakness is a scan: streaming data marches through and evicts
+the whole working set, earning nothing. LLCs therefore use
+<strong>RRIP</strong> (re-reference interval prediction): each line gets
+a small counter guessing how soon it will be re-referenced; new lines
+are inserted as “probably distant” rather than “just used”, so a scan’s
+lines age out before they displace resident hot lines, and a line only
+earns “near” status by actually being re-referenced (SRRIP; the D in
+DRRIP set-duels the insertion choice, the same
+<a href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">set-dueling</a>
+trick used for LLC partitioning).</p>
+<h3 id="writes">Writes</h3>
 <ul>
 <li><strong>Write-through</strong>: every store goes to the next level
 too. Simple, coherent, but needs a write buffer to hide latency and
@@ -395,9 +454,9 @@ Cache Coherence</a> as the Owned state problem.</li>
 with write-back) vs <strong>no-allocate</strong> (send the store on,
 standard with write-through).</li>
 </ul>
-<p><strong>Latency-hiding</strong>: <strong>non-blocking</strong>
-(lockup-free) caches keep servicing hits under outstanding misses, which
-is what lets
+<p><strong>Latency-hiding</strong>:</p>
+<p><strong>non-blocking</strong> (lockup-free) caches keep servicing
+hits under outstanding misses, which is what lets
 <a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">out-of-order
 cores</a> overlap misses (memory-level parallelism). The bookkeeping
 lives in <strong>MSHRs</strong> (miss status holding registers): a

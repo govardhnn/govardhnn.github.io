@@ -141,10 +141,10 @@ the next state, so behavior can hinge on physical delays.</li>
 </ul>
 <p>Race conditions and hazard sensitivity make asynchronous design hard,
 so virtually all practical design is synchronous, with asynchronous
-techniques reserved for interfaces between clock domains. The rest of
-this note is the synchronous toolkit. Latches and flip-flops themselves
-are small asynchronous circuits, designed once, characterized carefully,
-and reused as black boxes.</p>
+techniques reserved for interfaces between clock domains or reset
+circuitry. The rest of this note is the synchronous toolkit. Latches and
+flip-flops themselves are small asynchronous circuits, designed once,
+characterized carefully, and reused as black boxes.</p>
 <h2 id="latches">Latches</h2>
 <p>A bistable holds one bit using feedback. Cross-coupling two NOR gates
 gives an SR latch:
@@ -367,6 +367,12 @@ alt="Counter: register plus incrementer feedback" />
 <figcaption aria-hidden="true">Counter: register plus incrementer
 feedback</figcaption>
 </figure>
+<figure>
+<img src="figs/countertypes.svg"
+alt="the four counter shapes: mod-N, divider, ripple, ring/Johnson" />
+<figcaption aria-hidden="true">the four counter shapes: mod-N, divider,
+ripple, ring/Johnson</figcaption>
+</figure>
 <p>An <strong>LFSR</strong> (linear feedback shift register) counts
 through a pseudo-random sequence: shift, with the input the XOR of taps
 given by a generator polynomial over
@@ -378,35 +384,50 @@ cycles through all
 nonzero states:</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) lfsr &lt;= {lfsr[<span class="dv">2</span>:<span class="dv">0</span>], lfsr[<span class="dv">3</span>] ^ lfsr[<span class="dv">2</span>]};</span></code></pre></div>
-<p>The next-state logic is one XOR regardless of width, so LFSRs make
-the cheapest “counters” when the count order is irrelevant, and the same
-structure computes CRCs.</p>
+<p>Reading taps off the polynomial: the register has as many bits as the
+degree (here 4), and each middle term
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>x</mi><mi>k</mi></msup><annotation encoding="application/x-tex">x^k</annotation></semantics></math>
+marks a tap after stage
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>,
+so
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>x</mi><mn>4</mn></msup><mo>+</mo><msup><mi>x</mi><mn>3</mn></msup><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">x^4 + x^3 + 1</annotation></semantics></math>
+means “feed back bit 3 XOR bit 2” in the 0-indexed code above. A bigger
+example, CRC-CCITT’s generator
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>x</mi><mn>16</mn></msup><mo>+</mo><msup><mi>x</mi><mn>12</mn></msup><mo>+</mo><msup><mi>x</mi><mn>5</mn></msup><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">x^{16} + x^{12} + x^5 + 1</annotation></semantics></math>,
+becomes a 16-bit shift register with</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) crc &lt;= {crc[<span class="dv">14</span>:<span class="dv">0</span>], crc[<span class="dv">15</span>] ^ crc[<span class="dv">11</span>] ^ crc[<span class="dv">4</span>]};</span></code></pre></div>
+<p>The next-state logic is a couple of XORs regardless of width, so
+LFSRs make the cheapest “counters” when the count order is irrelevant,
+and the same structure computes CRCs, scramblers, and test-pattern
+generators.</p>
 <h2 id="memory">Memory</h2>
-<p>A register file is a small multi-port array: combinational
-(asynchronous) read ports and a clocked write port. It backs a CPU’s
-architectural registers.</p>
+<p>A <strong>register file</strong> is a small multi-port array:
+combinational (asynchronous and instantaneous) read ports and a clocked
+(next cycle reflecting) write port. It backs a CPU’s architectural
+registers.</p>
 <figure>
 <img src="figs/regfile.svg"
 alt="Register file with two read ports and one write port|393" />
 <figcaption aria-hidden="true">Register file with two read ports and one
 write port|393</figcaption>
 </figure>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">logic</span> [<span class="dv">31</span>:<span class="dv">0</span>] rf [<span class="dv">0</span>:<span class="dv">31</span>];</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> rd1 = rf[ra1];</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">if</span> (we) rf[wa] &lt;= wd;</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">logic</span> [<span class="dv">31</span>:<span class="dv">0</span>] rf [<span class="dv">0</span>:<span class="dv">31</span>];</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> rd1 = rf[ra1];</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">if</span> (we) rf[wa] &lt;= wd;</span></code></pre></div>
 <p>Larger storage uses RAM, typically a single port with a registered
 read so it maps to a dense block-RAM primitive.</p>
 <figure>
 <img src="figs/ram.svg" alt="Synchronous RAM|387" />
 <figcaption aria-hidden="true">Synchronous RAM|387</figcaption>
 </figure>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">logic</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] mem [<span class="dv">0</span>:DEPTH<span class="dv">-1</span>];</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">begin</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> (we) mem[addr] &lt;= din;</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  dout &lt;= mem[addr];          <span class="co">// registered read</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">logic</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] mem [<span class="dv">0</span>:DEPTH<span class="dv">-1</span>];</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">begin</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> (we) mem[addr] &lt;= din;</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  dout &lt;= mem[addr];          <span class="co">// registered read</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code></pre></div>
 <h2 id="fifo">FIFO</h2>
 <p>A FIFO buffers data between producer and consumer using a circular
 buffer with write and read pointers. <code>full</code> and
@@ -420,8 +441,14 @@ Gray-coded pointers safely crosses clock domains.</p>
 <h2 id="arbiter">Arbiter</h2>
 <p>An arbiter grants a shared resource to one of several requesters, one
 grant per cycle. A fixed-priority arbiter always favors the lowest index
-(a priority encoder over the request vector). A round-robin arbiter
+(a priority encoder over the request vector); a round-robin arbiter
 rotates priority after each grant for fairness.</p>
+<figure>
+<img src="figs/arbiter.svg"
+alt="fixed-priority gate chain and the round-robin pointer" />
+<figcaption aria-hidden="true">fixed-priority gate chain and the
+round-robin pointer</figcaption>
+</figure>
 <h2 id="pipelining">Pipelining</h2>
 <p>Inserting registers to split a long combinational path into stages
 raises throughput to one result per clock at the cost of latency; the
@@ -470,23 +497,23 @@ detector</figcaption>
 <p>Code it in the three-block style: one <code>always_ff</code> for the
 state register, one <code>always_comb</code> for next state, one for
 outputs.</p>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">enum</span> <span class="kw">logic</span> [<span class="dv">1</span>:<span class="dv">0</span>] { S0, S1, S2 } state_t;</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>state_t <span class="ot">state</span>, <span class="ot">next</span>;</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">state</span> &lt;= rst ? S0 : <span class="ot">next</span>;</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="kw">always_comb</span> <span class="kw">begin</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="ot">next</span> = <span class="ot">state</span>;</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">unique</span> <span class="kw">case</span> (<span class="ot">state</span>)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    S0: <span class="kw">if</span> (in) <span class="ot">next</span> = S1;</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    S1: <span class="ot">next</span> = in ? S1 : S2;</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    S2: <span class="ot">next</span> = in ? S1 : S0;</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">endcase</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> det = (<span class="ot">state</span> == S2) &amp;&amp; in;   <span class="co">// Mealy output</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">enum</span> <span class="kw">logic</span> [<span class="dv">1</span>:<span class="dv">0</span>] { S0, S1, S2 } state_t;</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>state_t <span class="ot">state</span>, <span class="ot">next</span>;</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">state</span> &lt;= rst ? S0 : <span class="ot">next</span>;</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="kw">always_comb</span> <span class="kw">begin</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="ot">next</span> = <span class="ot">state</span>;</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">unique</span> <span class="kw">case</span> (<span class="ot">state</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    S0: <span class="kw">if</span> (in) <span class="ot">next</span> = S1;</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    S1: <span class="ot">next</span> = in ? S1 : S2;</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    S2: <span class="ot">next</span> = in ? S1 : S0;</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">endcase</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> det = (<span class="ot">state</span> == S2) &amp;&amp; in;   <span class="co">// Mealy output</span></span></code></pre></div>
 <p>A Moore version of the same detector needs a fourth state, “just saw
 101”, whose mere occupancy asserts <code>det</code>, and its output
 arrives one cycle later since the pattern must first be registered into

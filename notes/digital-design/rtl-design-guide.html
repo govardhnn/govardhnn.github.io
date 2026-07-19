@@ -119,6 +119,9 @@ FIFO</a></li>
 <li><a href="#synthesizable-vs-simulation-only"
 id="toc-synthesizable-vs-simulation-only">Synthesizable vs
 Simulation-Only</a></li>
+<li><a href="#case-statements-the-evil-twins"
+id="toc-case-statements-the-evil-twins">Case Statements: the Evil
+Twins</a></li>
 <li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
@@ -168,6 +171,11 @@ size literals.</li>
 <code>always_comb</code> (blocking <code>=</code>). Operator
 families:</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 25%" />
+<col style="width: 41%" />
+</colgroup>
 <thead>
 <tr>
 <th>Family</th>
@@ -178,17 +186,17 @@ families:</p>
 <tbody>
 <tr>
 <td>Bitwise</td>
-<td><code>&amp; \| ^ ~</code></td>
+<td><code>&amp; | ^ ~</code></td>
 <td>per bit on a vector</td>
 </tr>
 <tr>
 <td>Logical</td>
-<td><code>&amp;&amp; \|\| !</code></td>
+<td><code>&amp;&amp; || !</code></td>
 <td>1-bit truth value</td>
 </tr>
 <tr>
 <td>Reduction</td>
-<td><code>&amp;a  \|a  ^a</code></td>
+<td><code>&amp;a |a ^a</code></td>
 <td>fold a vector to one bit</td>
 </tr>
 <tr>
@@ -336,6 +344,12 @@ class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">end</span></span>
 <span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">end</span></span>
 <span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="kw">endmodule</span></span></code></pre></div>
+<figure>
+<img src="figs/fifoptr.svg"
+alt="FIFO occupancy and the wrap bit: in flight, empty, and full" />
+<figcaption aria-hidden="true">FIFO occupancy and the wrap bit: in
+flight, empty, and full</figcaption>
+</figure>
 <h2 id="testbenches">Testbenches</h2>
 <p>Testbenches are not synthesized, so the full behavioral language
 applies: <code>initial</code>, <code>#delay</code>,
@@ -384,17 +398,48 @@ Simulation-Only</h2>
 </tr>
 </tbody>
 </table>
-<div class="callout callout-note">
+<p>A related trap: <code>#delay</code> inside RTL is not an error, it is
+silently <em>ignored</em> by synthesis, so a design “verified” with
+delays in its always blocks simulates one circuit and builds another.
+Delays belong in testbenches only. The x-aware operators
+<code>===</code>/<code>!==</code> are testbench-only for the same
+reason: hardware has no x.</p>
+<h2 id="case-statements-the-evil-twins">Case Statements: the Evil
+Twins</h2>
+<p>The classic synthesis pragmas <code>// synthesis full_case</code> and
+<code>// synthesis parallel_case</code> are what Cummings’ SNUG paper
+named the <strong>evil twins</strong>: they are promises made to the
+synthesis tool that the simulator never hears. <code>full_case</code>
+says “unlisted case values cannot occur,” letting synthesis drop the
+latch or default; <code>parallel_case</code> says “no two items
+overlap,” letting synthesis drop the priority logic. When the promise is
+false, simulation (which still executes the literal <code>case</code>
+semantics) and the netlist disagree, and the bug ships. The directives
+are most dangerous precisely when they appear to work.</p>
+<p>SystemVerilog replaced them with <code>unique case</code> and
+<code>priority case</code>: the same optimization intent, but stated
+<em>in the language</em>, so simulation actively checks the claim and
+fires a runtime violation report when it is broken. The tools stay
+honest with each other:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">unique</span> <span class="kw">case</span> (<span class="ot">state</span>)      <span class="co">// claim: exactly one match, no overlap</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  S0: ...</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  S1: ...</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">endcase</span>                  <span class="co">// sim reports a violation if the claim is false</span></span></code></pre></div>
+<p>For wildcard matching, use <code>casez</code> with <code>?</code> in
+the case items for don’t-care bits, and avoid <code>casex</code>
+entirely: <code>casex</code> also treats <em>x</em> as a wildcard, so an
+uninitialized input matches everything in simulation and the failure is
+invisible exactly when things are most broken.</p>
+<div class="callout callout-warning">
 <div class="callout-title">
-Learn the discipline from real RTL
+One driver, one block, one style
 </div>
-<p>The open-source RISC-V cores are excellent style references: Ibex is
-compact, heavily reviewed SystemVerilog written to lowRISC’s published
-Verilog style guide (naming, <code>_i</code>/<code>_o</code> port
-suffixes, one module per file), and Wally suffixes every signal with its
-pipeline stage letter (<code>InstrD</code>, <code>StallM</code>), the
-stage-naming rule from the table above applied to an entire processor.
-Reading either teaches more idiom per hour than any tutorial.</p>
+<p>The remaining Cummings rules worth engraving: never mix blocking and
+nonblocking assignments in one always block; never assign one signal
+from two blocks; latches (when truly intended) get nonblocking
+assignments like flops; and reset every flop you infer, because
+simulation starts at x but silicon starts at <em>random</em>.</p>
 </div>
 <hr />
 <p>Author: Sai Govardhan (saigov14@gmail.com)</p>
@@ -407,8 +452,12 @@ Architecture</em> (HDL chapters)</li>
 <p><strong>Standards, Papers, and Wikipedia</strong></p>
 <ul>
 <li>IEEE Std 1800 (SystemVerilog)</li>
-<li>C. E. Cummings, SNUG papers on blocking vs nonblocking
-assignments</li>
+<li>C. E. Cummings, <em>“full_case parallel_case”, the Evil Twins of
+Verilog Synthesis</em> (SNUG Boston 1999)</li>
+<li>C. E. Cummings, <em>Nonblocking Assignments in Verilog Synthesis,
+Coding Styles That Kill!</em> (SNUG 2000)</li>
+<li>C. E. Cummings, <em>SystemVerilog’s priority &amp; unique</em> (SNUG
+Israel 2005)</li>
 </ul>
 <p><strong>Microarchitecture References</strong></p>
 <ul>

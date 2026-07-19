@@ -325,22 +325,6 @@ and
 Sizing falls out backwards from the load: each stage’s input capacitance
 is
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub><mo>=</mo><mi>g</mi><mo>⋅</mo><msub><mi>C</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow></msub><mi>/</mi><mover><mi>f</mi><mo accent="true">̂</mo></mover></mrow><annotation encoding="application/x-tex">C_{in} = g \cdot C_{out} / \hat{f}</annotation></semantics></math>.</p>
-<div class="callout callout-note">
-<div class="callout-title">
-Why “fanout of 4” is everywhere
-</div>
-<p>Solving for the number of stages that minimizes delay gives a best
-stage effort of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>≈</mo><mn>3.6</mn></mrow><annotation encoding="application/x-tex">\rho \approx 3.6</annotation></semantics></math>;
-adding inverters to a path is worth it until each stage’s effort drops
-to about 4. Hence the ubiquitous rules: buffer chains taper by ~4x per
-stage, the optimal stage count is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>≈</mo><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>4</mn></msub><mi>F</mi></mrow><annotation encoding="application/x-tex">N \approx \log_4 F</annotation></semantics></math>,
-and “FO4 delay” (one inverter driving four copies of itself,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>=</mo><mn>4</mn><mo>+</mo><mn>1</mn><mo>=</mo><mn>5</mn><mi>τ</mi></mrow><annotation encoding="application/x-tex">d = 4+1 = 5\tau</annotation></semantics></math>)
-is the standard process-independent unit for comparing pipeline stage
-depths across chips.</p>
-</div>
 <h2 id="sequential-timing">Sequential Timing</h2>
 <p>A flip-flop has its own timing aperture around the clock edge:</p>
 <table>

@@ -129,10 +129,10 @@ Delay</a></li>
 function of its current inputs: the same inputs always produce the same
 outputs, regardless of history. No clock, no stored state, which is why
 it is also called <em>memoryless</em> or <em>time-independent</em> logic
-(sequential logic adds state). Any Boolean function is realizable as an
-acyclic network of gates, and any acyclic gate network computes a
-Boolean function, so the algebra and the hardware are two views of the
-same object.</p>
+(sequential logic adds state).</p>
+<p>Any Boolean function is realizable as an acyclic network of gates,
+and any acyclic gate network computes a Boolean function, so the algebra
+and the hardware are two views of the same object.</p>
 <p>Two standard procedures connect those views:</p>
 <ul>
 <li><strong>Analysis</strong>: given a diagram, label each gate’s output
@@ -236,17 +236,17 @@ assignment (<code>=</code>). Operator families:</p>
 <tbody>
 <tr>
 <td>Bitwise</td>
-<td><code>&amp; \| ^ ~</code></td>
+<td><code>&amp; | ^ ~</code></td>
 <td>per bit on a vector</td>
 </tr>
 <tr>
 <td>Logical</td>
-<td><code>&amp;&amp; \|\| !</code></td>
+<td><code>&amp;&amp; || !</code></td>
 <td>reduce to a 1-bit truth value</td>
 </tr>
 <tr>
 <td>Reduction</td>
-<td><code>&amp;a  \|a  ^a</code></td>
+<td><code>&amp;a |a ^a</code></td>
 <td>fold a vector to one bit (<code>^a</code> is parity)</td>
 </tr>
 <tr>
@@ -260,7 +260,7 @@ assignment (<code>=</code>). Operator families:</p>
 class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> y = (a &amp; b) | (a &amp; c) | (b &amp; c);   <span class="co">// majority</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">always_comb</span> <span class="kw">begin</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  y = &#39;<span class="dv">0</span>;                 <span class="co">// default avoids a latch</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  y = &#39;<span class="dv">0</span>;           </span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">unique</span> <span class="kw">case</span> (op)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="bn">2&#39;b00</span>: y = a + b;</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="bn">2&#39;b01</span>: y = a - b;</span>
@@ -289,9 +289,10 @@ written <code>y = sel ? d1 : d0</code>.</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><mi>k</mi></msup><annotation encoding="application/x-tex">2^k</annotation></semantics></math>:1
 mux with constants on its data inputs realizes any
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>-input
-truth table directly, exactly how an FPGA LUT works. Shannon expansion
-halves the mux: expand about the select variables and put what remains
-on the data inputs. Majority on a 4:1 mux with select
+truth table directly, exactly how an FPGA LUT works.</p>
+<p><strong>Shannon expansion</strong> halves the mux: expand about the
+select variables and put what remains on the data inputs. Majority on a
+4:1 mux with select
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{a, b\}</annotation></semantics></math>:</p>
 <table>
 <thead>
@@ -330,7 +331,13 @@ on the data inputs. Majority on a 4:1 mux with select
 </tbody>
 </table>
 <p>A 3-input function on a 4:1 mux plus at most one inverter, one mux
-size smaller than the direct 8:1 lookup.</p>
+size smaller than the direct 8:1 lookup:</p>
+<figure>
+<img src="figs/shannonmux.svg"
+alt="majority: direct 8:1 lookup vs Shannon expansion on a 4:1 mux" />
+<figcaption aria-hidden="true">majority: direct 8:1 lookup vs Shannon
+expansion on a 4:1 mux</figcaption>
+</figure>
 <h2 id="decoder">Decoder</h2>
 <p>Turns an
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>-bit
@@ -377,8 +384,9 @@ there is contention.</p>
 <h2 id="adders">Adders</h2>
 <p>A half adder sums two bits:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mi>a</mi><mo>⊕</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">s = a \oplus b</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow></msub><mo>=</mo><mi>a</mi><mi>b</mi></mrow><annotation encoding="application/x-tex">c_{out} = ab</annotation></semantics></math>.
-A full adder adds a carry input, built from two half adders and an OR:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow></msub><mo>=</mo><mi>a</mi><mi>b</mi></mrow><annotation encoding="application/x-tex">c_{out} = ab</annotation></semantics></math>.</p>
+<p>A full adder adds a carry input, built from two half adders and an
+OR:
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mi>a</mi><mo>⊕</mo><mi>b</mi><mo>⊕</mo><msub><mi>c</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>c</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow></msub><mo>=</mo><mi>a</mi><mi>b</mi><mo>∨</mo><msub><mi>c</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>⊕</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex"> s = a \oplus b \oplus c_{in}, \qquad c_{out} = ab \lor c_{in}(a \oplus b) </annotation></semantics></math></p>
 <figure>
 <img src="figs/fulladder.svg" alt="Full adder" />
@@ -496,34 +504,25 @@ networks, 8 bits</figcaption>
 few 4-bit ripple or lookahead blocks; Han-Carlson, Ladner-Fischer),
 picking a point between wire cost and depth. The sum stage is unchanged:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mi>i</mi></msub><mo>=</mo><msub><mi>p</mi><mi>i</mi></msub><mo>⊕</mo><msub><mi>c</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">s_i = p_i \oplus c_i</annotation></semantics></math>.</p>
-<div class="callout callout-note">
-<div class="callout-title">
-The other speed lever: dynamic logic
-</div>
-<p>The fastest adders of the GHz-race era did not just pick a better
-tree; they changed the gates. <strong>Dynamic (domino) logic</strong>
-precharges each node high on one clock phase and conditionally
-discharges it through an nMOS-only network on the other: no pMOS stack
-to drive, roughly half the input capacitance (logical effort below
-static’s), and monotonic stages that chain like falling dominoes. The
-price is a live clock in every gate, charge-sharing and noise hazards,
-and leakage that must be fought with keepers, costs that grew with
-scaling until static CMOS won back nearly all of the datapath. Domino
-survives where its speed still pays: register-file bitlines, CAMs/TLBs,
-and the occasional critical adder stage.</p>
-</div>
 <h3 id="subtraction">Subtraction</h3>
 <p>Subtraction reuses an adder:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>−</mo><mi>b</mi><mo>=</mo><mi>a</mi><mo>+</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">a - b = a + \bar{b} + 1</annotation></semantics></math>
-(two’s complement). An adder-subtractor XORs
+(two’s complement).</p>
+<p>A dual purpose adder-subtractor circuit can be built using XORs where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
-with a <code>sub</code> control and feeds <code>sub</code> in as
+with a <code>sub</code> control that feeds <code>sub</code> in as
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>c</mi><mn>0</mn></msub><annotation encoding="application/x-tex">c_0</annotation></semantics></math>:</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> <span class="ot">sum</span> = a + (b ^ {W{sub}}) + sub;   <span class="co">// sub=0: a+b, sub=1: a-b</span></span></code></pre></div>
 <p>For signed operands, overflow is a mismatch between the carries into
 and out of the sign bit:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>o</mi><mi>v</mi><mo>=</mo><msub><mi>c</mi><mi>N</mi></msub><mo>⊕</mo><msub><mi>c</mi><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">ov = c_{N} \oplus c_{N-1}</annotation></semantics></math>.</p>
+<figure>
+<img src="figs/addsub.svg"
+alt="adder-subtractor: XORs conditionally invert b, sub feeds the carry-in" />
+<figcaption aria-hidden="true">adder-subtractor: XORs conditionally
+invert b, sub feeds the carry-in</figcaption>
+</figure>
 <h2 id="comparator">Comparator</h2>
 <p>Equality is a bitwise XNOR of the two operands ANDed together:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mi>q</mi><mo>=</mo><msub><mo>∏</mo><mi>i</mi></msub><mrow style="border-top:0.065em solid;padding-top:0.1em"><msub><mi>a</mi><mi>i</mi></msub><mo>⊕</mo><msub><mi>b</mi><mi>i</mi></msub></mrow></mrow><annotation encoding="application/x-tex">eq = \prod_i \overline{a_i \oplus b_i}</annotation></semantics></math>.
@@ -536,6 +535,12 @@ exactly when the subtraction overflows, so
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><msub><mi>t</mi><mrow><mi>s</mi><mi>i</mi><mi>g</mi><mi>n</mi><mi>e</mi><mi>d</mi></mrow></msub><mo>=</mo><msub><mi>d</mi><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>⊕</mo><mi>o</mi><mi>v</mi><mo>,</mo><mspace width="2.0em"></mspace><mi>d</mi><mo>=</mo><mi>a</mi><mo>−</mo><mi>b</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
 lt_{signed} = d_{N-1} \oplus ov, \qquad d = a - b.
 </annotation></semantics></math></p>
+<figure>
+<img src="figs/comparator.svg"
+alt="equality and signed magnitude comparators" />
+<figcaption aria-hidden="true">equality and signed magnitude
+comparators</figcaption>
+</figure>
 <h2 id="shifters">Shifters</h2>
 <p>A shifter moves a word by a variable amount. Three flavors:</p>
 <ul>
@@ -561,11 +566,56 @@ when select bit
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>s</mi><mi>i</mi></msub><annotation encoding="application/x-tex">s_i</annotation></semantics></math>
 is set. Any shift amount is a sum of powers of two, so the stages
 compose.</p>
+<p>Following is an example where the three bit input
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mn>2</mn><mi>S</mi><mn>3</mn><mi>S</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">S2S3S1</annotation></semantics></math>)
+can create three levels of shifters which can perform upto an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>&gt;</mo><mo>&gt;</mo><msup><mn>2</mn><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">x&gt;&gt;2^3</annotation></semantics></math>
+shift</p>
 <figure>
 <img src="figs/barrel.svg" alt="Barrel shifter: log₂N mux stages" />
 <figcaption aria-hidden="true">Barrel shifter: log₂N mux
 stages</figcaption>
 </figure>
+<p>The shift amount <em>is</em> the select word, one stage per binary
+digit
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>8</mn></mrow><annotation encoding="application/x-tex">N=8</annotation></semantics></math>):</p>
+<table>
+<thead>
+<tr>
+<th>amount</th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mn>2</mn></msub><mspace width="0.167em"></mspace><msub><mi>s</mi><mn>1</mn></msub><mspace width="0.167em"></mspace><msub><mi>s</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">s_2\,s_1\,s_0</annotation></semantics></math></th>
+<th>stages shifting</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>000</td>
+<td>none</td>
+</tr>
+<tr>
+<td>1</td>
+<td>001</td>
+<td>1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>011</td>
+<td>2, 1</td>
+</tr>
+<tr>
+<td>5</td>
+<td>101</td>
+<td>4, 1</td>
+</tr>
+<tr>
+<td>7</td>
+<td>111</td>
+<td>4, 2, 1</td>
+</tr>
+</tbody>
+</table>
 <h2 id="alu">ALU</h2>
 <p>An ALU bundles the arithmetic and logic operations behind a
 function-select input, producing a result and status flags:
@@ -577,8 +627,9 @@ overflow). It is the computational core of a datapath.</p>
 <figcaption aria-hidden="true">Arithmetic logic unit</figcaption>
 </figure>
 <h2 id="multiplier">Multiplier</h2>
-<p>Multiplication is a sum of shifted partial products, binary long
-multiplication where each row is just an AND:</p>
+<p>Multiplication is a <em>sum of shifted partial products</em>, or more
+representatively; a binary long multiplication where each row is just an
+AND operation:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>3</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>2</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>1</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"><mi>×</mi></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>b</mi><mn>3</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>b</mi><mn>2</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>b</mi><mn>1</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>b</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>3</mn></msub><msub><mi>b</mi><mn>0</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>2</mn></msub><msub><mi>b</mi><mn>0</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>1</mn></msub><msub><mi>b</mi><mn>0</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>0</mn></msub><msub><mi>b</mi><mn>0</mn></msub></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>3</mn></msub><msub><mi>b</mi><mn>1</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>2</mn></msub><msub><mi>b</mi><mn>1</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>1</mn></msub><msub><mi>b</mi><mn>1</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>0</mn></msub><msub><mi>b</mi><mn>1</mn></msub></mtd><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>3</mn></msub><msub><mi>b</mi><mn>2</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>2</mn></msub><msub><mi>b</mi><mn>2</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>1</mn></msub><msub><mi>b</mi><mn>2</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>0</mn></msub><msub><mi>b</mi><mn>2</mn></msub></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>3</mn></msub><msub><mi>b</mi><mn>3</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>2</mn></msub><msub><mi>b</mi><mn>3</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>1</mn></msub><msub><mi>b</mi><mn>3</mn></msub></mtd><mtd columnalign="right" style="text-align: right"><msub><mi>a</mi><mn>0</mn></msub><msub><mi>b</mi><mn>3</mn></msub></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{array}{rrrrrrrr}
 {} &amp; {} &amp; {} &amp; {} &amp; a_3 &amp; a_2 &amp; a_1 &amp; a_0 \\
@@ -600,8 +651,17 @@ with no carry ripple, so a Wallace/Dadda tree reduces all rows to two in
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mi>n</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(\log n)</annotation></semantics></math>
 levels, and a single fast adder produces the final product.</p>
 <h2 id="logic-arrays">Logic Arrays</h2>
-<p>Regular two-level structures implement sum-of-products directly:</p>
+<p>Regular two-level structures implement sum-of-products directly: an
+<strong>AND plane</strong> forms product terms from the inputs and their
+complements, and an <strong>OR plane</strong> sums chosen products into
+each output. The families differ only in which plane is
+configurable:</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Structure</th>
@@ -611,22 +671,32 @@ levels, and a single fast adder produces the final product.</p>
 </thead>
 <tbody>
 <tr>
-<td>ROM</td>
-<td>fixed (full decoder)</td>
+<td>ROM (read-only memory)</td>
+<td>fixed (full decoder: every minterm)</td>
 <td>programmable</td>
 </tr>
 <tr>
-<td>PLA</td>
+<td>PLA (programmable logic array)</td>
 <td>programmable</td>
 <td>programmable</td>
 </tr>
 <tr>
-<td>PAL / PLD</td>
+<td>PAL (programmable array logic)</td>
 <td>programmable</td>
 <td>fixed</td>
 </tr>
 </tbody>
 </table>
+<figure>
+<img src="figs/planes.svg"
+alt="two-level AND plane / OR plane structure" />
+<figcaption aria-hidden="true">two-level AND plane / OR plane
+structure</figcaption>
+</figure>
+<p>A PAL trades the PLA’s flexibility (each output owns a fixed set of
+product terms) for speed and simpler programming; <strong>PLD</strong>
+is the umbrella term for all such programmable-logic devices, of which
+the PAL family was the commercial workhorse before FPGAs.</p>
 <p>An FPGA generalizes this with lookup tables (LUTs): a
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>-input
 LUT is a
