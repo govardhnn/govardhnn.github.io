@@ -152,7 +152,10 @@ def nav_href(section, title):
 
 def nav_footer(idx):
     # Prev/next links following NOTES order, staying within one sidebar section.
-    _, _, _, _, section, _ = NOTES[idx]
+    # Index pages are the hub and get no nav footer.
+    _, _, _, slug, section, _ = NOTES[idx]
+    if slug == "index":
+        return 
     parts = ['<div class="note-nav">']
     if idx > 0 and NOTES[idx - 1][4] == section:
         pt = NOTES[idx - 1][2]
