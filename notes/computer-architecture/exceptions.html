@@ -259,6 +259,15 @@ ISA</a>) implement traps:</p>
 <img src="figs/trapflow.svg" alt="trap entry and mret" />
 <figcaption aria-hidden="true">trap entry and mret</figcaption>
 </figure>
+<div class="callout callout-note">
+<div class="callout-title">
+CSRs sit outside the speculation machinery
+</div>
+<p>Out-of-order cores do not rename or speculate through CSRs: BOOM
+marks CSR instructions as serializing, draining the entire ROB before
+one executes. Privileged state is rare enough that real cores simply
+stop the world for it.</p>
+</div>
 <p>The <code>MPIE</code>/<code>MPP</code> fields make trap entry
 re-entrant-safe: entry saves the interrupt-enable bit and privilege
 mode, <code>mret</code> restores them. Common <code>mcause</code> codes:

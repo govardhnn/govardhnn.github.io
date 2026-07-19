@@ -170,6 +170,18 @@ MEM/WB) are ordinary edge-triggered registers from
 Circuits</a>; they carry each instruction’s data <em>and</em> control
 signals down the pipe, so five instructions coexist, one per stage.
 Control is decoded once in ID and travels with the instruction.</p>
+<div class="callout callout-note">
+<div class="callout-title">
+Name signals by stage
+</div>
+<p>The stage-naming discipline from
+<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
+Timing and Power</a>’s pipelined adder (<code>a_r[i]</code>, one name
+per stage copy) is exactly how the Wally core writes an entire
+processor: <code>InstrD</code>, <code>PCE</code>, <code>StallM</code>,
+every signal suffixed with its stage letter. A pipeline diagram and a
+naming convention are the same idea.</p>
+</div>
 <p>Pipelining arithmetic. For
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
 instructions on a

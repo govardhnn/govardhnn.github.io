@@ -282,6 +282,18 @@ restore a checkpoint, the same machinery as
 recovery. A clean implementation tags every instruction with an
 <em>epoch</em>; instructions from stale epochs are discarded wherever
 they are.</li>
+</ul>
+<div class="callout callout-note">
+<div class="callout-title">
+How selective squash really works
+</div>
+<p>BOOM refines the epoch idea into a <strong>branch mask</strong>:
+every in-flight instruction carries one bit per unresolved branch it
+depends on. When a branch resolves wrong, a single broadcast of its bit
+kills exactly the dependent instructions, wherever they sit, with no
+walking and no over-kill.</p>
+</div>
+<ul>
 <li><strong>Update</strong> the tables at resolve/commit with the true
 outcome.</li>
 </ul>

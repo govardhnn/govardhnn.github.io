@@ -166,6 +166,16 @@ binary compatible. The ISA is the contract (registers, instruction
 encodings, memory model); the <strong>microarchitecture</strong> is any
 implementation honoring it. Software investment survives hardware
 generations; the S/360 lineage still runs today as z/Architecture.</p>
+<div class="callout callout-example">
+<div class="callout-title">
+The 360 idea, in RTL you can read
+</div>
+<p>The open-source Ibex core offers one <code>mul</code> instruction
+with three selectable implementations: single-cycle (three parallel
+17x17 multipliers), 3-4 cycle fast, or 33-cycle serial. Same ISA
+contract, a 30x latency range: one parameter is the whole 360 model
+lineup in miniature.</p>
+</div>
 <h3 id="stack-accumulator-and-register-machines">Stack, Accumulator, and
 Register Machines</h3>
 <p>Where operands live is the first ISA design decision, and the

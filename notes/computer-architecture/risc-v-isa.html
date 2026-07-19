@@ -436,6 +436,17 @@ handling</td>
 <p><strong>G</strong> = IMAFD + Zicsr + Zifencei; a Linux-class core is
 typically <strong>RV64GC</strong>. Profiles (RVA23 etc.) bundle
 extensions so software has a stable target.</p>
+<div class="callout callout-example">
+<div class="callout-title">
+What a custom extension looks like
+</div>
+<p>CV32E40P’s Xpulp extensions show extensibility in action:
+zero-overhead hardware loops via CSRs, post-increment addressing
+(<code>cv.lb rD,(rs1),Imm</code>), compare-with-immediate branches, and
+SIMD on packed bytes, each worth real cycles in DSP loops. The cost is
+equally visible: every one needs its own <code>-march=...xcv*</code>
+toolchain flag, and code using them runs nowhere else.</p>
+</div>
 <p><strong>Privilege</strong> in brief: three modes, M (machine,
 mandatory, firmware), S (supervisor, OS with virtual memory from
 <a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches
