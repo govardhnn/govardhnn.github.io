@@ -51,37 +51,37 @@ fill in depth.</p>
 <li><a href="../../notes.html#Computer%20Architecture/History%20of%20Computing" target="_top">History
 of Computing</a>: stored program, ISA vs implementation,
 stack/accumulator/GPR, microprogramming, RISC, scaling walls, Iron Law,
-Amdahl</li>
+Amdahl<details class="subtopics"><summary>sections</summary><ul><li>Mechanical Prehistory</li><li>The Stored-Program Computer</li><li>The 1950s: Making Programs Cheaper</li><li>The 1960s: ISA vs Implementation</li><li>The Microprocessor and the RISC Revolution</li><li>Scaling Eras and Walls</li><li>Performance Fundamentals</li></ul></details></li>
 <li><a href="../../notes.html#Computer%20Architecture/Flynn's%20Taxonomy" target="_top">Flynn’s
 Taxonomy</a>: SISD/SIMD/MISD/MIMD, vector machines, VLIW,
-multithreading</li>
+multithreading<details class="subtopics"><summary>sections</summary><ul><li>SIMD: One Instruction, Many Data</li><li>MIMD: Many Streams</li><li>VLIW: The Compiler Alternative</li><li>Choosing</li></ul></details></li>
 <li><a href="../../notes.html#Computer%20Architecture/Floating%20Point%20Architecture" target="_top">Floating
 Point Architecture</a>: IEEE 754, rounding, guard/round/sticky, FMA, FP
-in the ISA</li>
+in the ISA<details class="subtopics"><summary>sections</summary><ul><li>Formats</li><li>Special Values</li><li>Rounding</li><li>FP Addition and Multiplication Hardware</li><li>Numerical Behavior</li><li>RISC-V Floating Point</li></ul></details></li>
 <li><a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">Simple
-Instruction Pipeline</a>: 5 stages, hazards, forwarding, stalls</li>
+Instruction Pipeline</a>: 5 stages, hazards, forwarding, stalls<details class="subtopics"><summary>sections</summary><ul><li>Unpipelined Baselines</li><li>The Classic 5-Stage Pipeline</li><li>Hazards</li><li>Data Hazards: Stalls and Forwarding</li><li>Control Hazards</li><li>Real Pipelines: Two, Four, and Five Stages</li><li>Exceptions in the Pipeline</li></ul></details></li>
 <li><a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">Branch
 Prediction</a>: 2-bit counters, gshare, TAGE, BTB, return address
-stack</li>
+stack<details class="subtopics"><summary>sections</summary><ul><li>What Must Be Predicted</li><li>Static Prediction</li><li>Dynamic Direction Prediction</li><li>Correlating Predictors</li><li>Target Prediction</li><li>Stacking Predictors: A Real Frontend</li><li>Living in the Pipeline</li></ul></details></li>
 <li><a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches
 and Virtual Memory</a>: tag/index/offset, 3Cs, AMAT, page tables, TLB,
-VIPT</li>
+VIPT<details class="subtopics"><summary>sections</summary><ul><li>Cache Anatomy</li><li>Inside the Arrays</li><li>Performance</li><li>Policies</li><li>Virtual Memory</li><li>The TLB</li><li>Caches Meet Translation</li></ul></details></li>
 <li><a href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">Multicore
 Cache Coherence</a>: SWMR, MSI/MESI/MOESI, snooping, directories, false
-sharing</li>
+sharing<details class="subtopics"><summary>sections</summary><ul><li>The Coherence Invariants</li><li>Cache Block States: MSI, MESI, MOESI</li><li>Snooping Protocols</li><li>Directory Protocols</li><li>Cache Hierarchies and Inclusion</li><li>False Sharing</li></ul></details></li>
 <li><a href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">Memory
 Model</a>: sequential consistency, TSO, store buffers, RVWMO, atomics,
-DRF-SC</li>
+DRF-SC<details class="subtopics"><summary>sections</summary><ul><li>Why Hardware Reorders</li><li>Sequential Consistency</li><li>TSO: What x86 Actually Does</li><li>Relaxed Models</li><li>The Programmer’s Contract: DRF-SC</li></ul></details></li>
 <li><a href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">Advanced
 Superscalar Architectures</a>: wide fetch/issue, wakeup-select, SMT,
-reliability</li>
+reliability<details class="subtopics"><summary>sections</summary><ul><li>In-Order Superscalar First</li><li>Frontend at Width</li><li>Backend at Width</li><li>Limits of ILP</li><li>Simultaneous Multithreading</li><li>Evolution Case Study</li><li>Reliability</li></ul></details></li>
 <li><a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">Out
 of Order Execution and Register Renaming</a>: scoreboard, Tomasulo,
-rename map, ROB, LSQ</li>
+rename map, ROB, LSQ<details class="subtopics"><summary>sections</summary><ul><li>True and False Dependencies</li><li>Register Renaming</li><li>Tomasulo’s Algorithm</li><li>Rename Schemes in Real Machines</li><li>The Reorder Buffer and In-Order Commit</li><li>Memory Instructions</li><li>Costs</li></ul></details></li>
 <li><a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">Exceptions</a>:
-precise exceptions, RISC-V trap CSRs, interrupts, virtual machines</li>
+precise exceptions, RISC-V trap CSRs, interrupts, virtual machines<details class="subtopics"><summary>sections</summary><ul><li>Precise Exceptions</li><li>In the 5-Stage Pipeline</li><li>In Out-of-Order Machines</li><li>The RISC-V Trap Mechanism</li><li>Interrupts</li><li>Virtual Machines</li></ul></details></li>
 <li><a href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V
-ISA</a>: formats, calling convention, extensions</li>
+ISA</a>: formats, calling convention, extensions<details class="subtopics"><summary>sections</summary><ul><li>Registers</li><li>Instruction Formats</li><li>The Instruction Classes</li><li>Calling Convention</li><li>Extensions</li><li>Compared</li></ul></details></li>
 </ol>
 <p>Digital design foundations:
 <a href="../../notes.html#Digital%20Design/Boolean%20Algebra" target="_top">Boolean
@@ -99,10 +99,10 @@ Design Guide</a>.</p>
 <ul>
 <li><a href="../../notes.html#Computer%20Architecture/Main%20Memory%20and%20Storage" target="_top">Main
 Memory and Storage</a>: DRAM organization, memory controllers, flash and
-SSDs</li>
+SSDs<details class="subtopics"><summary>sections</summary><ul><li>The DRAM Cell</li><li>Organization</li><li>The Memory Controller</li><li>RowHammer</li><li>Bandwidth: DDR and HBM</li><li>Flash and SSDs</li></ul></details></li>
 <li><a href="../../notes.html#Computer%20Architecture/Deep%20Learning%20Accelerators" target="_top">Deep
 Learning Accelerators</a>: rooflines, systolic arrays, TPUs,
-dataflows</li>
+dataflows<details class="subtopics"><summary>sections</summary><ul><li>The Workload and the Roofline</li><li>Data Movement Dominates Energy</li><li>Systolic Arrays</li><li>Precision</li><li>Scratchpads, Not Caches</li><li>GPU vs TPU</li></ul></details></li>
 </ul>
 <h2 id="wikipedia-reference-map">Wikipedia Reference Map</h2>
 <p>Entry points into the <a

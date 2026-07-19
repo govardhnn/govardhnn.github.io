@@ -181,3 +181,28 @@ li { margin: 0.25em 0; }
     border-top: 1px solid #ccc;
     font-size: 0.95em;
 }
+
+.subtopics {
+    margin: 0.25em 0 0.4em 0;
+    font-size: 0.88em;
+}
+
+.subtopics summary {
+    cursor: pointer;
+    color: #888;
+    user-select: none;
+}
+
+.subtopics summary:hover { color: #027; }
+
+.subtopics ul {
+    list-style: none;
+    margin: 0.25em 0 0.3em 0;
+    padding-left: 1.1em;
+    border-left: 2px solid #ddd;
+}
+
+.subtopics li {
+    margin: 0.12em 0;
+    color: #555;
+}
