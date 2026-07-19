@@ -736,12 +736,10 @@ both inputs together for NOT, invert a NAND for AND, and invert the
 <em>inputs</em> for OR (DeMorgan in gate form):</p>
 <figure>
 <img src="figs/nandgates.svg"
-alt="NOT, AND, and OR built from NAND alone" />
+alt="NOT, AND, and OR built from NAND alone|697" />
 <figcaption aria-hidden="true">NOT, AND, and OR built from NAND
-alone</figcaption>
+alone|697</figcaption>
 </figure>
-<p>The same recipe works with NOR by duality: tied inputs give NOT, an
-inverted NOR gives OR, and inverted inputs give AND.</p>
 <h3 id="xor-xnor">XOR / XNOR</h3>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>⊕</mo><mi>b</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>∧</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi><mo>⊕</mo><mi>b</mi></mrow><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>∧</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
 a \oplus b = (a \land \bar{b}) \lor (\bar{a} \land b), \qquad \overline{a \oplus b} = (a \land b) \lor (\bar{a} \land \bar{b}).
