@@ -315,6 +315,28 @@ load.</li>
 which loads conflict, let the rest issue aggressively; mispredictions
 cost a replay.</li>
 </ul>
+<h3 id="inside-the-lsu">Inside the LSU</h3>
+<figure>
+<img src="figs/lsq.svg"
+alt="the load-store unit: queues, forwarding CAM, and the violation check" />
+<figcaption aria-hidden="true">the load-store unit: queues, forwarding
+CAM, and the violation check</figcaption>
+</figure>
+<p>Both queues are allocated in program order at dispatch, so “older”
+and “younger” are just queue positions. The AGU computes
+<code>base + offset</code> at issue; a store fills its entry’s address
+and data fields <em>separately</em>, since the two operands can become
+ready in different cycles (which is why many cores crack a store into an
+address µop and a data µop). A load does two things in the same cycle:
+index the D-cache and CAM the store queue, with a priority pick of the
+<strong>youngest older</strong> matching store; the mux takes forwarded
+store data over cache data on a hit. Forwarding is only legal when the
+store’s bytes fully cover the load’s; a partial overlap has no clean
+source, so the load waits for the store to reach the cache. Stores drain
+from the queue head into the D-cache only after commit, and the load
+queue exists for the reverse check: when an older store’s address
+finally resolves, it CAMs the executed loads to catch any that ran too
+early.</p>
 <p>BOOM makes the aggression concrete: loads fire to memory the moment
 their address resolves, CAM-searching the store queue on the way
 (forward if an older matching store has data; sleep and retry if it does

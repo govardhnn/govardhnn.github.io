@@ -287,16 +287,17 @@ in its I/S position. Reconstructing the B-type immediate:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mn>31</mn><mo>,</mo><mn>7</mn><mo>,</mo><mn>30</mn><mo>:</mo><mn>25</mn><mo>,</mo><mn>11</mn><mo>:</mo><mn>8</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{31, 7, 30{:}25, 11{:}8\}</annotation></semantics></math>
 followed by a hardwired 0 (branch targets are even), then sign-extend
 from bit 12.</p>
-<p>The hardware payoff of both rules in one picture: the register fields
-wire <em>straight</em> to the register file with no muxing at all, and
-the immediate needs only a small per-format select plus a single sign
-extender that always looks at bit 31:</p>
+<p>The hardware payoff, bit by bit: because each immediate bit has at
+most a few fixed source positions across all five immediate formats, the
+entire 32-bit immediate assembles through mostly 2:1 muxes, one
+shared-source range that needs no mux at all, and a single 4:1 at the
+worst bit. A format-agnostic encoding would need a shifter here; RISC-V
+needs wires:</p>
 <figure>
-<img src="figs/rvdecode.svg"
-alt="register fields go straight to the register file; immediates need one select and one sign extender" />
-<figcaption aria-hidden="true">register fields go straight to the
-register file; immediates need one select and one sign
-extender</figcaption>
+<img src="figs/rvimm.svg"
+alt="the immediate mux, per bit range: mostly 2:1, one 4:1, nothing bigger|697" />
+<figcaption aria-hidden="true">the immediate mux, per bit range: mostly
+2:1, one 4:1, nothing bigger|697</figcaption>
 </figure>
 <h2 id="the-instruction-classes">The Instruction Classes</h2>
 <p><strong>ALU</strong>: <code>add/sub/and/or/xor</code>, shifts
