@@ -155,7 +155,7 @@ def nav_footer(idx):
     # Index pages are the hub and get no nav footer.
     _, _, _, slug, section, _ = NOTES[idx]
     if slug == "index":
-        return 
+        return ""
     parts = ['<div class="note-nav">']
     if idx > 0 and NOTES[idx - 1][4] == section:
         pt = NOTES[idx - 1][2]
