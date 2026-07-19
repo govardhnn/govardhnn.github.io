@@ -267,8 +267,20 @@ everything after (weak ordering / the Primer’s XC model).</li>
 a lock <em>acquire</em> is a one-way barrier downward (later accesses
 cannot float above it), a <em>release</em> is one-way upward (earlier
 accesses cannot float below it). The critical section stays fenced in
-while independent code moves freely.</li>
+while independent code moves freely:</li>
 </ul>
+<figure>
+<img src="figs/acqrel.svg"
+alt="acquire and release as one-way barriers: code may move into the critical section, never out" />
+<figcaption aria-hidden="true">acquire and release as one-way barriers:
+code may move into the critical section, never out</figcaption>
+</figure>
+<p>The asymmetry is the whole point. A full fence forbids motion in both
+directions and stalls both ways; acquire/release each forbid only the
+direction that could leak the critical section, so the hardware keeps
+every reordering that does not matter. Independent code migrating
+<em>into</em> the locked region is harmless (it just executes under the
+lock); anything escaping <em>out</em> would run unprotected.</p>
 <h3 id="rvwmo">RVWMO</h3>
 <p>RISC-V’s default model
 (<a href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V
