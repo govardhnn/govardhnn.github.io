@@ -887,6 +887,12 @@ the result sign differs. Carry-out of the MSB is not a reliable
 signed-overflow indicator.</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode verilog"><code class="sourceCode verilog"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> overflow <span class="op">=</span> <span class="op">(</span>a<span class="op">[</span>W<span class="dv">-1</span><span class="op">]</span> <span class="op">==</span> b<span class="op">[</span>W<span class="dv">-1</span><span class="op">])</span> <span class="op">&amp;&amp;</span> <span class="op">(</span>sum<span class="op">[</span>W<span class="dv">-1</span><span class="op">]</span> <span class="op">!=</span> a<span class="op">[</span>W<span class="dv">-1</span><span class="op">]);</span></span></code></pre></div>
+<figure>
+<img src="figs/overflow.svg"
+alt="signed-overflow detector: XNOR the operand signs, XOR the result sign, AND|484" />
+<figcaption aria-hidden="true">signed-overflow detector: XNOR the
+operand signs, XOR the result sign, AND|484</figcaption>
+</figure>
 <h3 id="fixed-point">Fixed-point</h3>
 <p>An implied binary point splits integer and fractional bits.
 <code>Ua.b</code> is unsigned with
