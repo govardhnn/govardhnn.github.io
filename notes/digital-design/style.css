@@ -75,7 +75,9 @@ tr:nth-child(even) td {
 }
 
 img {
+    width: 50%;
     max-width: 100%;
+    height: auto;
     display: block;
     margin: 1.4em auto;
 }
