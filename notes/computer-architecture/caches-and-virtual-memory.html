@@ -102,6 +102,8 @@ id="toc-caches-and-virtual-memory">Caches and Virtual Memory</a>
 <ul>
 <li><a href="#cache-anatomy" id="toc-cache-anatomy">Cache
 Anatomy</a></li>
+<li><a href="#inside-the-arrays" id="toc-inside-the-arrays">Inside the
+Arrays</a></li>
 <li><a href="#performance" id="toc-performance">Performance</a></li>
 <li><a href="#policies" id="toc-policies">Policies</a></li>
 <li><a href="#virtual-memory" id="toc-virtual-memory">Virtual
@@ -238,6 +240,10 @@ tag
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>48</mn><mo>−</mo><mn>12</mn><mo>=</mo><mn>36</mn></mrow><annotation encoding="application/x-tex">= 48-12 = 36</annotation></semantics></math>
 bits. Note the index+offset fit in 12 bits, exactly a 4 KiB page; this
 is deliberate (VIPT, below).</p>
+<h2 id="inside-the-arrays">Inside the Arrays</h2>
+<p>A cache is two SRAM arrays (tags, data) plus comparators, and two
+physical questions shape every design: in what order are the arrays
+read, and how many requests can they serve at once?</p>
 <h3 id="reading-the-arrays-parallel-or-serial">Reading the Arrays:
 Parallel or Serial</h3>
 <p>The tag and data arrays can be accessed two ways, and the choice is a
@@ -257,6 +263,66 @@ way: every added fetch cycle grows the
 <a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">misprediction
 restart penalty</a>, so I-caches typically read tags and data in
 parallel.</p>
+<h3 id="bandwidth-ports-and-banks">Bandwidth: Ports and Banks</h3>
+<p>A wide core issues ~2 memory operations per cycle, but a <strong>true
+multiported</strong> SRAM (every cell readable twice at once) is slow
+enough that no commercial processor ships one. Three ways to fake
+it:</p>
+<figure>
+<img src="figs/cacheports.svg"
+alt="array replication vs multibanking" />
+<figcaption aria-hidden="true">array replication vs
+multibanking</figcaption>
+</figure>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Idea</th>
+<th>Cost</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>array replication</td>
+<td>two full copies, one load port each; stores write both</td>
+<td>2x area</td>
+<td>Alpha 21164</td>
+</tr>
+<tr>
+<td>virtual multiporting</td>
+<td>double-pump one array, two accesses per cycle</td>
+<td>abandoned: does not scale with GHz</td>
+<td>Power2, Alpha 21264</td>
+</tr>
+<tr>
+<td>multibanking</td>
+<td>split into single-ported banks; an index bit routes each
+request</td>
+<td>bank conflicts stall</td>
+<td>R10000, Opteron, everything modern</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-question">
+<div class="callout-title">
+Why are instruction caches single-ported and blocking?
+</div>
+<p>Fetch is sequential: one access returns a whole line of consecutive
+instructions, so a single port already feeds the machine. And a
+lockup-free I-cache would buy nothing: every instruction implicitly
+depends on fetching its predecessor, so there is no independent later
+fetch to overlap with an I-miss. The properties that justify D-cache
+complexity (random access, independent misses) are exactly the ones
+instruction streams lack.</p>
+</div>
 <h2 id="performance">Performance</h2>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>M</mi><mi>A</mi><mi>T</mi><mo>=</mo><msub><mi>t</mi><mrow><mi>h</mi><mi>i</mi><mi>t</mi></mrow></msub><mo>+</mo><mtext mathvariant="normal">miss rate</mtext><mo>×</mo><mtext mathvariant="normal">miss penalty</mtext></mrow><annotation encoding="application/x-tex">AMAT = t_{hit} + \text{miss rate} \times \text{miss penalty}</annotation></semantics></math></p>
 <p>Multilevel:
@@ -350,66 +416,6 @@ associative side buffer of recent evictions) mop up conflict misses.
 demand; accurate ones hide most compulsory/capacity latency, inaccurate
 ones pollute. <strong>Critical-word-first</strong> returns the needed
 word of a line before the rest.</p>
-<h3 id="bandwidth-ports-and-banks">Bandwidth: Ports and Banks</h3>
-<p>A wide core issues ~2 memory operations per cycle, but a <strong>true
-multiported</strong> SRAM (every cell readable twice at once) is slow
-enough that no commercial processor ships one. Three ways to fake
-it:</p>
-<figure>
-<img src="figs/cacheports.svg"
-alt="array replication vs multibanking" />
-<figcaption aria-hidden="true">array replication vs
-multibanking</figcaption>
-</figure>
-<table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
-<thead>
-<tr>
-<th>Approach</th>
-<th>Idea</th>
-<th>Cost</th>
-<th>Used by</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>array replication</td>
-<td>two full copies, one load port each; stores write both</td>
-<td>2x area</td>
-<td>Alpha 21164</td>
-</tr>
-<tr>
-<td>virtual multiporting</td>
-<td>double-pump one array, two accesses per cycle</td>
-<td>abandoned: does not scale with GHz</td>
-<td>Power2, Alpha 21264</td>
-</tr>
-<tr>
-<td>multibanking</td>
-<td>split into single-ported banks; an index bit routes each
-request</td>
-<td>bank conflicts stall</td>
-<td>R10000, Opteron, everything modern</td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-question">
-<div class="callout-title">
-Why are instruction caches single-ported and blocking?
-</div>
-<p>Fetch is sequential: one access returns a whole line of consecutive
-instructions, so a single port already feeds the machine. And a
-lockup-free I-cache would buy nothing: every instruction implicitly
-depends on fetching its predecessor, so there is no independent later
-fetch to overlap with an I-miss. The properties that justify D-cache
-complexity (random access, independent misses) are exactly the ones
-instruction streams lack.</p>
-</div>
 <p><strong>Hit-time tricks</strong>: <strong>way prediction</strong>
 guesses which way of a set-associative cache will hit and reads only
 that way first (direct-mapped speed and energy on a correct guess, an

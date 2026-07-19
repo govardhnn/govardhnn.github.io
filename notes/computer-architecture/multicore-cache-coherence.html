@@ -149,20 +149,25 @@ are never lost between epochs).</li>
 <p>Equivalently (token counting): a block has
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
 tokens; writing requires all of them, reading requires at least one.
-(<strong>Token Coherence</strong> turned this framing into a real
-protocol family: tokens travel with the data, so correctness needs no
-bus order and no directory serialization: a broadcast protocol on any
-unordered network, with a slow “retry with priority” path for the rare
-races.) Every practical protocol is an <strong>invalidate
-protocol</strong>: to write, a core first invalidates every other copy,
-ending the current epoch and starting its own read-write epoch.
-(<strong>Update</strong> protocols, which broadcast new values into the
-other caches instead, cost far more bandwidth and make write atomicity
-in the
+Every practical protocol is an <strong>invalidate protocol</strong>: to
+write, a core first invalidates every other copy, ending the current
+epoch and starting its own read-write epoch. (<strong>Update</strong>
+protocols, which broadcast new values into the other caches instead,
+cost far more bandwidth and make write atomicity in the
 <a href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">Memory
 Model</a> hard, so they are essentially extinct.) Coherence is enforced
 at cache-block granularity, typically 64 B, which is exactly what
 creates false sharing below.</p>
+<div class="callout callout-note">
+<div class="callout-title">
+Tokens made literal
+</div>
+<p><strong>Token Coherence</strong> turned the counting framing into a
+real protocol family: tokens travel with the data, so correctness needs
+no bus order and no directory serialization, giving broadcast
+performance on any unordered network, with a slow “retry with priority”
+path for the rare races.</p>
+</div>
 <h2 id="cache-block-states-msi-mesi-moesi">Cache Block States: MSI,
 MESI, MOESI</h2>
 <p>A block’s state in a private cache encodes four independent

@@ -43,6 +43,9 @@ Dependencies</a></li>
 Renaming</a></li>
 <li><a href="#tomasulos-algorithm"
 id="toc-tomasulos-algorithm">Tomasulo’s Algorithm</a></li>
+<li><a href="#rename-schemes-in-real-machines"
+id="toc-rename-schemes-in-real-machines">Rename Schemes in Real
+Machines</a></li>
 <li><a href="#the-reorder-buffer-and-in-order-commit"
 id="toc-the-reorder-buffer-and-in-order-commit">The Reorder Buffer and
 In-Order Commit</a></li>
@@ -153,9 +156,35 @@ table</strong>. Physical registers outnumber architectural (e.g. 200+ vs
 conflict. Map after: x1→p9, x3→p8, x7→p10. A physical register is freed
 when the <em>next</em> writer of the same architectural register commits
 (no one can still read the old value).</p>
-<h3 id="three-ways-to-build-it">Three Ways to Build It</h3>
-<p>Renaming fixes <em>where a value lives</em>; three schemes answer
-that differently, and all three have shipped:</p>
+<h2 id="tomasulos-algorithm">Tomasulo’s Algorithm</h2>
+<p>The IBM 360/91 FPU (1967) invented distributed renaming three years
+after the scoreboard:</p>
+<figure>
+<img src="figs/tomasulo.svg" alt="Tomasulo organization" />
+<figcaption aria-hidden="true">Tomasulo organization</figcaption>
+</figure>
+<ul>
+<li><strong>Reservation stations (RS)</strong> in front of each
+functional unit hold waiting instructions. Each operand is either a
+value (already available, copied in) or a <strong>tag</strong> naming
+the RS that will produce it.</li>
+<li>Register file entries carry a tag too: “the value is coming from RS
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>”.</li>
+<li>When a unit finishes, it broadcasts (tag, value) on the
+<strong>common data bus (CDB)</strong>; every RS and register entry
+snoops it and captures a matching value. Dependents can issue the next
+cycle: forwarding falls out of the design.</li>
+</ul>
+<p>Renaming lives in the tags (destinations are RS names, not register
+names), so WAR/WAW vanish. Modern machines keep the idea but shrink
+reservation stations to an <strong>issue queue</strong> holding only
+tags, since copying wide values into every RS wastes area and the CDB
+does not scale to many results per cycle. Where the values themselves
+live became its own design choice:</p>
+<h2 id="rename-schemes-in-real-machines">Rename Schemes in Real
+Machines</h2>
+<p>Three answers shipped, each defining where speculative and committed
+values sit:</p>
 <figure>
 <img src="figs/renameschemes.svg" alt="the three rename schemes" />
 <figcaption aria-hidden="true">the three rename schemes</figcaption>
@@ -237,31 +266,6 @@ documented merged-PRF core: 96 integer + 64 FP physical registers over
 map table for single-cycle misprediction recovery, and a per-branch
 allocation list records the registers allocated on the speculative path,
 so a squash returns them to the free list in one OR operation.</p>
-<h2 id="tomasulos-algorithm">Tomasulo’s Algorithm</h2>
-<p>The IBM 360/91 FPU (1967) invented distributed renaming three years
-after the scoreboard:</p>
-<figure>
-<img src="figs/tomasulo.svg" alt="Tomasulo organization" />
-<figcaption aria-hidden="true">Tomasulo organization</figcaption>
-</figure>
-<ul>
-<li><strong>Reservation stations (RS)</strong> in front of each
-functional unit hold waiting instructions. Each operand is either a
-value (already available, copied in) or a <strong>tag</strong> naming
-the RS that will produce it.</li>
-<li>Register file entries carry a tag too: “the value is coming from RS
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>”.</li>
-<li>When a unit finishes, it broadcasts (tag, value) on the
-<strong>common data bus (CDB)</strong>; every RS and register entry
-snoops it and captures a matching value. Dependents can issue the next
-cycle: forwarding falls out of the design.</li>
-</ul>
-<p>Renaming lives in the tags (destinations are RS names, not register
-names), so WAR/WAW vanish. Modern machines keep the idea but move values
-into a unified <strong>physical register file</strong> (PRF);
-reservation stations shrink to an <strong>issue queue</strong> holding
-only tags, since copying wide values into every RS wastes area and the
-CDB does not scale to many results per cycle.</p>
 <h2 id="the-reorder-buffer-and-in-order-commit">The Reorder Buffer and
 In-Order Commit</h2>
 <p>Pure Tomasulo updates registers as results appear, out of order,

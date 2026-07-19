@@ -111,9 +111,8 @@ Function</a></li>
 Minimization</a></li>
 <li><a href="#from-equations-to-gates"
 id="toc-from-equations-to-gates">From Equations to Gates</a></li>
-<li><a href="#boolean-expressions-in-verilog"
-id="toc-boolean-expressions-in-verilog">Boolean Expressions in
-Verilog</a></li>
+<li><a href="#bits-as-a-field-gf2" id="toc-bits-as-a-field-gf2">Bits as
+a Field: GF(2)</a></li>
 <li><a href="#number-systems" id="toc-number-systems">Number
 Systems</a></li>
 <li><a href="#references" id="toc-references">References</a></li>
@@ -253,110 +252,6 @@ and
 The algebra lets us <strong>simplify</strong> expressions, put them in
 <strong>normal form</strong>, and test two expressions for
 <strong>equivalence</strong>.</p>
-<h3 id="arithmetic-view">Arithmetic view</h3>
-<p>Reading
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>,</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">0, 1</annotation></semantics></math>
-as integers gives arithmetic equivalents, useful in proofs and in
-software without native bit operations:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mi>y</mi><mo>=</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mspace width="2.0em"></mspace><mi>x</mi><mo>∨</mo><mi>y</mi><mo>=</mo><mi>x</mi><mo>+</mo><mi>y</mi><mo>−</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow><mi mathvariant="normal">max</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mspace width="2.0em"></mspace><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>1</mn><mo>−</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">
-x \land y = xy = \min(x,y) \qquad x \lor y = x + y - xy = \max(x,y) \qquad \bar{x} = 1 - x
-</annotation></semantics></math> XOR is addition modulo 2: add the bits
-as integers and keep the remainder mod 2, so
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>⊕</mo><mn>1</mn><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">1 \oplus 1 = 0</annotation></semantics></math>.
-Taking
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>⊕</mi><annotation encoding="application/x-tex">\oplus</annotation></semantics></math>
-as addition and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>∧</mi><annotation encoding="application/x-tex">\land</annotation></semantics></math>
-as multiplication, the set
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{0, 1\}</annotation></semantics></math>
-satisfies every field axiom, giving the two-element <strong>Galois
-Field</strong>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>F</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">GF(2)</annotation></semantics></math>,
-the smallest field there is. Since
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>⊕</mo><mi>x</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x \oplus x = 0</annotation></semantics></math>,
-every element is its own negative: addition and subtraction are the same
-operation. Because bits form a field, all of linear algebra (vectors,
-matrices, polynomials) works over bits, which hardware exploits
-directly:</p>
-<ul>
-<li><strong>Parity</strong> is the XOR-sum of all the bits of a word,
-literally its “sum” in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>F</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">GF(2)</annotation></semantics></math>.
-That is why an XOR chain/tree computes parity, and why flipping any
-single bit always flips the parity (single-bit error detection).</li>
-<li><strong>CRCs</strong> treat a bit stream as the coefficients of a
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>F</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">GF(2)</annotation></semantics></math>
-polynomial
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1011</mn><mo>→</mo><msup><mi>x</mi><mn>3</mn></msup><mo>+</mo><mi>x</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">1011 \to x^3 + x + 1</annotation></semantics></math>)
-and take its remainder after dividing by a fixed <em>generator
-polynomial</em>. Polynomial division in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>F</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">GF(2)</annotation></semantics></math>
-needs only shift-and-XOR, so a CRC engine is just a shift register with
-XOR taps at the generator’s terms (an LFSR).</li>
-<li><strong>Linear error-correcting codes</strong> (Hamming, memory ECC)
-compute check bits as a matrix-vector product over
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>F</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">GF(2)</annotation></semantics></math>:
-each check bit is the AND of the data word with a row mask, accumulated
-by XOR. Decoding recomputes the product; a nonzero result
-(<em>syndrome</em>) points at the flipped bit.</li>
-</ul>
-<p>Material implication
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x \rightarrow y = \bar{x} \lor y</annotation></semantics></math>
-rounds out the secondary operations (it reappears in SVA assertions as
-<code>|-&gt;</code>, false only when
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>y</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x=1, y=0</annotation></semantics></math>,
-vacuously true when
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x=0</annotation></semantics></math>).</p>
-<p>Deriving that form from the truth table shows the standard SOP
-recipe: OR the minterms of the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>-rows,
-then simplify.</p>
-<table>
-<thead>
-<tr>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math></th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math></th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x \rightarrow y</annotation></semantics></math></th>
-<th>minterm</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mspace width="0.167em"></mspace><mover><mi>y</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\bar{x}\,\bar{y}</annotation></semantics></math></td>
-</tr>
-<tr>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mspace width="0.167em"></mspace><mi>y</mi></mrow><annotation encoding="application/x-tex">\bar{x}\,y</annotation></semantics></math></td>
-</tr>
-<tr>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-<td></td>
-</tr>
-<tr>
-<td>1</td>
-<td>1</td>
-<td>1</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mspace width="0.167em"></mspace><mi>y</mi></mrow><annotation encoding="application/x-tex">x\,y</annotation></semantics></math></td>
-</tr>
-</tbody>
-</table>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mover><mi>y</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mi>y</mi><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="prefix">(</mo><mover><mi>y</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">
-x \rightarrow y = \bar{x}\bar{y} \lor \bar{x}y \lor xy
-= \bar{x}(\bar{y} \lor y) \lor xy
-= \bar{x} \lor xy
-= (\bar{x} \lor x)(\bar{x} \lor y)
-= \bar{x} \lor y
-</annotation></semantics></math></p>
-<p>(distribute, complement, distribute again; the last two steps are the
-identity
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>∨</mo><mover><mi>a</mi><mo accent="true">‾</mo></mover><mi>b</mi><mo>=</mo><mi>a</mi><mo>∨</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a \lor \bar{a}b = a \lor b</annotation></semantics></math>).</p>
 <h2 id="axioms">Axioms</h2>
 <p>Everything below follows from the definitions of AND, OR, and NOT,
 stated as axioms for all
@@ -548,6 +443,62 @@ read off the shaded regions.</p>
 <figcaption aria-hidden="true">Venn diagrams for AND, OR,
 NOT</figcaption>
 </figure>
+<h3 id="worked-example-simplifying-implication">Worked Example:
+Simplifying Implication</h3>
+<p>Material implication
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x \rightarrow y = \bar{x} \lor y</annotation></semantics></math>
+(it reappears in SVA assertions as <code>|-&gt;</code>, false only when
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>y</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x=1, y=0</annotation></semantics></math>).
+Deriving that form from its truth table shows the standard recipe the
+identities above enable: OR the minterms of the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>-rows,
+then simplify.</p>
+<table>
+<thead>
+<tr>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x \rightarrow y</annotation></semantics></math></th>
+<th>minterm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mspace width="0.167em"></mspace><mover><mi>y</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\bar{x}\,\bar{y}</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mspace width="0.167em"></mspace><mi>y</mi></mrow><annotation encoding="application/x-tex">\bar{x}\,y</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mspace width="0.167em"></mspace><mi>y</mi></mrow><annotation encoding="application/x-tex">x\,y</annotation></semantics></math></td>
+</tr>
+</tbody>
+</table>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mover><mi>y</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mi>y</mi><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="prefix">(</mo><mover><mi>y</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">
+x \rightarrow y = \bar{x}\bar{y} \lor \bar{x}y \lor xy
+= \bar{x}(\bar{y} \lor y) \lor xy
+= \bar{x} \lor xy
+= (\bar{x} \lor x)(\bar{x} \lor y)
+= \bar{x} \lor y
+</annotation></semantics></math></p>
+<p>(distribute, complement, distribute again; the last two steps are the
+identity
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>∨</mo><mover><mi>a</mi><mo accent="true">‾</mo></mover><mi>b</mi><mo>=</mo><mi>a</mi><mo>∨</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a \lor \bar{a}b = a \lor b</annotation></semantics></math>).</p>
 <h2 id="dual-and-complement-of-a-function">Dual and Complement of a
 Function</h2>
 <p>The <strong>dual</strong>
@@ -807,19 +758,56 @@ gives <strong>parity</strong>
 iff an odd number of inputs are
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>).
 XNOR is <strong>equivalence</strong>, true iff the inputs match.</p>
-<h2 id="boolean-expressions-in-verilog">Boolean Expressions in
-Verilog</h2>
-<p>Verilog uses <code>&amp;</code>, <code>|</code>, <code>~</code> for
-AND, OR, NOT, and <code>^</code> for XOR. A combinational function is an
-<code>assign</code>:</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode verilog"><code class="sourceCode verilog"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> majority<span class="op">(</span>a<span class="op">,</span> b<span class="op">,</span> c<span class="op">,</span> out<span class="op">);</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">input</span>  a<span class="op">,</span> b<span class="op">,</span> c<span class="op">;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">output</span> out<span class="op">;</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">assign</span> out <span class="op">=</span> <span class="op">(</span>a <span class="op">&amp;</span> b<span class="op">)</span> <span class="op">|</span> <span class="op">(</span>a <span class="op">&amp;</span> c<span class="op">)</span> <span class="op">|</span> <span class="op">(</span>b <span class="op">&amp;</span> c<span class="op">);</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">endmodule</span></span></code></pre></div>
+<h2 id="bits-as-a-field-gf2">Bits as a Field: GF(2)</h2>
+<p>Reading
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>,</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">0, 1</annotation></semantics></math>
+as integers gives arithmetic equivalents, useful in proofs and in
+software without native bit operations:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mi>y</mi><mo>=</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mspace width="2.0em"></mspace><mi>x</mi><mo>∨</mo><mi>y</mi><mo>=</mo><mi>x</mi><mo>+</mo><mi>y</mi><mo>−</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow><mi mathvariant="normal">max</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mspace width="2.0em"></mspace><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>1</mn><mo>−</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">
+x \land y = xy = \min(x,y) \qquad x \lor y = x + y - xy = \max(x,y) \qquad \bar{x} = 1 - x
+</annotation></semantics></math> XOR is addition modulo 2: add the bits
+as integers and keep the remainder mod 2, so
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>⊕</mo><mn>1</mn><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">1 \oplus 1 = 0</annotation></semantics></math>.
+Taking
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>⊕</mi><annotation encoding="application/x-tex">\oplus</annotation></semantics></math>
+as addition and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>∧</mi><annotation encoding="application/x-tex">\land</annotation></semantics></math>
+as multiplication, the set
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{0, 1\}</annotation></semantics></math>
+satisfies every field axiom, giving the two-element <strong>Galois
+Field</strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>F</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">GF(2)</annotation></semantics></math>,
+the smallest field there is. Since
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>⊕</mo><mi>x</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x \oplus x = 0</annotation></semantics></math>,
+every element is its own negative: addition and subtraction are the same
+operation. Because bits form a field, all of linear algebra (vectors,
+matrices, polynomials) works over bits, which hardware exploits
+directly:</p>
+<ul>
+<li><strong>Parity</strong> is the XOR-sum of all the bits of a word,
+literally its “sum” in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>F</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">GF(2)</annotation></semantics></math>.
+That is why an XOR chain/tree computes parity, and why flipping any
+single bit always flips the parity (single-bit error detection).</li>
+<li><strong>CRCs</strong> treat a bit stream as the coefficients of a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>F</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">GF(2)</annotation></semantics></math>
+polynomial
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1011</mn><mo>→</mo><msup><mi>x</mi><mn>3</mn></msup><mo>+</mo><mi>x</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">1011 \to x^3 + x + 1</annotation></semantics></math>)
+and take its remainder after dividing by a fixed <em>generator
+polynomial</em>. Polynomial division in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>F</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">GF(2)</annotation></semantics></math>
+needs only shift-and-XOR, so a CRC engine is just a shift register with
+XOR taps at the generator’s terms (an LFSR).</li>
+<li><strong>Linear error-correcting codes</strong> (Hamming, memory ECC)
+compute check bits as a matrix-vector product over
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>F</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">GF(2)</annotation></semantics></math>:
+each check bit is the AND of the data word with a row mask, accumulated
+by XOR. Decoding recomputes the product; a nonzero result
+(<em>syndrome</em>) points at the flipped bit.</li>
+</ul>
 <h2 id="number-systems">Number Systems</h2>
-<p>The values logic operates on. An
+<p>Logic manipulates truth values; datapaths interpret whole bit vectors
+as numbers, so the encodings deserve the same care as the operators. An
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>-bit
 unsigned number weights bit
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
@@ -905,8 +893,8 @@ bits)</th>
 <p>Signed overflow happens only when adding two same-signed operands and
 the result sign differs. Carry-out of the MSB is not a reliable
 signed-overflow indicator.</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode verilog"><code class="sourceCode verilog"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> overflow <span class="op">=</span> <span class="op">(</span>a<span class="op">[</span>W<span class="dv">-1</span><span class="op">]</span> <span class="op">==</span> b<span class="op">[</span>W<span class="dv">-1</span><span class="op">])</span> <span class="op">&amp;&amp;</span> <span class="op">(</span>sum<span class="op">[</span>W<span class="dv">-1</span><span class="op">]</span> <span class="op">!=</span> a<span class="op">[</span>W<span class="dv">-1</span><span class="op">]);</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode verilog"><code class="sourceCode verilog"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> overflow <span class="op">=</span> <span class="op">(</span>a<span class="op">[</span>W<span class="dv">-1</span><span class="op">]</span> <span class="op">==</span> b<span class="op">[</span>W<span class="dv">-1</span><span class="op">])</span> <span class="op">&amp;&amp;</span> <span class="op">(</span>sum<span class="op">[</span>W<span class="dv">-1</span><span class="op">]</span> <span class="op">!=</span> a<span class="op">[</span>W<span class="dv">-1</span><span class="op">]);</span></span></code></pre></div>
 <h3 id="fixed-point">Fixed-point</h3>
 <p>An implied binary point splits integer and fractional bits.
 <code>Ua.b</code> is unsigned with

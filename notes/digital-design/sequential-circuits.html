@@ -291,31 +291,15 @@ T or JK flops (a D flop’s excitation is trivially
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>=</mo><msup><mi>Q</mi><mo>+</mo></msup></mrow><annotation encoding="application/x-tex">D = Q^+</annotation></semantics></math>,
 one reason it won). In modern synchronous design everything is a D flop;
 T and JK survive as exercises and inside counters.</p>
-<p>Each flip-flop imposes timing constraints around the edge:</p>
-<ul>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">t_{setup}</annotation></semantics></math>:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
-stable before the edge.</li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{hold}</annotation></semantics></math>:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
-stable after the edge.</li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>c</mi><mi>q</mi></mrow></msub><annotation encoding="application/x-tex">t_{cq}</annotation></semantics></math>:
-clock-to-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>
-delay.</li>
-</ul>
-<figure>
-<img src="figs/ffwave.svg"
-alt="Setup, hold, and clock-to-Q around a clock edge|620" />
-<figcaption aria-hidden="true">Setup, hold, and clock-to-Q around a
-clock edge|620</figcaption>
-</figure>
-<p>For a path between two flip-flops through logic of delay
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>,
-the clock period satisfies
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>≥</mo><msub><mi>t</mi><mrow><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub></mrow><annotation encoding="application/x-tex">T \ge t_{cq} + t_{pd} + t_{setup}</annotation></semantics></math>,
-setting the maximum frequency. A hold violation
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><mo>&lt;</mo><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub></mrow><annotation encoding="application/x-tex">t_{cq} + t_{cd} &lt; t_{hold}</annotation></semantics></math>)
-is a fast-path failure and cannot be fixed by slowing the clock.</p>
+<p>Each flip-flop imposes timing constraints around the edge
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">t_{setup}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{hold}</annotation></semantics></math>,
+clock-to-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>),
+and together with the logic delay between flops they set the clock
+period. The full timing story, from the setup and hold equations to
+skew, metastability, and static timing analysis, is the subject of
+<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
+Timing and Power</a>.</p>
 <h2 id="describing-sequential-logic">Describing Sequential Logic</h2>
 <p>Model edge-triggered state with <code>always_ff</code> and the
 nonblocking assignment (<code>&lt;=</code>). Combinational blocks use
@@ -440,13 +424,13 @@ grant per cycle. A fixed-priority arbiter always favors the lowest index
 rotates priority after each grant for fairness.</p>
 <h2 id="pipelining">Pipelining</h2>
 <p>Inserting registers to split a long combinational path into stages
-raises throughput to one result per clock at the cost of latency. The
-slowest stage sets the period, so balancing stage delays maximizes
-frequency.</p>
-<figure>
-<img src="figs/pipeline.svg" alt="Pipelined datapath" />
-<figcaption aria-hidden="true">Pipelined datapath</figcaption>
-</figure>
+raises throughput to one result per clock at the cost of latency; the
+slowest stage sets the period. The worked example, the forwarding
+pitfall, and the loop-carried-dependency limit are in
+<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
+Timing and Power</a>; the technique applied to a whole processor is the
+<a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">Simple
+Instruction Pipeline</a>.</p>
 <h2 id="finite-state-machines">Finite State Machines</h2>
 <p>An FSM is sequential logic with named states. It has combinational
 next-state logic, a state register, and combinational output logic.</p>

@@ -261,16 +261,10 @@ explicit sends/receives; scales past any coherent domain.</li>
 </ul>
 <p><strong>Multithreading</strong> is MIMD inside one core: coarse-grain
 (switch on stall), fine-grain (rotate every cycle: barrel processors),
-and SMT (issue from several threads in one cycle):</p>
-<figure>
-<img src="figs/smt.svg"
-alt="filling issue slots: superscalar vs fine-grain MT vs SMT" />
-<figcaption aria-hidden="true">filling issue slots: superscalar vs
-fine-grain MT vs SMT</figcaption>
-</figure>
-<p>What must be replicated per thread is only architectural state (PC,
-registers, CSRs); pipelines, caches, and predictors are shared, detailed
-in
+and SMT (issue from several threads in one cycle). What must be
+replicated per thread is only architectural state (PC, registers, CSRs);
+pipelines, caches, and predictors are shared. The issue-slot mechanics,
+costs, and the waste-filling picture are in
 <a href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">Advanced
 Superscalar Architectures</a>.</p>
 <h2 id="vliw-the-compiler-alternative">VLIW: The Compiler

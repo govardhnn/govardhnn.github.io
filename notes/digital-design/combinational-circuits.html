@@ -637,40 +637,19 @@ truth-table memory, realizing any
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>-input
 function.</p>
 <h2 id="propagation-delay">Propagation Delay</h2>
-<p>Real gates take time. Two numbers characterize a combinational
-block:</p>
-<ul>
-<li><strong>Propagation delay</strong>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>:
-the <em>maximum</em> time from an input change to the output settling at
-its final value.</li>
-<li><strong>Contamination delay</strong>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{cd}</annotation></semantics></math>:
-the <em>minimum</em> time before the output can start to change at
-all.</li>
-</ul>
-<p>Delays add along a path. The slowest input-to-output route is the
-<strong>critical path</strong> and sets the block’s
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>;
-the fastest is the <strong>short path</strong> and sets
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{cd}</annotation></semantics></math>.
-Between
+<p>Real gates take time: a block’s <strong>propagation delay</strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>
+is the slowest input-to-output path (the <strong>critical
+path</strong>), its <strong>contamination delay</strong>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{cd}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>
-after an input change the output is untrustworthy: it may fluctuate
-through intermediate values as changes race down paths of different
-lengths before settling.</p>
-<figure>
-<img src="figs/paths.svg" alt="Critical path vs short path|662" />
-<figcaption aria-hidden="true">Critical path vs short
-path|662</figcaption>
-</figure>
-<p>The critical path is what timing closure is about: the combinational
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>
-between two registers must fit in the clock period, so speeding up a
-circuit means shortening its critical path (carry lookahead versus
-ripple is exactly this trade).</p>
+the fastest, and between the two the output may fluctuate as changes
+race down unequal paths. The critical path is what a clock period must
+cover, so speeding up a circuit means shortening it (carry lookahead
+versus ripple is exactly this trade). The full timing model,
+constraints, and analysis live in
+<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
+Timing and Power</a>; what matters here is the racing itself, because it
+produces glitches:</p>
 <h2 id="hazards">Hazards</h2>
 <p>A hazard is a momentary wrong output (glitch) from unequal path
 delays, even when the logic is correct. A <strong>static-1
