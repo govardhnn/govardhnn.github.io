@@ -730,10 +730,18 @@ and NOR are the natural primitives.</p>
 can build any function.
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mi>∧</mi><mo>,</mo><mi>∨</mi><mo>,</mo><mi>¬</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{\land, \lor, \lnot\}</annotation></semantics></math>
 is complete (canonical SOP uses only these). Crucially, <strong>NAND
-alone and NOR alone are each universal</strong>,
-e.g. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi><mo>∧</mo><mi>x</mi></mrow></mrow><annotation encoding="application/x-tex">\bar{x} = \overline{x \land x}</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow></mrow></mrow><annotation encoding="application/x-tex">x \lor y = \overline{\bar{x} \land \bar{y}}</annotation></semantics></math>,
-which is why a single gate type can implement any logic in silicon.</p>
+alone and NOR alone are each universal</strong>, which is why a single
+gate type can implement any logic in silicon. The constructions: tie
+both inputs together for NOT, invert a NAND for AND, and invert the
+<em>inputs</em> for OR (DeMorgan in gate form):</p>
+<figure>
+<img src="figs/nandgates.svg"
+alt="NOT, AND, and OR built from NAND alone" />
+<figcaption aria-hidden="true">NOT, AND, and OR built from NAND
+alone</figcaption>
+</figure>
+<p>The same recipe works with NOR by duality: tied inputs give NOT, an
+inverted NOR gives OR, and inverted inputs give AND.</p>
 <h3 id="xor-xnor">XOR / XNOR</h3>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>⊕</mo><mi>b</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>∧</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi><mo>⊕</mo><mi>b</mi></mrow><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>∧</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
 a \oplus b = (a \land \bar{b}) \lor (\bar{a} \land b), \qquad \overline{a \oplus b} = (a \land b) \lor (\bar{a} \land \bar{b}).

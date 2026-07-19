@@ -655,36 +655,60 @@ digit
 <table>
 <thead>
 <tr>
-<th>amount</th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mn>2</mn></msub><mspace width="0.167em"></mspace><msub><mi>s</mi><mn>1</mn></msub><mspace width="0.167em"></mspace><msub><mi>s</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">s_2\,s_1\,s_0</annotation></semantics></math></th>
-<th>stages shifting</th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>s</mi><mn>2</mn></msub><annotation encoding="application/x-tex">s_2</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>s</mi><mn>1</mn></msub><annotation encoding="application/x-tex">s_1</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>s</mi><mn>0</mn></msub><annotation encoding="application/x-tex">s_0</annotation></semantics></math></th>
+<th>stages shifted</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>0</td>
-<td>000</td>
-<td>none</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
 </tr>
 <tr>
+<td>0</td>
+<td>0</td>
 <td>1</td>
-<td>001</td>
 <td>1</td>
 </tr>
 <tr>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>2</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
 <td>3</td>
-<td>011</td>
-<td>2, 1</td>
 </tr>
 <tr>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
 <td>5</td>
-<td>101</td>
-<td>4, 1</td>
 </tr>
 <tr>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>6</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
 <td>7</td>
-<td>111</td>
-<td>4, 2, 1</td>
 </tr>
 </tbody>
 </table>
@@ -761,9 +785,9 @@ configurable:</p>
 </table>
 <figure>
 <img src="figs/planes.svg"
-alt="two-level AND plane / OR plane structure" />
+alt="two-level AND plane / OR plane structure|568" />
 <figcaption aria-hidden="true">two-level AND plane / OR plane
-structure</figcaption>
+structure|568</figcaption>
 </figure>
 <p>A PAL trades the PLA’s flexibility (each output owns a fixed set of
 product terms) for speed and simpler programming; <strong>PLD</strong>
