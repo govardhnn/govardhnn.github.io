@@ -101,11 +101,8 @@
 Algebra</a>
 <ul>
 <li><a href="#introduction" id="toc-introduction">Introduction</a></li>
-<li><a href="#axioms" id="toc-axioms">Axioms</a></li>
 <li><a href="#properties" id="toc-properties">Properties</a></li>
-<li><a href="#dual-and-complement-of-a-function"
-id="toc-dual-and-complement-of-a-function">Dual and Complement of a
-Function</a></li>
+<li><a href="#duality" id="toc-duality">Duality</a></li>
 <li><a href="#normal-form" id="toc-normal-form">Normal Form</a></li>
 <li><a href="#logic-minimization" id="toc-logic-minimization">Logic
 Minimization</a></li>
@@ -252,41 +249,20 @@ and
 The algebra lets us <strong>simplify</strong> expressions, put them in
 <strong>normal form</strong>, and test two expressions for
 <strong>equivalence</strong>.</p>
-<h2 id="axioms">Axioms</h2>
-<p>Everything below follows from the definitions of AND, OR, and NOT,
-stated as axioms for all
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">x \in \{0, 1\}</annotation></semantics></math>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>∧</mo><mi>x</mi><mo>=</mo><mn>0</mn><mspace width="2.0em"></mspace><mn>1</mn><mo>∨</mo><mi>x</mi><mo>=</mo><mn>1</mn><mspace width="2.0em"></mspace><mtext mathvariant="normal">(null)</mtext></mrow><annotation encoding="application/x-tex">
-0 \land x = 0 \qquad 1 \lor x = 1 \qquad\text{(null)}
-</annotation></semantics></math>
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>∧</mo><mi>x</mi><mo>=</mo><mi>x</mi><mspace width="2.0em"></mspace><mn>0</mn><mo>∨</mo><mi>x</mi><mo>=</mo><mi>x</mi><mspace width="2.0em"></mspace><mtext mathvariant="normal">(identity)</mtext></mrow><annotation encoding="application/x-tex">
-1 \land x = x \qquad 0 \lor x = x \qquad\text{(identity)}
-</annotation></semantics></math>
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mn>0</mn></mrow><mo>=</mo><mn>1</mn><mspace width="2.0em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mn>1</mn></mrow><mo>=</mo><mn>0</mn><mspace width="2.0em"></mspace><mtext mathvariant="normal">(negation)</mtext></mrow><annotation encoding="application/x-tex">
-\bar{0} = 1 \qquad \bar{1} = 0 \qquad\text{(negation)}
-</annotation></semantics></math></p>
-<h3 id="duality">Duality</h3>
-<p>Notice each axiom comes as a left/right pair. The <strong>principle
-of duality</strong>: if an expression is true, so is the one obtained by
-swapping every
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>∧</mi><mo>↔</mo><mi>∨</mi></mrow><annotation encoding="application/x-tex">\land \leftrightarrow \lor</annotation></semantics></math>
-and every
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>↔</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">0 \leftrightarrow 1</annotation></semantics></math>.
-Since duality holds for the axioms, it holds for <em>all</em> of Boolean
-algebra, so every identity below comes in a matched pair.</p>
-<p>An operation unchanged by this swap is <strong>self-dual</strong>:
-NOT and the identity are, and so is majority
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∧</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mi>y</mi><mo>∧</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>∧</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(x \land y) \lor (y \land z) \lor (z \land x)</annotation></semantics></math>.
-No binary operation depending on both inputs is self-dual, and
-compositions of self-dual operations stay self-dual.</p>
 <h2 id="properties">Properties</h2>
-<p>The working set of identities (AND-form | OR-form), for all
+<p>Everything in the algebra follows from a small axiomatic core, the
+null, identity, and negation laws:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>∧</mo><mi>x</mi><mo>=</mo><mn>0</mn><mspace width="2.0em"></mspace><mn>1</mn><mo>∨</mo><mi>x</mi><mo>=</mo><mn>1</mn><mspace width="2.0em"></mspace><mn>1</mn><mo>∧</mo><mi>x</mi><mo>=</mo><mi>x</mi><mspace width="2.0em"></mspace><mn>0</mn><mo>∨</mo><mi>x</mi><mo>=</mo><mi>x</mi><mspace width="2.0em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mn>0</mn></mrow><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">
+0 \land x = 0 \qquad 1 \lor x = 1 \qquad 1 \land x = x \qquad 0 \lor x = x \qquad \bar{0} = 1
+</annotation></semantics></math></p>
+<p>The working set of identities derived from them (AND-form | OR-form),
+for all
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">x, y, z \in \{0, 1\}</annotation></semantics></math>:</p>
 <table>
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 45%" />
-<col style="width: 44%" />
+<col style="width: 9%" />
+<col style="width: 39%" />
+<col style="width: 51%" />
 </colgroup>
 <thead>
 <tr>
@@ -360,6 +336,10 @@ compositions of self-dual operations stay self-dual.</p>
 </table>
 <p>Notes:</p>
 <ul>
+<li><strong>Idempotence</strong> is an important property where applying
+the same operation multiple times yields the same exact result as
+applying them just once - making it safe to retry the same
+operation</li>
 <li><strong>Complement</strong> and <strong>involution</strong> have no
 counterpart in ordinary algebra, they are what make the algebra
 <em>complemented</em>.</li>
@@ -443,65 +423,22 @@ read off the shaded regions.</p>
 <figcaption aria-hidden="true">Venn diagrams for AND, OR,
 NOT</figcaption>
 </figure>
-<h3 id="worked-example-simplifying-implication">Worked Example:
-Simplifying Implication</h3>
-<p>Material implication
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x \rightarrow y = \bar{x} \lor y</annotation></semantics></math>
-(it reappears in SVA assertions as <code>|-&gt;</code>, false only when
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>y</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x=1, y=0</annotation></semantics></math>).
-Deriving that form from its truth table shows the standard recipe the
-identities above enable: OR the minterms of the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>-rows,
-then simplify.</p>
-<table>
-<thead>
-<tr>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math></th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math></th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x \rightarrow y</annotation></semantics></math></th>
-<th>minterm</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mspace width="0.167em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow></mrow><annotation encoding="application/x-tex">\bar{x}\,\bar{y}</annotation></semantics></math></td>
-</tr>
-<tr>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mspace width="0.167em"></mspace><mi>y</mi></mrow><annotation encoding="application/x-tex">\bar{x}\,y</annotation></semantics></math></td>
-</tr>
-<tr>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-<td></td>
-</tr>
-<tr>
-<td>1</td>
-<td>1</td>
-<td>1</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mspace width="0.167em"></mspace><mi>y</mi></mrow><annotation encoding="application/x-tex">x\,y</annotation></semantics></math></td>
-</tr>
-</tbody>
-</table>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mi>y</mi><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">
-x \rightarrow y = \bar{x}\bar{y} \lor \bar{x}y \lor xy
-= \bar{x}(\bar{y} \lor y) \lor xy
-= \bar{x} \lor xy
-= (\bar{x} \lor x)(\bar{x} \lor y)
-= \bar{x} \lor y
-</annotation></semantics></math></p>
-<p>(distribute, complement, distribute again; the last two steps are the
-identity
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mi>b</mi><mo>=</mo><mi>a</mi><mo>∨</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a \lor \bar{a}b = a \lor b</annotation></semantics></math>).</p>
-<h2 id="dual-and-complement-of-a-function">Dual and Complement of a
-Function</h2>
-<p>The <strong>dual</strong>
+<h2 id="duality">Duality</h2>
+<p>Every identity above comes as a matched AND/OR pair, and that is no
+accident. The <strong>principle of duality</strong>: if an expression is
+true, so is the one obtained by swapping every
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>∧</mi><mo>↔</mo><mi>∨</mi></mrow><annotation encoding="application/x-tex">\land \leftrightarrow \lor</annotation></semantics></math>
+and every
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>↔</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">0 \leftrightarrow 1</annotation></semantics></math>.
+Duality holds for the axioms, so it holds for everything derived from
+them: prove one form and its dual comes free.</p>
+<p>An operation unchanged by this swap is <strong>self-dual</strong>:
+NOT and the identity are, and so is majority
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>∧</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mi>y</mi><mo>∧</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>∧</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(x \land y) \lor (y \land z) \lor (z \land x)</annotation></semantics></math>.
+No binary operation depending on both inputs is self-dual, and
+compositions of self-dual operations stay self-dual.</p>
+<p>The idea extends from identities to whole functions. The
+<strong>dual</strong>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>f</mi><mi>D</mi></msup><annotation encoding="application/x-tex">f^D</annotation></semantics></math>
 swaps every
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>∧</mi><mo>↔</mo><mi>∨</mi></mrow><annotation encoding="application/x-tex">\land \leftrightarrow \lor</annotation></semantics></math>
@@ -602,6 +539,61 @@ variables (16 for
 <p>Canonical forms are rarely minimal. Reducing to a <em>minimal</em>
 SOP/POS (fewest terms, fewest literals) is <strong>logic
 minimization</strong>.</p>
+<h3 id="worked-example-simplifying-implication">Worked Example:
+Simplifying Implication</h3>
+<p>Material implication
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x \rightarrow y = \bar{x} \lor y</annotation></semantics></math>
+(it reappears in SVA assertions as <code>|-&gt;</code>, false only when
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>y</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x=1, y=0</annotation></semantics></math>).
+Deriving that form from its truth table is the whole workflow in
+miniature: write the canonical SOP, then let the identities shrink
+it.</p>
+<table>
+<thead>
+<tr>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x \rightarrow y</annotation></semantics></math></th>
+<th>minterm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mspace width="0.167em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow></mrow><annotation encoding="application/x-tex">\bar{x}\,\bar{y}</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mspace width="0.167em"></mspace><mi>y</mi></mrow><annotation encoding="application/x-tex">\bar{x}\,y</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mspace width="0.167em"></mspace><mi>y</mi></mrow><annotation encoding="application/x-tex">x\,y</annotation></semantics></math></td>
+</tr>
+</tbody>
+</table>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mi>y</mi><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>x</mi><mi>y</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">
+x \rightarrow y = \bar{x}\bar{y} \lor \bar{x}y \lor xy
+= \bar{x}(\bar{y} \lor y) \lor xy
+= \bar{x} \lor xy
+= (\bar{x} \lor x)(\bar{x} \lor y)
+= \bar{x} \lor y
+</annotation></semantics></math></p>
+<p>(distribute, complement, distribute again; the last two steps are the
+identity
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mi>b</mi><mo>=</mo><mi>a</mi><mo>∨</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a \lor \bar{a}b = a \lor b</annotation></semantics></math>).</p>
 <h2 id="logic-minimization">Logic Minimization</h2>
 <p>The core move is the combining theorem applied repeatedly:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi>Q</mi><mo>∨</mo><mi>P</mi><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>Q</mi></mrow><mo>=</mo><mi>P</mi></mrow><annotation encoding="application/x-tex">PQ \lor P\bar{Q} = P</annotation></semantics></math>.
