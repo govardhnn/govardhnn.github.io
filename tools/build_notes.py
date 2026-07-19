@@ -215,5 +215,52 @@ def main():
 
         print(f"OK  {filename} -> {os.path.basename(site_dir)}/{slug}.html")
 
+H2_RE = re.compile(r'<h2 id="[^"]*"[^>]*>(.*?)</h2>', re.S)
+TAG_RE = re.compile(r"<[^>]+>")
+
+def note_sections(site_dir, slug):
+    with open(os.path.join(site_dir, f"{slug}.html"), encoding="utf-8") as f:
+        html = f.read()
+    out = []
+    for h in H2_RE.findall(html):
+        text = " ".join(TAG_RE.sub("", h).split())
+        if text and text != "References":
+            out.append(text)
+    return out
+
+def add_index_subtopics():
+    # On each Index page, expand every reading-list entry with a collapsible
+    # list of that note's h2 sections. Only touches anchors inside <li> items
+    # (the CA index also links DD notes from a paragraph; those are skipped).
+    import html as htmlmod
+    for site_dir in {CA_SITE_DIR, DD_SITE_DIR}:
+        idx_path = os.path.join(site_dir, "index.html")
+        with open(idx_path, encoding="utf-8") as f:
+            page = f.read()
+        for _, _, title, slug, section, nsite in NOTES:
+            if slug == "index":
+                continue
+            href = f"../../notes.html#{section}/{title}".replace(" ", "%20")
+            pos = page.find(f'href="{href}"')
+            if pos == -1:
+                continue
+            close = page.find("</li>", pos)
+            if close == -1:
+                continue
+            between = page[pos:close]
+            if "</ol>" in between or "</ul>" in between or "<h2" in between:
+                continue  # anchor not inside a list item
+            secs = note_sections(nsite, slug)
+            if not secs:
+                continue
+            items = "".join(f"<li>{htmlmod.escape(t)}</li>" for t in secs)
+            details = ('<details class="subtopics"><summary>sections</summary>'
+                       f"<ul>{items}</ul></details>")
+            page = page[:close] + details + page[close:]
+        with open(idx_path, "w", encoding="utf-8") as f:
+            f.write(page)
+        print(f"OK  subtopics -> {os.path.basename(site_dir)}/index.html")
+
 if __name__ == "__main__":
     main()
+    add_index_subtopics()
