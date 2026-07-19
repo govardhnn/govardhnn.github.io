@@ -413,16 +413,22 @@
           noResultsEl.style.display = (q && totalMatches === 0) ? 'block' : 'none';
       });
 
-      // Restore from URL hash
-      const initHash = decodeURIComponent(window.location.hash.slice(1));
-      if (initHash && itemRegistry[initHash]) {
-          const { note, el, section } = itemRegistry[initHash];
+      // Open the note named by the URL hash (on load, and again whenever a
+      // link inside the note iframe navigates to notes.html#Section/Title --
+      // that is a same-document navigation, so it fires hashchange, not load)
+      function openFromHash() {
+          const key = decodeURIComponent(window.location.hash.slice(1));
+          const entry = itemRegistry[key];
+          if (!entry) return;
+          const { note, el, section } = entry;
           // Open parent section
           el.closest('.note-items').classList.add('open');
           el.closest('.note-items').previousElementSibling.classList.add('open');
           openNote(note, el, section);
           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
+      openFromHash();
+      window.addEventListener('hashchange', openFromHash);
       </script>
   </body>
 </html>
