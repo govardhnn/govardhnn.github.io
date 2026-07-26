@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Boolean Algebra</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {  background-color: #f8f8f8; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ef2929; } /* Alert */
+    code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #204a87; } /* Attribute */
+    code span.bn { color: #0000cf; } /* BaseN */
+    code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4e9a06; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #8f5902; font-style: italic; } /* Comment */
+    code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+    code span.dt { color: #204a87; } /* DataType */
+    code span.dv { color: #0000cf; } /* DecVal */
+    code span.er { color: #a40000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #0000cf; } /* Float */
+    code span.fu { color: #204a87; font-weight: bold; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+    code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+    code span.ot { color: #8f5902; } /* Other */
+    code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+    code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+    code span.ss { color: #4e9a06; } /* SpecialString */
+    code span.st { color: #4e9a06; } /* String */
+    code span.va { color: #000000; } /* Variable */
+    code span.vs { color: #4e9a06; } /* VerbatimString */
+    code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../note-style.css" />
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Boolean Algebra</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#boolean-algebra" id="toc-boolean-algebra">Boolean
+Algebra</a>
+<ul>
+<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#properties" id="toc-properties">Properties</a></li>
+<li><a href="#duality" id="toc-duality">Duality</a></li>
+<li><a href="#normal-form" id="toc-normal-form">Normal Form</a></li>
+<li><a href="#logic-minimization" id="toc-logic-minimization">Logic
+Minimization</a></li>
+<li><a href="#from-equations-to-gates"
+id="toc-from-equations-to-gates">From Equations to Gates</a></li>
+<li><a href="#bits-as-a-field-gf2" id="toc-bits-as-a-field-gf2">Bits as
+a Field: GF(2)</a></li>
+<li><a href="#number-systems" id="toc-number-systems">Number
+Systems</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="boolean-algebra">Boolean Algebra</h1>
+<h2 id="introduction">Introduction</h2>
+<p><strong>Boolean algebra</strong> describes the logic functions from
+which we build digital systems. It is a branch of algebra over where the
+variables can only take True or False values: <span
+class="math inline">\(\{1, 0\}\)</span> with three fundamental
+operators:</p>
+<ul>
+<li><span class="math inline">\(\text{AND}(x, y)\)</span>, also called
+conjunction, denoted as <span class="math inline">\(x \land y\)</span>
+(also <span class="math inline">\(x \cdot y\)</span> or <span
+class="math inline">\(xy\)</span>), <span
+class="math inline">\(1\)</span> only if <strong><em>both</em></strong>
+inputs are <span class="math inline">\(1\)</span>.</li>
+<li><span class="math inline">\(\text{OR}(x, y)\)</span>, denoted <span
+class="math inline">\(x \lor y\)</span> (also <span
+class="math inline">\(x + y\)</span>), <span
+class="math inline">\(1\)</span> if <strong>either</strong> input is
+<span class="math inline">\(1\)</span>.</li>
+<li><span class="math inline">\(\text{NOT}(x)\)</span>, denoted <span
+class="math inline">\(\bar{x}\)</span> (also <span
+class="math inline">\(x&#39;\)</span>), <span
+class="math inline">\(1\)</span> only if <span
+class="math inline">\(x\)</span> is <span
+class="math inline">\(0\)</span>.</li>
+</ul>
+<p>Three common compound gates derive from these:</p>
+<ul>
+<li><span class="math inline">\(\text{XOR}(x, y)\)</span>, aka Exclusive
+<span class="math inline">\(\text{OR}\)</span> denoted <span
+class="math inline">\(x \oplus y\)</span>, <span
+class="math inline">\(1\)</span> if <strong>exactly one</strong> input
+is <span class="math inline">\(1\)</span>.</li>
+<li><span class="math inline">\(\text{NAND}(x, y)\)</span>, denoted
+<span class="math inline">\(\overline{x \land y}\)</span></li>
+<li><span class="math inline">\(\text{NOR}(x, y)\)</span>, denoted <span
+class="math inline">\(\overline{x \lor y}\)</span></li>
+</ul>
+<p>Below is a Truth Table for the above operators:</p>
+<table>
+<thead>
+<tr class="header">
+<th>x</th>
+<th>y</th>
+<th>AND</th>
+<th>OR</th>
+<th>XOR</th>
+<th>NAND</th>
+<th>NOR</th>
+<th>NOT(x)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>XNOR (<span class="math inline">\(\overline{x \oplus y}\)</span>, aka
+<strong>equivalence</strong>) completes the compound set, 1 if both
+inputs are the same.</p>
+<blockquote>
+<p>George Boole introduced the algebra in <em>The Mathematical Analysis
+of Logic</em> (1847) and <em>An Investigation of the Laws of
+Thought</em> (1854). In the 1930s Claude Shannon showed the two-element
+algebra models switching circuits, making it the working mathematics of
+digital hardware (“switching algebra” and “Boolean algebra” are used
+interchangeably in circuit design).</p>
+</blockquote>
+<p>A variable or its complement in an expression is a
+<strong>literal</strong> (e.g. <span class="math inline">\(a \land
+\bar{b}\)</span> has two: <span class="math inline">\(a\)</span> and
+<span class="math inline">\(\bar{b}\)</span>). The algebra lets us
+<strong>simplify</strong> expressions, put them in <strong>normal
+form</strong>, and test two expressions for
+<strong>equivalence</strong>.</p>
+<h2 id="properties">Properties</h2>
+<p>Everything in the algebra follows from a small axiomatic core, the
+null, identity, and negation laws:</p>
+<p><span class="math display">\[
+0 \land x = 0 \qquad 1 \lor x = 1 \qquad 1 \land x = x \qquad 0 \lor x =
+x \qquad \bar{0} = 1
+\]</span></p>
+<p>The working set of identities derived from them (AND-form | OR-form),
+for all <span class="math inline">\(x, y, z \in \{0, 1\}\)</span>:</p>
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 39%" />
+<col style="width: 51%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>AND form</th>
+<th>OR form</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Identity</td>
+<td><span class="math inline">\(x \land 1 = x\)</span></td>
+<td><span class="math inline">\(x \lor 0 = x\)</span></td>
+</tr>
+<tr class="even">
+<td>Null</td>
+<td><span class="math inline">\(x \land 0 = 0\)</span></td>
+<td><span class="math inline">\(x \lor 1 = 1\)</span></td>
+</tr>
+<tr class="odd">
+<td>Idempotence</td>
+<td><span class="math inline">\(x \land x = x\)</span></td>
+<td><span class="math inline">\(x \lor x = x\)</span></td>
+</tr>
+<tr class="even">
+<td>Complement</td>
+<td><span class="math inline">\(x \land \bar{x} = 0\)</span></td>
+<td><span class="math inline">\(x \lor \bar{x} = 1\)</span></td>
+</tr>
+<tr class="odd">
+<td>Involution</td>
+<td><span class="math inline">\(\overline{\bar{x}} = x\)</span></td>
+<td><em>(self-dual)</em></td>
+</tr>
+<tr class="even">
+<td>Commutative</td>
+<td><span class="math inline">\(x \land y = y \land x\)</span></td>
+<td><span class="math inline">\(x \lor y = y \lor x\)</span></td>
+</tr>
+<tr class="odd">
+<td>Associative</td>
+<td><span class="math inline">\(x \land (y \land z) = (x \land y) \land
+z\)</span></td>
+<td><span class="math inline">\(x \lor (y \lor z) = (x \lor y) \lor
+z\)</span></td>
+</tr>
+<tr class="even">
+<td>Distributive</td>
+<td><span class="math inline">\(x \land (y \lor z) = (x \land y) \lor (x
+\land z)\)</span></td>
+<td><span class="math inline">\(x \lor (y \land z) = (x \lor y) \land (x
+\lor z)\)</span></td>
+</tr>
+<tr class="odd">
+<td>Absorption</td>
+<td><span class="math inline">\(x \land (x \lor y) = x\)</span></td>
+<td><span class="math inline">\(x \lor (x \land y) = x\)</span></td>
+</tr>
+<tr class="even">
+<td>Combining</td>
+<td><span class="math inline">\((x \land y) \lor (x \land \bar{y}) =
+x\)</span></td>
+<td><span class="math inline">\((x \lor y) \land (x \lor \bar{y}) =
+x\)</span></td>
+</tr>
+<tr class="odd">
+<td>Consensus</td>
+<td><span class="math inline">\(xy \lor \bar{x}z \lor yz = xy \lor
+\bar{x}z\)</span></td>
+<td><span class="math inline">\((x{\lor}y)(\bar{x}{\lor}z)(y{\lor}z) =
+(x{\lor}y)(\bar{x}{\lor}z)\)</span></td>
+</tr>
+<tr class="even">
+<td>DeMorgan’s</td>
+<td><span class="math inline">\(\overline{x \land y} = \bar{x} \lor
+\bar{y}\)</span></td>
+<td><span class="math inline">\(\overline{x \lor y} = \bar{x} \land
+\bar{y}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Notes:</p>
+<ul>
+<li><strong>Idempotence</strong> is an important property where applying
+the same operation multiple times yields the same exact result as
+applying them just once - making it safe to retry the same
+operation</li>
+<li><strong>Complement</strong> and <strong>involution</strong> have no
+counterpart in ordinary algebra, they are what make the algebra
+<em>complemented</em>.</li>
+<li><span class="math inline">\(\land\)</span> and <span
+class="math inline">\(\lor\)</span> are <strong>monotone</strong>:
+changing an input from <span class="math inline">\(0\)</span> to <span
+class="math inline">\(1\)</span> can never flip the output from <span
+class="math inline">\(1\)</span> to <span
+class="math inline">\(0\)</span>. All nonmonotonicity enters through
+negation, which the two complement laws define completely.</li>
+<li><strong>Consensus</strong>: in <span class="math inline">\(xy \lor
+\bar{x}z \lor yz\)</span>, the term <span
+class="math inline">\(yz\)</span> is <strong>redundant</strong>
+(whenever <span class="math inline">\(yz=1\)</span>, either <span
+class="math inline">\(xy\)</span> or <span
+class="math inline">\(\bar{x}z\)</span> is already <span
+class="math inline">\(1\)</span>), so it drops out.</li>
+<li>Any identity can be proved by <strong>perfect induction</strong>,
+checking all <span class="math inline">\(2^n\)</span> input
+combinations. DeMorgan, for instance:</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>x</th>
+<th>y</th>
+<th><span class="math inline">\(\overline{x \land y}\)</span></th>
+<th><span class="math inline">\(\bar{x} \lor \bar{y}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>Venn diagrams give a second visual check: <span
+class="math inline">\(\land\)</span> is intersection, <span
+class="math inline">\(\lor\)</span> is union, <span
+class="math inline">\(\bar{x}\)</span> is the outside. Absorption,
+DeMorgan, and the complement laws can all be read off the shaded
+regions.</p>
+<figure>
+<img src="figs/venn.svg" alt="Venn diagrams for AND, OR, NOT" />
+<figcaption aria-hidden="true">Venn diagrams for AND, OR,
+NOT</figcaption>
+</figure>
+<h2 id="duality">Duality</h2>
+<p>Every identity above comes as a matched AND/OR pair, and that is no
+accident. The <strong>principle of duality</strong>: if an expression is
+true, so is the one obtained by swapping every <span
+class="math inline">\(\land \leftrightarrow \lor\)</span> and every
+<span class="math inline">\(0 \leftrightarrow 1\)</span>. Duality holds
+for the axioms, so it holds for everything derived from them: prove one
+form and its dual comes free.</p>
+<p>An operation unchanged by this swap is <strong>self-dual</strong>:
+NOT and the identity are, and so is majority <span
+class="math inline">\((x \land y) \lor (y \land z) \lor (z \land
+x)\)</span>. No binary operation depending on both inputs is self-dual,
+and compositions of self-dual operations stay self-dual.</p>
+<p>The idea extends from identities to whole functions. The
+<strong>dual</strong> <span class="math inline">\(f^D\)</span> swaps
+every <span class="math inline">\(\land \leftrightarrow \lor\)</span>
+and <span class="math inline">\(0 \leftrightarrow 1\)</span>: <span
+class="math display">\[
+f = (a \land b) \lor (b \land c) \;\implies\; f^D = (a \lor b) \land (b
+\lor c).
+\]</span></p>
+<p>The dual applied to complemented inputs equals the complement of the
+function, the generalized DeMorgan’s theorem, and the basis for building
+a CMOS pull-up network as the dual of its pull-down: <span
+class="math display">\[
+f^D(\bar{a}, \bar{b}, \ldots) = \overline{f(a, b, \ldots)}.
+\]</span></p>
+<p>To <strong>complement</strong> an expression directly: take the dual,
+then complement each literal. E.g. <span
+class="math inline">\(\overline{(a \land b) \lor (\bar{a} \land c)} =
+(\bar{a} \lor \bar{b}) \land (a \lor \bar{c})\)</span>.</p>
+<h2 id="normal-form">Normal Form</h2>
+<p>To compare two expressions, put both in <strong>normal form</strong>,
+a <em>sum of products</em> (ORed AND-terms). Each product term matches
+one truth-table row where the output is <span
+class="math inline">\(1\)</span>. For the 3-input
+<strong>majority</strong> function (true when ≥2 inputs are high): <span
+class="math display">\[
+f(a, b, c) = (\bar{a}bc) \lor (a\bar{b}c) \lor (ab\bar{c}) \lor (abc)
+\]</span></p>
+<p>Any expression reaches normal form by <strong>Shannon
+expansion</strong> about each variable: <span class="math display">\[
+f(\ldots, x_i, \ldots) = \big(x_i \land f(\ldots, 1, \ldots)\big) \lor
+\big(\bar{x_i} \land f(\ldots, 0, \ldots)\big).
+\]</span></p>
+<h3 id="minterms-maxterms-canonical-forms">Minterms, maxterms, canonical
+forms</h3>
+<p>A <strong>minterm</strong> <span class="math inline">\(m_j\)</span>
+is a product using every variable once (true or complemented), true on
+exactly row <span class="math inline">\(j\)</span>. There are <span
+class="math inline">\(2^n\)</span> of them:</p>
+<table>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(a\)</span></th>
+<th><span class="math inline">\(b\)</span></th>
+<th><span class="math inline">\(c\)</span></th>
+<th>minterm</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td><span class="math inline">\(\bar{a}\,\bar{b}\,\bar{c}\)</span></td>
+<td><span class="math inline">\(m_0\)</span></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td><span class="math inline">\(a\,\bar{b}\,c\)</span></td>
+<td><span class="math inline">\(m_5\)</span></td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td><span class="math inline">\(a\,b\,c\)</span></td>
+<td><span class="math inline">\(m_7\)</span></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Canonical SOP</strong> = OR of minterms for rows where
+output is <span class="math inline">\(1\)</span>. Majority is true on
+rows 3,5,6,7: <span class="math inline">\(\;f = \sum
+m(3,5,6,7)\)</span>.</li>
+<li><strong>Canonical POS</strong> = AND of <strong>maxterms</strong>
+<span class="math inline">\(M_j = \overline{m_j}\)</span> for rows where
+output is <span class="math inline">\(0\)</span>: <span
+class="math inline">\(\;f = \prod M(0,1,2,4)\)</span>.</li>
+</ul>
+<p>Each truth table has exactly one canonical SOP and one canonical POS,
+the basis for equivalence checking. There are <span
+class="math inline">\(2^{2^n}\)</span> functions of <span
+class="math inline">\(n\)</span> variables (16 for <span
+class="math inline">\(n=2\)</span>, 256 for <span
+class="math inline">\(n=3\)</span>).</p>
+<p>Canonical forms are rarely minimal. Reducing to a <em>minimal</em>
+SOP/POS (fewest terms, fewest literals) is <strong>logic
+minimization</strong>.</p>
+<h3 id="worked-example-simplifying-implication">Worked Example:
+Simplifying Implication</h3>
+<p>Material implication <span class="math inline">\(x \rightarrow y =
+\bar{x} \lor y\)</span> (it reappears in SVA assertions as
+<code>|-&gt;</code>, false only when <span class="math inline">\(x=1,
+y=0\)</span>). Deriving that form from its truth table is the whole
+workflow in miniature: write the canonical SOP, then let the identities
+shrink it.</p>
+<table>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(x\)</span></th>
+<th><span class="math inline">\(y\)</span></th>
+<th><span class="math inline">\(x \rightarrow y\)</span></th>
+<th>minterm</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td><span class="math inline">\(\bar{x}\,\bar{y}\)</span></td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td><span class="math inline">\(\bar{x}\,y\)</span></td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td><span class="math inline">\(x\,y\)</span></td>
+</tr>
+</tbody>
+</table>
+<p><span class="math display">\[
+x \rightarrow y = \bar{x}\bar{y} \lor \bar{x}y \lor xy
+= \bar{x}(\bar{y} \lor y) \lor xy
+= \bar{x} \lor xy
+= (\bar{x} \lor x)(\bar{x} \lor y)
+= \bar{x} \lor y
+\]</span></p>
+<p>(distribute, complement, distribute again; the last two steps are the
+identity <span class="math inline">\(a \lor \bar{a}b = a \lor
+b\)</span>).</p>
+<h2 id="logic-minimization">Logic Minimization</h2>
+<p>The core move is the combining theorem applied repeatedly: <span
+class="math inline">\(PQ \lor P\bar{Q} = P\)</span>. Each application
+drops a literal. An <strong>implicant</strong> is a product term that
+implies the function; a <strong>prime implicant</strong> is one that
+cannot lose any further literal. A minimal SOP is a sum of prime
+implicants covering every <span class="math inline">\(1\)</span>.</p>
+<h3 id="karnaugh-maps">Karnaugh maps</h3>
+<p>A K-map arranges the truth table so cells differing in one variable
+are adjacent, including wraparound. Combining adjacent minterms becomes
+“circle adjacent <span class="math inline">\(1\)</span>s and drop the
+variable that changes”. Columns and rows follow Gray-code order. For
+<span class="math inline">\(f = abc \lor \bar{a}bc \lor
+ab\bar{c}\)</span>:</p>
+<table>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(a \backslash bc\)</span></th>
+<th>00</th>
+<th>01</th>
+<th>11</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>0</strong></td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td><strong>1</strong></td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>Two groups of two cover all the <span
+class="math inline">\(1\)</span>s: column <span
+class="math inline">\(bc\)</span> (varies <span
+class="math inline">\(a\)</span>) gives <span
+class="math inline">\(bc\)</span>; the <span
+class="math inline">\(a{=}1\)</span> pair in columns <span
+class="math inline">\(11,10\)</span> (varies <span
+class="math inline">\(c\)</span>) gives <span
+class="math inline">\(ab\)</span>. So <span class="math inline">\(f = bc
+\lor ab\)</span>.</p>
+<p>Grouping rules:</p>
+<ul>
+<li>Circle groups of <span class="math inline">\(1, 2, 4, 8,
+\ldots\)</span> (<span class="math inline">\(2^k\)</span>) adjacent
+<span class="math inline">\(1\)</span>s, never other sizes.</li>
+<li>The map wraps: left/right columns and top/bottom rows are
+adjacent.</li>
+<li>Make each group as large as possible. A larger group has fewer
+literals.</li>
+<li>Cover every <span class="math inline">\(1\)</span> with at least one
+group. A <span class="math inline">\(1\)</span> that only one group can
+cover forces that group, an <strong>essential prime
+implicant</strong>.</li>
+<li>Groups may overlap.</li>
+</ul>
+<h3 id="dont-cares">Don’t-cares</h3>
+<p>Input combinations that cannot occur (or whose output is irrelevant)
+are marked <span class="math inline">\(X\)</span> and may be grouped as
+either <span class="math inline">\(0\)</span> or <span
+class="math inline">\(1\)</span>, whichever enlarges a group. They cost
+nothing if left uncovered.</p>
+<h3 id="beyond-k-maps">Beyond K-maps</h3>
+<p>K-maps are practical to about 4 variables. Synthesis tools instead
+use algorithms: <strong>Quine-McCluskey</strong> (exhaustive tabular
+prime-implicant generation), <strong>Espresso</strong> (heuristic SOP
+minimizer), or <strong>Binary Decision Diagrams</strong> (a canonical
+graph form manipulated directly).</p>
+<p>Deciding whether <em>any</em> input makes a formula true is
+<strong>Boolean satisfiability (SAT)</strong>, the first problem proved
+NP-complete. Modern equivalence checkers and formal verification tools
+are built on SAT solvers alongside BDDs.</p>
+<h2 id="from-equations-to-gates">From Equations to Gates</h2>
+<p>A logic function is drawn as a <strong>logic diagram</strong> of gate
+symbols. To convert an expression to a diagram, pick the top-level
+operator, draw that gate, and recurse on its arguments; to read a
+diagram back, label each gate’s output working from the inputs out.</p>
+<figure>
+<img src="figs/gates.svg" alt="Logic gate symbols" />
+<figcaption aria-hidden="true">Logic gate symbols</figcaption>
+</figure>
+<h3 id="nand-nor-and-inversion-bubbles">NAND, NOR, and inversion
+bubbles</h3>
+<p>An <strong>inversion bubble</strong> on a gate input or output
+replaces an explicit inverter.</p>
+<ul>
+<li><strong>NAND</strong> = AND + inverter, <span
+class="math inline">\(\overline{a \land b}\)</span>; by DeMorgan, an OR
+with bubbled inputs.</li>
+<li><strong>NOR</strong> = OR + inverter, <span
+class="math inline">\(\overline{a \lor b}\)</span>; by DeMorgan, an AND
+with bubbled inputs.</li>
+</ul>
+<figure>
+<img src="figs/bubblepush.svg"
+alt="Bubble pushing: NAND is a bubbled-input OR, NOR is a bubbled-input AND" />
+<figcaption aria-hidden="true">Bubble pushing: NAND is a bubbled-input
+OR, NOR is a bubbled-input AND</figcaption>
+</figure>
+<p><strong>Bubble pushing</strong> is DeMorgan in gate form:
+complementing all ports of an AND yields an OR and vice versa. Sliding
+bubbles through a network this way converts AND/OR logic into all-NAND
+or all-NOR form. CMOS only provides <em>inverting</em> gates, so NAND
+and NOR are the natural primitives.</p>
+<h3 id="functional-completeness">Functional completeness</h3>
+<p>A set of operators is <strong>functionally complete</strong> if it
+can build any function. <span class="math inline">\(\{\land, \lor,
+\lnot\}\)</span> is complete (canonical SOP uses only these). Crucially,
+<strong>NAND alone and NOR alone are each universal</strong>, which is
+why a single gate type can implement any logic in silicon. The
+constructions: tie both inputs together for NOT, invert a NAND for AND,
+and invert the <em>inputs</em> for OR (DeMorgan in gate form):</p>
+<figure>
+<img src="figs/nandgates.svg" style="width:75.0%"
+alt="NOT, AND, and OR built from NAND alone" />
+<figcaption aria-hidden="true">NOT, AND, and OR built from NAND
+alone</figcaption>
+</figure>
+<h3 id="xor-xnor">XOR / XNOR</h3>
+<p><span class="math display">\[
+a \oplus b = (a \land \bar{b}) \lor (\bar{a} \land b), \qquad
+\overline{a \oplus b} = (a \land b) \lor (\bar{a} \land \bar{b}).
+\]</span></p>
+<p>XOR is commutative and associative, with <span
+class="math inline">\(x \oplus 0 = x\)</span>, <span
+class="math inline">\(\;x \oplus 1 = \bar{x}\)</span>, <span
+class="math inline">\(\;x \oplus x = 0\)</span>. A chain <span
+class="math inline">\(x_1 \oplus \cdots \oplus x_n\)</span> gives
+<strong>parity</strong> (<span class="math inline">\(1\)</span> iff an
+odd number of inputs are <span class="math inline">\(1\)</span>). XNOR
+is <strong>equivalence</strong>, true iff the inputs match.</p>
+<h2 id="bits-as-a-field-gf2">Bits as a Field: GF(2)</h2>
+<p>Reading <span class="math inline">\(0, 1\)</span> as integers gives
+arithmetic equivalents, useful in proofs and in software without native
+bit operations: <span class="math display">\[
+x \land y = xy = \min(x,y) \qquad x \lor y = x + y - xy = \max(x,y)
+\qquad \bar{x} = 1 - x
+\]</span> XOR is addition modulo 2: add the bits as integers and keep
+the remainder mod 2, so <span class="math inline">\(1 \oplus 1 =
+0\)</span>. Taking <span class="math inline">\(\oplus\)</span> as
+addition and <span class="math inline">\(\land\)</span> as
+multiplication, the set <span class="math inline">\(\{0, 1\}\)</span>
+satisfies every field axiom, giving the two-element <strong>Galois
+Field</strong> <span class="math inline">\(GF(2)\)</span>, the smallest
+field there is. Since <span class="math inline">\(x \oplus x =
+0\)</span>, every element is its own negative: addition and subtraction
+are the same operation. Because bits form a field, all of linear algebra
+(vectors, matrices, polynomials) works over bits, which hardware
+exploits directly:</p>
+<ul>
+<li><strong>Parity</strong> is the XOR-sum of all the bits of a word,
+literally its “sum” in <span class="math inline">\(GF(2)\)</span>. That
+is why an XOR chain/tree computes parity, and why flipping any single
+bit always flips the parity (single-bit error detection).</li>
+<li><strong>CRCs</strong> treat a bit stream as the coefficients of a
+<span class="math inline">\(GF(2)\)</span> polynomial (<span
+class="math inline">\(1011 \to x^3 + x + 1\)</span>) and take its
+remainder after dividing by a fixed <em>generator polynomial</em>.
+Polynomial division in <span class="math inline">\(GF(2)\)</span> needs
+only shift-and-XOR, so a CRC engine is just a shift register with XOR
+taps at the generator’s terms (an LFSR).</li>
+<li><strong>Linear error-correcting codes</strong> (Hamming, memory ECC)
+compute check bits as a matrix-vector product over <span
+class="math inline">\(GF(2)\)</span>: each check bit is the AND of the
+data word with a row mask, accumulated by XOR. Decoding recomputes the
+product; a nonzero result (<em>syndrome</em>) points at the flipped
+bit.</li>
+</ul>
+<h2 id="number-systems">Number Systems</h2>
+<p>Logic manipulates truth values; datapaths interpret whole bit vectors
+as numbers, so the encodings deserve the same care as the operators. An
+<span class="math inline">\(N\)</span>-bit unsigned number weights bit
+<span class="math inline">\(i\)</span> by <span
+class="math inline">\(2^i\)</span>, covering <span
+class="math inline">\(0\)</span> to <span
+class="math inline">\(2^N-1\)</span>: <span class="math display">\[
+1011_2 = 1{\cdot}2^3 + 0{\cdot}2^2 + 1{\cdot}2^1 + 1{\cdot}2^0 = 11_{10}
+\]</span> Hexadecimal is shorthand: each hex digit is one 4-bit nibble,
+so conversion is table lookup, no arithmetic.</p>
+<h3 id="signed-twos-complement">Signed: two’s complement</h3>
+<p>The standard signed encoding gives the most significant bit weight
+<span class="math inline">\(-2^{N-1}\)</span> instead of <span
+class="math inline">\(+2^{N-1}\)</span>. Its decisive property is that
+ordinary binary addition works for any signs, with no special
+casing.</p>
+<p><span class="math display">\[
+5 = 0101, \qquad -5 = \overline{0101} + 1 = 1010 + 1 = 1011
+\]</span> <span class="math display">\[
+5 + (-5) = 0101 + 1011 = 10000 \to \text{drop carry} \to 0000 \checkmark
+\]</span></p>
+<ul>
+<li><strong>Negate</strong>: invert all bits, add 1.
+<code>assign neg = ~a + 1'b1;</code></li>
+<li><strong>Range</strong> (<span class="math inline">\(N\)</span>
+bits): <span class="math inline">\([-2^{N-1},\, 2^{N-1}-1]\)</span>, one
+extra negative value (no <span class="math inline">\(-0\)</span>). The
+value <span class="math inline">\(10{\ldots}0\)</span> negates to
+itself.</li>
+<li><strong>Sign extend</strong>: copy the sign bit into new upper bits,
+never zero-fill. <code>assign out = {{(M){in[N-1]}}, in};</code></li>
+</ul>
+<p>Comparison with the alternatives:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>System</th>
+<th>Range (<span class="math inline">\(N\)</span> bits)</th>
+<th>Zeros</th>
+<th>Addition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Unsigned</td>
+<td><span class="math inline">\([0,\, 2^N-1]\)</span></td>
+<td>1</td>
+<td>direct</td>
+</tr>
+<tr class="even">
+<td>Two’s complement</td>
+<td><span class="math inline">\([-2^{N-1},\, 2^{N-1}-1]\)</span></td>
+<td>1</td>
+<td>direct, same hardware as unsigned</td>
+</tr>
+<tr class="odd">
+<td>Sign/magnitude</td>
+<td><span class="math inline">\([-(2^{N-1}-1),\,
+2^{N-1}-1]\)</span></td>
+<td>2</td>
+<td>needs sign-comparison logic</td>
+</tr>
+</tbody>
+</table>
+<h3 id="overflow">Overflow</h3>
+<p>Signed overflow happens only when adding two same-signed operands and
+the result sign differs. Carry-out of the MSB is not a reliable
+signed-overflow indicator.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode verilog"><code class="sourceCode verilog"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> overflow <span class="op">=</span> <span class="op">(</span>a<span class="op">[</span>W<span class="dv">-1</span><span class="op">]</span> <span class="op">==</span> b<span class="op">[</span>W<span class="dv">-1</span><span class="op">])</span> <span class="op">&amp;&amp;</span> <span class="op">(</span>sum<span class="op">[</span>W<span class="dv">-1</span><span class="op">]</span> <span class="op">!=</span> a<span class="op">[</span>W<span class="dv">-1</span><span class="op">]);</span></span></code></pre></div>
+<ul>
+<li>We can use XNOR to indicate two inputs are equivalent</li>
+<li>We can use XOR to incidate that the two inputs are not
+equivalent</li>
+</ul>
+<figure>
+<img src="figs/overflow.svg"
+alt="signed-overflow detector: XNOR the operand signs, XOR the result sign, AND|484" />
+<figcaption aria-hidden="true">signed-overflow detector: XNOR the
+operand signs, XOR the result sign, AND|484</figcaption>
+</figure>
+<h3 id="fixed-point">Fixed-point</h3>
+<p>An implied binary point splits integer and fractional bits.
+<code>Ua.b</code> is unsigned with <span
+class="math inline">\(a\)</span> integer and <span
+class="math inline">\(b\)</span> fractional bits; <code>Qa.b</code> is
+the signed (two’s complement) form. <span class="math display">\[
+0110.1100\ (Q4.4) = 2^2 + 2^1 + 2^{-1} + 2^{-2} = 6.75
+\]</span> Negatives reuse two’s complement, so a plain integer adder
+works unchanged; the point position is interpretation only. Resolution
+is the grid spacing (<span class="math inline">\(2^{-b}\)</span>);
+accuracy is the worst-case error, <span
+class="math inline">\(\Delta/2\)</span> for round-to-nearest versus
+<span class="math inline">\(\Delta\)</span> for truncation.</p>
+<h3 id="binary-codes">Binary codes</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Code</th>
+<th>Mapping</th>
+<th>Property</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>BCD</td>
+<td>each decimal digit in its own 4 bits (<span class="math inline">\(59
+\to 0101\,1001\)</span>)</td>
+<td>exact decimal, wastes codes <span
+class="math inline">\(1010\)</span> to <span
+class="math inline">\(1111\)</span></td>
+</tr>
+<tr class="even">
+<td>Excess-3</td>
+<td>BCD digit <span class="math inline">\(+3\)</span></td>
+<td>self-complementing (9’s complement is bitwise NOT)</td>
+</tr>
+<tr class="odd">
+<td>Gray</td>
+<td>successive values differ in one bit (<span
+class="math inline">\(00,01,11,10\)</span>)</td>
+<td>no multi-bit transitions, safe for pointers and encoders</td>
+</tr>
+</tbody>
+</table>
+<p>Gray conversion is pure XOR:
+<code>gray = bin ^ (bin &gt;&gt; 1)</code>, inverse is a prefix XOR.</p>
+<hr />
+<p>Author: Sai Govardhan (saigov14@gmail.com) ## References</p>
+<p><strong>Textbooks</strong></p>
+<ul>
+<li>W. J. Dally &amp; R. C. Harting, <em>Digital Design: A Systems
+Approach</em></li>
+<li>D. Harris &amp; S. Harris, <em>Digital Design and Computer
+Architecture</em></li>
+<li>M. Morris Mano, <em>Digital Design</em></li>
+</ul>
+<pre class="license"><code>MIT License
+
+Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+</body>
+</html>

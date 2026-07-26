@@ -1,0 +1,162 @@
+/* Shared stylesheet for markdown-rendered study notes (pandoc output). */
+
+html { font-size: 17px; -webkit-text-size-adjust: 100%; }
+
+body {
+    font-family: "Noto Serif", "DejaVu Serif", Georgia, serif;
+    color: #222;
+    background: #fafafa;
+    line-height: 1.6;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 32px 28px 80px 28px;
+    word-wrap: break-word;
+}
+
+/* ── Headings ── */
+h1, h2, h3, h4, h5 {
+    font-family: "Open Sans", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #111;
+}
+
+h1 {
+    font-size: 1.9em;
+    margin: 0 0 0.8em 0;
+    padding-bottom: 0.3em;
+    border-bottom: 2px solid #ddd;
+}
+
+h2 {
+    font-size: 1.4em;
+    margin: 1.8em 0 0.6em 0;
+    padding-bottom: 0.2em;
+    border-bottom: 1px solid #e4e4e4;
+}
+
+h3 { font-size: 1.15em; margin: 1.4em 0 0.5em 0; }
+h4 { font-size: 1.0em;  margin: 1.2em 0 0.4em 0; color: #333; }
+
+p { margin: 0.7em 0; }
+
+a { color: #0356b6; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Code ── */
+code {
+    font-family: "Droid Sans Mono", "DejaVu Sans Mono", Consolas, monospace;
+    font-size: 0.85em;
+    background: #f0f0f1;
+    color: #b5060d;
+    padding: 0.12em 0.35em;
+    border-radius: 3px;
+}
+
+pre {
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 5px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    line-height: 1.45;
+}
+
+pre code {
+    background: none;
+    color: #24292e;
+    padding: 0;
+    font-size: 0.84em;
+}
+
+/* ── Tables ── */
+table {
+    border-collapse: collapse;
+    margin: 1.1em 0;
+    font-size: 0.92em;
+    width: auto;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    text-align: left;
+    vertical-align: top;
+}
+
+thead th {
+    background: #eef1f4;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 600;
+}
+
+tbody tr:nth-child(even) { background: #f4f4f5; }
+
+/* ── Figures / images ── */
+figure { margin: 1.4em auto; text-align: center; }
+
+img {
+    max-width: 100%;
+    height: auto;
+    background: #fff;
+    padding: 8px;
+    border: 1px solid #e4e4e4;
+    border-radius: 4px;
+}
+
+figcaption {
+    font-size: 0.85em;
+    color: #666;
+    font-style: italic;
+    margin-top: 0.5em;
+}
+
+/* ── Blockquotes ── */
+blockquote {
+    margin: 1em 0;
+    padding: 0.4em 1.1em;
+    border-left: 4px solid #c5c5c5;
+    color: #555;
+    background: #f4f4f5;
+}
+
+/* ── Obsidian-style callouts ── */
+.callout {
+    margin: 1.2em 0;
+    padding: 12px 16px;
+    border-radius: 5px;
+    border: 1px solid;
+    border-left-width: 4px;
+}
+
+.callout > .callout-title {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 600;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 0.3em;
+}
+
+.callout p:first-of-type { margin-top: 0; }
+.callout p:last-child { margin-bottom: 0; }
+
+.callout.note {
+    background: #eef4fb;
+    border-color: #b9d4ef;
+    border-left-color: #2f6fb3;
+}
+.callout.note > .callout-title { color: #2f6fb3; }
+
+.callout.warning {
+    background: #fdf3e7;
+    border-color: #f3d7ad;
+    border-left-color: #d98a1a;
+}
+.callout.warning > .callout-title { color: #b5700f; }
+
+/* ── Lists ── */
+ul, ol { padding-left: 1.6em; }
+li { margin: 0.25em 0; }
+
+hr { border: none; border-top: 1px solid #ddd; margin: 1.6em 0; }
