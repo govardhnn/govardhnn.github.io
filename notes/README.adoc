@@ -2,4 +2,6 @@ build.sh using mathjax, gawk and pandoc
 
 ./build.sh <note-in-md> -o <directory-name>
 
+then watch: gh workflow view pages-build-deployment
+ 
 govardhan
