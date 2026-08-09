@@ -1,0 +1,5 @@
+build.sh using mathjax, gawk and pandoc
+
+./build.sh <note-in-md> -o <directory-name>
+
+govardhan
