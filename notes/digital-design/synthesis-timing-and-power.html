@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Synthesis, Timing and Power</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -27,9 +21,8 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
-    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span { line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -58,43 +51,48 @@
       }
     pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
     div.sourceCode
-      {   }
+      {  background-color: #f8f8f8; }
     @media screen {
     pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
     }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { color: #008000; } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.al { color: #ef2929; } /* Alert */
+    code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #204a87; } /* Attribute */
+    code span.bn { color: #0000cf; } /* BaseN */
+    code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4e9a06; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #8f5902; font-style: italic; } /* Comment */
+    code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+    code span.dt { color: #204a87; } /* DataType */
+    code span.dv { color: #0000cf; } /* DecVal */
+    code span.er { color: #a40000; font-weight: bold; } /* Error */
     code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { color: #008000; font-weight: bold; } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    code span.fl { color: #0000cf; } /* Float */
+    code span.fu { color: #204a87; font-weight: bold; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+    code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+    code span.ot { color: #8f5902; } /* Other */
+    code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+    code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+    code span.ss { color: #4e9a06; } /* SpecialString */
+    code span.st { color: #4e9a06; } /* String */
+    code span.va { color: #000000; } /* Variable */
+    code span.vs { color: #4e9a06; } /* VerbatimString */
+    code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../note-style.css" />
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+  type="text/javascript"></script>
 </head>
 <body>
+<header id="title-block-header">
+<h1 class="title">Synthesis, Timing and Power</h1>
+</header>
 <nav id="TOC" role="doc-toc">
 <ul>
 <li><a href="#synthesis-timing-and-power"
@@ -142,18 +140,18 @@ first.</p>
 <col style="width: 50%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Flow target</th>
 <th>Maps RTL onto</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>ASIC</td>
 <td>standard-cell library (AND/OR/NAND/flop cells from a foundry
 PDK)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>FPGA</td>
 <td>LUTs, flip-flops, and hard macros (block RAM, DSP slices, clock
 managers)</td>
@@ -171,12 +169,10 @@ algebra’s identities mechanized (two-level minimization, factoring,
 common-subexpression extraction).</li>
 <li><strong>Technology mapping</strong>: decompose the optimized network
 into a base of 2-input NANDs and inverters (always possible, since NAND2
-is universal per
-<a href="../../notes.html#Digital%20Design/Combinational%20Circuits" target="_top">Combinational
-Circuits</a>), then cover that subject graph with the target library’s
-actual cells (or LUTs), now with concrete area, delay, and power
-numbers. Area is reported in <strong>gate equivalents</strong>: 1 GE =
-one NAND2 cell.</li>
+is universal per [[Combinational Circuits]]), then cover that subject
+graph with the target library’s actual cells (or LUTs), now with
+concrete area, delay, and power numbers. Area is reported in
+<strong>gate equivalents</strong>: 1 GE = one NAND2 cell.</li>
 <li><strong>Timing-driven optimization</strong>: resize gates,
 restructure paths, and insert buffers to close setup/hold against the
 constraints supplied (an SDC file).</li>
@@ -206,39 +202,34 @@ real fabric.</p>
 <col style="width: 50%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Term</th>
 <th>Definition</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>Propagation delay
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math></td>
+<tr class="odd">
+<td>Propagation delay <span class="math inline">\(t_{pd}\)</span></td>
 <td><strong>maximum</strong> time from an input change until the outputs
 reach their final value</td>
 </tr>
-<tr>
-<td>Contamination delay
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{cd}</annotation></semantics></math></td>
+<tr class="even">
+<td>Contamination delay <span class="math inline">\(t_{cd}\)</span></td>
 <td><strong>minimum</strong> time from an input change until any output
 starts to change</td>
 </tr>
 </tbody>
 </table>
-<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>
-says how long to wait before trusting the output;
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{cd}</annotation></semantics></math>
+<p><span class="math inline">\(t_{pd}\)</span> says how long to wait
+before trusting the output; <span class="math inline">\(t_{cd}\)</span>
 says how soon the old value stops being trustworthy. Between them the
 output can be anything.</p>
 <h3 id="critical-path">Critical Path</h3>
-<p>Delays add along a path: the circuit’s
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>
-is the sum of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>
-along the longest path (the <strong>critical path</strong>), and its
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{cd}</annotation></semantics></math>
-the sum along the shortest.</p>
+<p>Delays add along a path: the circuit’s <span
+class="math inline">\(t_{pd}\)</span> is the sum of <span
+class="math inline">\(t_{pd}\)</span> along the longest path (the
+<strong>critical path</strong>), and its <span
+class="math inline">\(t_{cd}\)</span> the sum along the shortest.</p>
 <figure>
 <img src="figs/paths.svg" alt="Critical path vs short path" />
 <figcaption aria-hidden="true">Critical path vs short path</figcaption>
@@ -252,103 +243,97 @@ path.</p>
 Reasoning About Gate Delay</h3>
 <p>STA reports <em>that</em> a path fails; <strong>logical
 effort</strong> explains <em>why</em> and predicts the best fix on the
-back of an envelope. Normalize a gate’s delay to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>
-(the delay of an ideal inverter driving another):</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>=</mo><mi>g</mi><mi>h</mi><mo>+</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">d = g h + p</annotation></semantics></math></p>
+back of an envelope. Normalize a gate’s delay to <span
+class="math inline">\(\tau\)</span> (the delay of an ideal inverter
+driving another):</p>
+<p><span class="math display">\[d = g h + p\]</span></p>
 <ul>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>,
-<strong>logical effort</strong>: how much worse the gate’s topology is
-than an inverter at driving current, given equal input capacitance.
-Independent of size.</li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo>=</mo><msub><mi>C</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow></msub><mi>/</mi><msub><mi>C</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub></mrow><annotation encoding="application/x-tex">h = C_{out}/C_{in}</annotation></semantics></math>,
+<li><span class="math inline">\(g\)</span>, <strong>logical
+effort</strong>: how much worse the gate’s topology is than an inverter
+at driving current, given equal input capacitance. Independent of
+size.</li>
+<li><span class="math inline">\(h = C_{out}/C_{in}\)</span>,
 <strong>electrical effort</strong> (fanout): the load it drives relative
 to its own input.</li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>,
-<strong>parasitic delay</strong>: the gate driving its own diffusion
-capacitance; irreducible by sizing.</li>
+<li><span class="math inline">\(p\)</span>, <strong>parasitic
+delay</strong>: the gate driving its own diffusion capacitance;
+irreducible by sizing.</li>
 </ul>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Gate</th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math></th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math></th>
+<th><span class="math inline">\(g\)</span></th>
+<th><span class="math inline">\(p\)</span></th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>inverter</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math></td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math></td>
+<td><span class="math inline">\(1\)</span></td>
+<td><span class="math inline">\(1\)</span></td>
 </tr>
-<tr>
+<tr class="even">
 <td>NAND2</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">4/3</annotation></semantics></math></td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math></td>
+<td><span class="math inline">\(4/3\)</span></td>
+<td><span class="math inline">\(2\)</span></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>NAND3</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">5/3</annotation></semantics></math></td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>3</mn><annotation encoding="application/x-tex">3</annotation></semantics></math></td>
+<td><span class="math inline">\(5/3\)</span></td>
+<td><span class="math inline">\(3\)</span></td>
 </tr>
-<tr>
+<tr class="even">
 <td>NOR2</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">5/3</annotation></semantics></math></td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math></td>
+<td><span class="math inline">\(5/3\)</span></td>
+<td><span class="math inline">\(2\)</span></td>
 </tr>
 </tbody>
 </table>
 <p>NAND beats NOR because its series stack is nMOS; that asymmetry is
 why synthesized netlists are NAND-heavy.</p>
-<p>For a path of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
-stages, multiply the efforts:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo>=</mo><mo>∏</mo><msub><mi>g</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">G = \prod g_i</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mo>=</mo><msub><mi>C</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow></msub><mi>/</mi><msub><mi>C</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub></mrow><annotation encoding="application/x-tex">H = C_{out}/C_{in}</annotation></semantics></math>
-for the whole path,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
-for branching, giving path effort
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mi>G</mi><mi>B</mi><mi>H</mi></mrow><annotation encoding="application/x-tex">F = GBH</annotation></semantics></math>.
-Delay is minimized when every stage bears equal effort
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><mo>=</mo><msup><mi>F</mi><mrow><mn>1</mn><mi>/</mi><mi>N</mi></mrow></msup></mrow><annotation encoding="application/x-tex">\hat{f} = F^{1/N}</annotation></semantics></math>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>D</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub><mo>=</mo><mi>N</mi><msup><mi>F</mi><mrow><mn>1</mn><mi>/</mi><mi>N</mi></mrow></msup><mo>+</mo><mo>∑</mo><msub><mi>p</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">D_{min} = N F^{1/N} + \sum p_i</annotation></semantics></math></p>
+<p>For a path of <span class="math inline">\(N\)</span> stages, multiply
+the efforts: <span class="math inline">\(G = \prod g_i\)</span>, <span
+class="math inline">\(H = C_{out}/C_{in}\)</span> for the whole path,
+<span class="math inline">\(B\)</span> for branching, giving path effort
+<span class="math inline">\(F = GBH\)</span>. Delay is minimized when
+every stage bears equal effort <span class="math inline">\(\hat{f} =
+F^{1/N}\)</span>:</p>
+<p><span class="math display">\[D_{min} = N F^{1/N} + \sum
+p_i\]</span></p>
 <p>Worked example: inverter → NAND2 → inverter driving 8x the path’s
-input capacitance.
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo>=</mo><mn>1</mn><mo>⋅</mo><mstyle displaystyle="false"><mfrac><mn>4</mn><mn>3</mn></mfrac></mstyle><mo>⋅</mo><mn>1</mn><mo>=</mo><mstyle displaystyle="false"><mfrac><mn>4</mn><mn>3</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">G = 1 \cdot \tfrac{4}{3} \cdot 1 = \tfrac{4}{3}</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">B = 1</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mstyle displaystyle="false"><mfrac><mn>4</mn><mn>3</mn></mfrac></mstyle><mo>⋅</mo><mn>8</mn><mo>=</mo><mn>10.7</mn></mrow><annotation encoding="application/x-tex">F = \tfrac{4}{3} \cdot 8 = 10.7</annotation></semantics></math>,
-so
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">̂</mo></mover><mo>=</mo><msup><mn>10.7</mn><mrow><mn>1</mn><mi>/</mi><mn>3</mn></mrow></msup><mo>=</mo><mn>2.2</mn></mrow><annotation encoding="application/x-tex">\hat{f} = 10.7^{1/3} = 2.2</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>=</mo><mn>3</mn><mo stretchy="false" form="prefix">(</mo><mn>2.2</mn><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>10.6</mn><mspace width="0.167em"></mspace><mi>τ</mi></mrow><annotation encoding="application/x-tex">D = 3(2.2) + (1 + 2 + 1) = 10.6\,\tau</annotation></semantics></math>.
-Sizing falls out backwards from the load: each stage’s input capacitance
-is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mrow><mi>i</mi><mi>n</mi></mrow></msub><mo>=</mo><mi>g</mi><mo>⋅</mo><msub><mi>C</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow></msub><mi>/</mi><mover><mi>f</mi><mo accent="true">̂</mo></mover></mrow><annotation encoding="application/x-tex">C_{in} = g \cdot C_{out} / \hat{f}</annotation></semantics></math>.</p>
+input capacitance. <span class="math inline">\(G = 1 \cdot \tfrac{4}{3}
+\cdot 1 = \tfrac{4}{3}\)</span>, <span class="math inline">\(B =
+1\)</span>, <span class="math inline">\(F = \tfrac{4}{3} \cdot 8 =
+10.7\)</span>, so <span class="math inline">\(\hat{f} = 10.7^{1/3} =
+2.2\)</span> and <span class="math inline">\(D = 3(2.2) + (1 + 2 + 1) =
+10.6\,\tau\)</span>. Sizing falls out backwards from the load: each
+stage’s input capacitance is <span class="math inline">\(C_{in} = g
+\cdot C_{out} / \hat{f}\)</span>.</p>
 <h2 id="sequential-timing">Sequential Timing</h2>
 <p>A flip-flop has its own timing aperture around the clock edge:</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Term</th>
 <th>Definition</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">t_{setup}</annotation></semantics></math></td>
+<tr class="odd">
+<td><span class="math inline">\(t_{setup}\)</span></td>
 <td>data stable at least this long <strong>before</strong> the edge</td>
 </tr>
-<tr>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{hold}</annotation></semantics></math></td>
+<tr class="even">
+<td><span class="math inline">\(t_{hold}\)</span></td>
 <td>data stable at least this long <strong>after</strong> the edge</td>
 </tr>
-<tr>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><annotation encoding="application/x-tex">t_{pcq}</annotation></semantics></math></td>
+<tr class="odd">
+<td><span class="math inline">\(t_{pcq}\)</span></td>
 <td>clock-to-Q propagation delay (max)</td>
 </tr>
-<tr>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>c</mi><mi>c</mi><mi>q</mi></mrow></msub><annotation encoding="application/x-tex">t_{ccq}</annotation></semantics></math></td>
+<tr class="even">
+<td><span class="math inline">\(t_{ccq}\)</span></td>
 <td>clock-to-Q contamination delay (min)</td>
 </tr>
 </tbody>
@@ -359,38 +344,33 @@ alt="Setup, hold, and clock-to-Q around a clock edge" />
 <figcaption aria-hidden="true">Setup, hold, and clock-to-Q around a
 clock edge</figcaption>
 </figure>
-<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub></mrow><annotation encoding="application/x-tex">t_{setup} + t_{hold}</annotation></semantics></math>
-is the <strong>aperture time</strong>: data must hold steady through
-that whole window for a reliable capture.</p>
+<p><span class="math inline">\(t_{setup} + t_{hold}\)</span> is the
+<strong>aperture time</strong>: data must hold steady through that whole
+window for a reliable capture.</p>
 <h3 id="the-setup-constraint-max-delay">The Setup Constraint
 (Max-Delay)</h3>
-<p>For two flip-flops joined by logic of delay
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>,
-sharing a clock of period
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>c</mi></msub><annotation encoding="application/x-tex">T_c</annotation></semantics></math>:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>c</mi></msub><mo>≥</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><mspace width="2.0em"></mspace><mo>⇔</mo><mspace width="2.0em"></mspace><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><mo>≤</mo><msub><mi>T</mi><mi>c</mi></msub><mo>−</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+<p>For two flip-flops joined by logic of delay <span
+class="math inline">\(t_{pd}\)</span>, sharing a clock of period <span
+class="math inline">\(T_c\)</span>: <span class="math display">\[
 T_c \ge t_{pcq} + t_{pd} + t_{setup}
 \qquad\Longleftrightarrow\qquad
 t_{pd} \le T_c - (t_{pcq} + t_{setup})
-</annotation></semantics></math>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub></mrow><annotation encoding="application/x-tex">t_{pcq} + t_{setup}</annotation></semantics></math>
-is the <strong>sequencing overhead</strong>, clock budget lost to the
-flops before any logic runs. Negative setup slack means the design
-cannot run at that frequency; the only fixes are faster logic (fewer
-levels, better structures), pipelining, or a slower clock.</p>
+\]</span> <span class="math inline">\(t_{pcq} + t_{setup}\)</span> is
+the <strong>sequencing overhead</strong>, clock budget lost to the flops
+before any logic runs. Negative setup slack means the design cannot run
+at that frequency; the only fixes are faster logic (fewer levels, better
+structures), pipelining, or a slower clock.</p>
 <h3 id="the-hold-constraint-min-delay">The Hold Constraint
 (Min-Delay)</h3>
 <p>The same pair also imposes a lower bound, independent of clock
-period:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>c</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><mo>≥</mo><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+period: <span class="math display">\[
 t_{ccq} + t_{cd} \ge t_{hold}
-</annotation></semantics></math> If the path is too fast, data launched
-by an edge races through and corrupts the capture of the
-<em>previous</em> cycle’s data at the same edge. A hold violation cannot
-be fixed by slowing the clock; the fix is adding delay (buffers) on the
-offending path. Well-designed flops have
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub><mo>≤</mo><msub><mi>t</mi><mrow><mi>c</mi><mi>c</mi><mi>q</mi></mrow></msub></mrow><annotation encoding="application/x-tex">t_{hold} \le t_{ccq}</annotation></semantics></math>,
-so a bare flop-to-flop connection is already safe; hold problems arise
+\]</span> If the path is too fast, data launched by an edge races
+through and corrupts the capture of the <em>previous</em> cycle’s data
+at the same edge. A hold violation cannot be fixed by slowing the clock;
+the fix is adding delay (buffers) on the offending path. Well-designed
+flops have <span class="math inline">\(t_{hold} \le t_{ccq}\)</span>, so
+a bare flop-to-flop connection is already safe; hold problems arise
 mostly from clock skew (below) and very fast paths.</p>
 <h2 id="pipelining">Pipelining</h2>
 <figure>
@@ -399,10 +379,10 @@ alt="Pipelined datapath: registers split a long combinational path into stages" 
 <figcaption aria-hidden="true">Pipelined datapath: registers split a
 long combinational path into stages</figcaption>
 </figure>
-<p>When a combinational block’s
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{pd}</annotation></semantics></math>
-exceeds the setup ceiling, split it with a register in the middle: two
-faster blocks, each meeting timing at a shorter period.</p>
+<p>When a combinational block’s <span
+class="math inline">\(t_{pd}\)</span> exceeds the setup ceiling, split
+it with a register in the middle: two faster blocks, each meeting timing
+at a shorter period.</p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Before: one combinational block, too slow for the target period</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> mid = heavy_function_1(a);</span>
@@ -420,15 +400,15 @@ cycles-per-second, and ever-finer pipelining eventually loses more on
 the first term than it gains on the second.</p>
 <h3 id="worked-example-pipelining-a-32-bit-ripple-carry-adder">Worked
 Example: Pipelining a 32-bit Ripple-Carry Adder</h3>
-<p>Each full-adder stage has carry-in-to-carry-out delay
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>d</mi><mi>c</mi><mi>c</mi></mrow></msub><mo>=</mo><mn>100</mn><mspace width="0.167em"></mspace><mtext mathvariant="normal">ps</mtext></mrow><annotation encoding="application/x-tex">t_{dcc} = 100\,\text{ps}</annotation></semantics></math>,
-so a 32-bit ripple adder needs
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>a</mi><mi>d</mi><mi>d</mi></mrow></msub><mo>=</mo><mn>32</mn><mo>×</mo><msub><mi>t</mi><mrow><mi>d</mi><mi>c</mi><mi>c</mi></mrow></msub><mo>=</mo><mn>3.2</mn><mspace width="0.167em"></mspace><mtext mathvariant="normal">ns</mtext><mspace width="0.278em"></mspace><mo>⇒</mo><mspace width="0.278em"></mspace><mo>≈</mo><mn>312</mn><mspace width="0.167em"></mspace><mtext mathvariant="normal">M adds/s</mtext><mi>.</mi></mrow><annotation encoding="application/x-tex">
-t_{add} = 32 \times t_{dcc} = 3.2\,\text{ns} \;\Rightarrow\; \approx 312\,\text{M adds/s}.
-</annotation></semantics></math> For a target of 1 G adds/s (one per
-ns), split into four 8-bit slices, each followed by a register:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>8</mn><mo>×</mo><mn>100</mn><mspace width="0.167em"></mspace><mtext mathvariant="normal">ps</mtext><mo>=</mo><mn>800</mn><mspace width="0.167em"></mspace><mtext mathvariant="normal">ps</mtext></mrow><annotation encoding="application/x-tex">8 \times 100\,\text{ps} = 800\,\text{ps}</annotation></semantics></math>
-per slice, leaving 200 ps for sequencing overhead.</p>
+<p>Each full-adder stage has carry-in-to-carry-out delay <span
+class="math inline">\(t_{dcc} = 100\,\text{ps}\)</span>, so a 32-bit
+ripple adder needs <span class="math display">\[
+t_{add} = 32 \times t_{dcc} = 3.2\,\text{ns} \;\Rightarrow\; \approx
+312\,\text{M adds/s}.
+\]</span> For a target of 1 G adds/s (one per ns), split into four 8-bit
+slices, each followed by a register: <span class="math inline">\(8
+\times 100\,\text{ps} = 800\,\text{ps}\)</span> per slice, leaving 200
+ps for sequencing overhead.</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Four 8-bit slices, each followed by a pipeline register. The easy-to-miss</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">// detail: not-yet-processed operand bits must be registered forward at every</span></span>
@@ -493,23 +473,21 @@ requires redesigning the arithmetic itself (e.g. a carry-save or
 lookahead structure), not inserting registers.</p>
 <h2 id="clock-skew">Clock Skew</h2>
 <p>Real clock networks do not deliver the edge everywhere at once. For a
-launch flop A and capture flop B,
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>s</mi><mi>k</mi><mi>e</mi><mi>w</mi></mrow></msub><mo>=</mo><msub><mi>t</mi><mrow><mi>c</mi><mi>l</mi><mi>k</mi><mo>→</mo><mi>B</mi></mrow></msub><mo>−</mo><msub><mi>t</mi><mrow><mi>c</mi><mi>l</mi><mi>k</mi><mo>→</mo><mi>A</mi></mrow></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
+launch flop A and capture flop B, <span class="math display">\[
 t_{skew} = t_{clk \to B} - t_{clk \to A}.
-</annotation></semantics></math> Positive skew (capture clock late)
-<em>helps</em> setup and <em>hurts</em> hold:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>c</mi></msub><mo>≥</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><mo>−</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>k</mi><mi>e</mi><mi>w</mi></mrow></msub><mspace width="2.0em"></mspace><msub><mi>t</mi><mrow><mi>c</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>c</mi><mi>d</mi></mrow></msub><mo>≥</mo><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>k</mi><mi>e</mi><mi>w</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+\]</span> Positive skew (capture clock late) <em>helps</em> setup and
+<em>hurts</em> hold: <span class="math display">\[
 T_c \ge t_{pcq} + t_{pd} + t_{setup} - t_{skew}
 \qquad
 t_{ccq} + t_{cd} \ge t_{hold} + t_{skew}
-</annotation></semantics></math> Deliberately delaying the capture clock
-to buy setup margin on one path is <strong>useful skew</strong>; the
-price is a tighter hold check on that same path, and the borrowed time
-must come from somewhere adjacent. Since sign and magnitude are hard to
-guarantee across a die, STA budgets an <em>uncertainty</em> that eats
-margin in both checks, which is why ASIC and FPGA clock trees are
-explicitly engineered (balanced H-trees, matched buffering) rather than
-routed like ordinary wires.</p>
+\]</span> Deliberately delaying the capture clock to buy setup margin on
+one path is <strong>useful skew</strong>; the price is a tighter hold
+check on that same path, and the borrowed time must come from somewhere
+adjacent. Since sign and magnitude are hard to guarantee across a die,
+STA budgets an <em>uncertainty</em> that eats margin in both checks,
+which is why ASIC and FPGA clock trees are explicitly engineered
+(balanced H-trees, matched buffering) rather than routed like ordinary
+wires.</p>
 <h3 id="skew-vs.-jitter">Skew vs. Jitter</h3>
 <table>
 <colgroup>
@@ -518,31 +496,31 @@ routed like ordinary wires.</p>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th></th>
 <th>Clock skew</th>
 <th>Clock jitter</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Nature</td>
 <td><strong>spatial</strong>: different flops see the edge at different
 times</td>
 <td><strong>temporal</strong>: the same clock’s edges wander cycle to
 cycle</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Source</td>
 <td>unequal clock-tree paths and loads</td>
 <td>PLL noise, supply (di/dt) noise, thermal</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Constant?</td>
 <td>roughly static for a given layout</td>
 <td>random, time-varying</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Useful?</td>
 <td>can be intentional (useful skew)</td>
 <td>never, pure margin loss</td>
@@ -563,22 +541,19 @@ first flop may go metastable, but it gets a full cycle to resolve before
 the second samples it.</p>
 <h3 id="mtbf">MTBF</h3>
 <p>The synchronizer makes a <em>propagated</em> metastable event
-astronomically unlikely, quantified as mean time between failures:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">MTBF</mtext><mo>=</mo><mfrac><msup><mi>e</mi><mrow><mspace width="0.167em"></mspace><msub><mi>t</mi><mi>r</mi></msub><mi>/</mi><mi>τ</mi></mrow></msup><mrow><msub><mi>T</mi><mn>0</mn></msub><mo>⋅</mo><msub><mi>f</mi><mrow><mi>c</mi><mi>l</mi><mi>k</mi></mrow></msub><mo>⋅</mo><msub><mi>f</mi><mrow><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi></mrow></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+astronomically unlikely, quantified as mean time between failures: <span
+class="math display">\[
 \text{MTBF} = \frac{e^{\,t_r/\tau}}{T_0 \cdot f_{clk} \cdot f_{data}}
-</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mi>r</mi></msub><annotation encoding="application/x-tex">t_r</annotation></semantics></math>
-is the resolution time allowed (about one period minus setup),
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mn>0</mn></msub><annotation encoding="application/x-tex">T_0</annotation></semantics></math>
-are flop metastability constants, and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mrow><mi>c</mi><mi>l</mi><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">f_{clk}</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mrow><mi>d</mi><mi>a</mi><mi>t</mi><mi>a</mi></mrow></msub><annotation encoding="application/x-tex">f_{data}</annotation></semantics></math>
-are the sampling and input-change rates. The exponential is why adding a
-flop helps so dramatically, and why fast clocks and busy inputs hurt; at
-high frequency a 3-flop chain is sometimes needed to push MTBF to years
-or centuries.</p>
+\]</span> where <span class="math inline">\(t_r\)</span> is the
+resolution time allowed (about one period minus setup), <span
+class="math inline">\(\tau\)</span> and <span
+class="math inline">\(T_0\)</span> are flop metastability constants, and
+<span class="math inline">\(f_{clk}\)</span>, <span
+class="math inline">\(f_{data}\)</span> are the sampling and
+input-change rates. The exponential is why adding a flop helps so
+dramatically, and why fast clocks and busy inputs hurt; at high
+frequency a 3-flop chain is sometimes needed to push MTBF to years or
+centuries.</p>
 <h2 id="clock-domain-crossing-cdc">Clock Domain Crossing (CDC)</h2>
 <p>A 2-flop synchronizer is correct for a single bit only. Synchronizing
 each bit of a bus independently lets different bits resolve on different
@@ -591,36 +566,36 @@ technique depends on what crosses:</p>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>What’s crossing</th>
 <th>Technique</th>
 <th>Why it works</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>single control bit</td>
 <td>2-flop synchronizer</td>
 <td>one bit cannot be incoherent with itself</td>
 </tr>
-<tr>
+<tr class="even">
 <td>multi-bit control</td>
 <td>mux-recirculation / multi-cycle path: sync a 1-bit enable, hold the
 bus stable</td>
 <td>only the enable is synchronized; the bus is stable when sampled</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>counter / pointer</td>
 <td>Gray-code before crossing</td>
 <td>one bit changes per step, so a mis-sample yields old or new value,
 never garbage</td>
 </tr>
-<tr>
+<tr class="even">
 <td>streaming data</td>
 <td>asynchronous FIFO, Gray-coded pointers</td>
 <td>decouples the domains; pointers cross safely as Gray codes</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>handshake</td>
 <td>req/ack, each synchronized into the other domain</td>
 <td>any width, at round-trip latency cost</td>
@@ -639,25 +614,25 @@ only one bit changes at a time.</p>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th></th>
 <th>Synchronous reset</th>
 <th>Asynchronous reset</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Applied</td>
 <td>sampled only at the clock edge</td>
 <td>immediate,
 <code>always_ff @(posedge clk or negedge rst_n)</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td>+</td>
 <td>plain timing path, filters sub-cycle glitches, clean STA</td>
 <td>works with no clock running (safe at power-up)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>−</td>
 <td>needs a running clock; adds a term to the data path</td>
 <td>glitch-susceptible; release is a timing hazard</td>
@@ -686,12 +661,11 @@ Practice</h2>
 across all conditions, with no simulation vectors. It is the signoff
 answer to “does the chip meet timing”.</p>
 <h3 id="slack">Slack</h3>
-<p>The per-path number STA reports:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">setup slack</mtext><mo>=</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>T</mi><mi>c</mi></msub><mo>−</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><mo>−</mo><msub><mi>t</mi><mrow><mi>u</mi><mi>n</mi><mi>c</mi><mi>e</mi><mi>r</mi><mi>t</mi><mi>a</mi><mi>i</mi><mi>n</mi><mi>t</mi><mi>y</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>p</mi><mi>d</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
-\text{setup slack} = (T_c - t_{setup} - t_{uncertainty}) - (t_{pcq} + t_{pd})
-</annotation></semantics></math> Slack
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≥</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\ge 0</annotation></semantics></math>
-passes; negative slack is a violation. <strong>Worst negative slack
+<p>The per-path number STA reports: <span class="math display">\[
+\text{setup slack} = (T_c - t_{setup} - t_{uncertainty}) - (t_{pcq} +
+t_{pd})
+\]</span> Slack <span class="math inline">\(\ge 0\)</span> passes;
+negative slack is a violation. <strong>Worst negative slack
 (WNS)</strong> and <strong>total negative slack (TNS)</strong> summarize
 how badly and how widely a design misses. Closing timing means driving
 all slack non-negative with faster cells, fewer levels, pipelining,
@@ -702,25 +676,25 @@ useful skew, or a lower frequency.</p>
 Constraints) file; STA then checks four path groups:</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Path group</th>
 <th>From → to</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>reg → reg</td>
 <td>launch flop → capture flop</td>
 </tr>
-<tr>
+<tr class="even">
 <td>in → reg</td>
 <td>input port → first flop (<code>set_input_delay</code>)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>reg → out</td>
 <td>last flop → output port (<code>set_output_delay</code>)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>in → out</td>
 <td>pure combinational feed-through</td>
 </tr>
@@ -736,26 +710,24 @@ exceptions cause false violations and over-constrained synthesis:</p>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Exception</th>
 <th>Meaning</th>
 <th>Example</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>false path</td>
 <td>never functionally exercised, skip it</td>
 <td>paths between unrelated async domains; a static config register</td>
 </tr>
-<tr>
+<tr class="even">
 <td>multicycle path</td>
-<td>data gets
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
-cycles, not 1</td>
+<td>data gets <span class="math inline">\(N\)</span> cycles, not 1</td>
 <td>a result sampled every 4th cycle</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>set_case_analysis</code></td>
 <td>pin constant in this mode, prune through it</td>
 <td>a test-mode mux select</td>
@@ -777,19 +749,19 @@ temperature):</p>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Check</th>
 <th>Worst corner</th>
 <th>Why</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>setup (max delay)</td>
 <td>slow process, low V, high T</td>
 <td>gates slowest, deadline hardest</td>
 </tr>
-<tr>
+<tr class="even">
 <td>hold (min delay)</td>
 <td>fast process, high V, low T</td>
 <td>gates fastest, race easiest</td>
@@ -813,19 +785,20 @@ scaling was a power problem. It splits into two components:</p>
 <col style="width: 51%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Component</th>
 <th>Spent</th>
 <th>Scales with</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>dynamic</td>
 <td>only while signals switch</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>⋅</mo><mi>C</mi><mo>⋅</mo><msubsup><mi>V</mi><mrow><mi>D</mi><mi>D</mi></mrow><mn>2</mn></msubsup><mo>⋅</mo><mi>f</mi></mrow><annotation encoding="application/x-tex">\alpha \cdot C \cdot V_{DD}^2 \cdot f</annotation></semantics></math></td>
+<td><span class="math inline">\(\alpha \cdot C \cdot V_{DD}^2 \cdot
+f\)</span></td>
 </tr>
-<tr>
+<tr class="even">
 <td>static (leakage)</td>
 <td>continuously, even idle</td>
 <td>transistor leakage, worse as devices shrink</td>
@@ -834,10 +807,10 @@ scaling was a power problem. It splits into two components:</p>
 </table>
 <h3 id="dynamic-power">Dynamic Power</h3>
 <p>Switching a node charges its load capacitance from the supply and
-later dumps the charge to ground, unrecovered:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mrow><mi>d</mi><mi>y</mi><mi>n</mi></mrow></msub><mo>=</mo><mi>α</mi><mspace width="0.167em"></mspace><mi>C</mi><mspace width="0.167em"></mspace><msubsup><mi>V</mi><mrow><mi>D</mi><mi>D</mi></mrow><mn>2</mn></msubsup><mspace width="0.167em"></mspace><mi>f</mi></mrow><annotation encoding="application/x-tex">
+later dumps the charge to ground, unrecovered: <span
+class="math display">\[
 P_{dyn} = \alpha \, C \, V_{DD}^2 \, f
-</annotation></semantics></math></p>
+\]</span></p>
 <table>
 <colgroup>
 <col style="width: 33%" />
@@ -845,48 +818,44 @@ P_{dyn} = \alpha \, C \, V_{DD}^2 \, f
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Term</th>
 <th>Meaning</th>
 <th>Lever</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math></td>
+<tr class="odd">
+<td><span class="math inline">\(\alpha\)</span></td>
 <td>activity factor: probability a node switches per cycle (1 for the
 clock, ~0.1 typical logic, 0 gated)</td>
 <td>clock/power gating, fewer glitches</td>
 </tr>
-<tr>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math></td>
+<tr class="even">
+<td><span class="math inline">\(C\)</span></td>
 <td>switched capacitance (gate + diffusion + wire)</td>
 <td>smaller cells, shorter wires, fewer levels</td>
 </tr>
-<tr>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>V</mi><mrow><mi>D</mi><mi>D</mi></mrow></msub><annotation encoding="application/x-tex">V_{DD}</annotation></semantics></math></td>
+<tr class="odd">
+<td><span class="math inline">\(V_{DD}\)</span></td>
 <td>supply voltage</td>
 <td>the <strong>quadratic</strong> term, the strongest lever</td>
 </tr>
-<tr>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math></td>
+<tr class="even">
+<td><span class="math inline">\(f\)</span></td>
 <td>clock frequency</td>
 <td>run no faster than the workload needs</td>
 </tr>
 </tbody>
 </table>
-<p>Halving
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>V</mi><mrow><mi>D</mi><mi>D</mi></mrow></msub><annotation encoding="application/x-tex">V_{DD}</annotation></semantics></math>
-quarters dynamic power, which is why voltage scaling dominates low-power
-design.</p>
-<p>For uncorrelated data a node’s activity is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><msub><mi>P</mi><mn>1</mn></msub><msub><mi>P</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">\alpha = P_1 P_0</annotation></semantics></math>;
-random data gives
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.25</mn><annotation encoding="application/x-tex">0.25</annotation></semantics></math>,
-and structured data is usually lower (upper bits of small values rarely
-switch). Glitches raise effective
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>:
-a node that should settle once may transition several times per cycle as
+<p>Halving <span class="math inline">\(V_{DD}\)</span> quarters dynamic
+power, which is why voltage scaling dominates low-power design.</p>
+<p>For uncorrelated data a node’s activity is <span
+class="math inline">\(\alpha = P_1 P_0\)</span>; random data gives <span
+class="math inline">\(0.25\)</span>, and structured data is usually
+lower (upper bits of small values rarely switch). Glitches raise
+effective <span class="math inline">\(\alpha\)</span>: a node that
+should settle once may transition several times per cycle as
 unequal-delay paths resolve, so low-glitch structure saves power, not
 just correctness. A second, smaller dynamic component is
 <strong>short-circuit power</strong>: during a transition both CMOS
@@ -902,24 +871,23 @@ clock off” stopped being sufficient.</p>
 <col style="width: 50%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Source</th>
 <th>Cause</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>subthreshold</td>
-<td>current through an “off” transistor; exponentially worse as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>V</mi><mi>t</mi></msub><annotation encoding="application/x-tex">V_t</annotation></semantics></math>
-drops</td>
+<td>current through an “off” transistor; exponentially worse as <span
+class="math inline">\(V_t\)</span> drops</td>
 </tr>
-<tr>
+<tr class="even">
 <td>gate</td>
 <td>tunneling through the thin gate dielectric (mitigated by
 high-k)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>junction</td>
 <td>reverse-biased junction current (BTBT, GIDL)</td>
 </tr>
@@ -930,10 +898,10 @@ leaks about 10x less than one off transistor, so a gate’s leakage
 depends on its input values; idle gates can be parked in low-leakage
 input states.</p>
 <h3 id="clock-gating">Clock Gating</h3>
-<p>The highest-value RTL technique. The clock has
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\alpha = 1</annotation></semantics></math>
-and huge capacitance, so it dominates dynamic power. Gating ANDs it with
-an enable, stopping it into idle blocks:</p>
+<p>The highest-value RTL technique. The clock has <span
+class="math inline">\(\alpha = 1\)</span> and huge capacitance, so it
+dominates dynamic power. Gating ANDs it with an enable, stopping it into
+idle blocks:</p>
 <div class="sourceCode" id="cb6"><pre
 class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">if</span> (en) q &lt;= d;   <span class="co">// synthesis infers a clock gate</span></span></code></pre></div>
 <p>The enable must only change while the clock is low or the gated clock
@@ -947,18 +915,18 @@ written directly: the correct structure is the library’s
 <col style="width: 50%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Style</th>
 <th>How the ICG gets there</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>inferred</td>
 <td>write the enabled register; synthesis inserts the ICG (portable,
 preferred)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>instantiated</td>
 <td>instantiate the library ICG cell by hand (explicit,
 library-specific)</td>
@@ -986,24 +954,22 @@ leaks). Costs wake-up latency and area, and the block loses state, so it
 suits coarse-grained, long-idle blocks.</p>
 <h3 id="multiple-threshold-voltages-multi-vt">Multiple Threshold
 Voltages (Multi-Vt)</h3>
-<p>Libraries offer the same cells at several
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>V</mi><mi>t</mi></msub><annotation encoding="application/x-tex">V_t</annotation></semantics></math>:
-low-Vt is fast and leaky, high-Vt slow and quiet. Synthesis uses low-Vt
-only on critical paths and high-Vt everywhere with slack, getting
-near-low-Vt frequency at near-high-Vt leakage.</p>
+<p>Libraries offer the same cells at several <span
+class="math inline">\(V_t\)</span>: low-Vt is fast and leaky, high-Vt
+slow and quiet. Synthesis uses low-Vt only on critical paths and high-Vt
+everywhere with slack, getting near-low-Vt frequency at near-high-Vt
+leakage.</p>
 <h3 id="dynamic-voltage-and-frequency-scaling-dvfs">Dynamic Voltage and
 Frequency Scaling (DVFS)</h3>
-<p>Exploits the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>V</mi><mn>2</mn></msup><annotation encoding="application/x-tex">V^2</annotation></semantics></math>
-term at runtime: lower the frequency to the workload’s minimum, then
-lower the voltage to the minimum supporting that frequency. With voltage
-roughly linear in frequency,
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mrow><mi>d</mi><mi>y</mi><mi>n</mi></mrow></msub><mo>∝</mo><msup><mi>V</mi><mn>2</mn></msup><mi>f</mi><mo>∝</mo><msup><mtext mathvariant="normal">rate</mtext><mn>3</mn></msup><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p>Exploits the <span class="math inline">\(V^2\)</span> term at
+runtime: lower the frequency to the workload’s minimum, then lower the
+voltage to the minimum supporting that frequency. With voltage roughly
+linear in frequency, <span class="math display">\[
 P_{dyn} \propto V^2 f \propto \text{rate}^3,
-</annotation></semantics></math> so half the rate costs about an eighth
-the power, which is why DVFS is so effective for bursty workloads. A
-controller monitors load and temperature and picks the (V, f) point from
-the chip’s characterized table.</p>
+\]</span> so half the rate costs about an eighth the power, which is why
+DVFS is so effective for bursty workloads. A controller monitors load
+and temperature and picks the (V, f) point from the chip’s characterized
+table.</p>
 <h3 id="power-intent-domains-and-upf-ieee-1801">Power Intent: Domains
 and UPF (IEEE 1801)</h3>
 <p>Power gating, multi-Vt, and DVFS require partitioning the design into
@@ -1020,34 +986,34 @@ cells:</p>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Cell</th>
 <th>Where</th>
 <th>Job</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>isolation</td>
 <td>output of a domain that can power down</td>
 <td>clamp the floating output to a known 0/1</td>
 </tr>
-<tr>
+<tr class="even">
 <td>level shifter</td>
 <td>between domains at different voltages</td>
 <td>translate logic levels</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>retention register</td>
 <td>in a domain that powers down but keeps state</td>
 <td>tiny always-on shadow latch preserves the value</td>
 </tr>
-<tr>
+<tr class="even">
 <td>power switch</td>
 <td>in the domain’s supply</td>
 <td>the sleep transistor, under UPF control</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>always-on logic</td>
 <td>control, retention, isolation enables</td>
 <td>must stay powered to manage the rest</td>
@@ -1064,19 +1030,19 @@ silicon.</p>
 <h3 id="energy-vs.-power">Energy vs. Power</h3>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Quantity</th>
 <th>Definition</th>
 <th>Bounds</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>power</td>
 <td>energy per time (W)</td>
 <td>thermal/cooling limit, supply current</td>
 </tr>
-<tr>
+<tr class="even">
 <td>energy</td>
 <td>power × time (J)</td>
 <td>battery life, cost per computation</td>
@@ -1129,9 +1095,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
-<div class="note-nav">
-<a class="nav-prev" href="../../notes.html#Digital%20Design/RTL%20Design%20Guide" target="_top">&larr; RTL Design Guide</a>
-<span></span>
-</div>
 </body>
 </html>

@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Sequential Circuits</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -27,9 +21,8 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
-    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span { line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -58,43 +51,48 @@
       }
     pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
     div.sourceCode
-      {   }
+      {  background-color: #f8f8f8; }
     @media screen {
     pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
     }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { color: #008000; } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.al { color: #ef2929; } /* Alert */
+    code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #204a87; } /* Attribute */
+    code span.bn { color: #0000cf; } /* BaseN */
+    code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4e9a06; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #8f5902; font-style: italic; } /* Comment */
+    code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+    code span.dt { color: #204a87; } /* DataType */
+    code span.dv { color: #0000cf; } /* DecVal */
+    code span.er { color: #a40000; font-weight: bold; } /* Error */
     code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { color: #008000; font-weight: bold; } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    code span.fl { color: #0000cf; } /* Float */
+    code span.fu { color: #204a87; font-weight: bold; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+    code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+    code span.ot { color: #8f5902; } /* Other */
+    code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+    code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+    code span.ss { color: #4e9a06; } /* SpecialString */
+    code span.st { color: #4e9a06; } /* String */
+    code span.va { color: #000000; } /* Variable */
+    code span.vs { color: #4e9a06; } /* VerbatimString */
+    code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../note-style.css" />
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+  type="text/javascript"></script>
 </head>
 <body>
+<header id="title-block-header">
+<h1 class="title">Sequential Circuits</h1>
+</header>
 <nav id="TOC" role="doc-toc">
 <ul>
 <li><a href="#sequential-circuits"
@@ -147,22 +145,14 @@ flip-flops themselves are small asynchronous circuits, designed once,
 characterized carefully, and reused as black boxes.</p>
 <h2 id="latches">Latches</h2>
 <p>A bistable holds one bit using feedback. Cross-coupling two NOR gates
-gives an SR latch:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
-sets
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">Q=1</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math>
-resets
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">Q=0</annotation></semantics></math>,
-both low holds, both high is illegal
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>Q</mi></mrow><annotation encoding="application/x-tex">\bar{Q}</annotation></semantics></math>
-both driven low, and releasing
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math>
-together races).</p>
+gives an SR latch: <span class="math inline">\(S\)</span> sets <span
+class="math inline">\(Q=1\)</span>, <span
+class="math inline">\(R\)</span> resets <span
+class="math inline">\(Q=0\)</span>, both low holds, both high is illegal
+(<span class="math inline">\(Q\)</span> and <span
+class="math inline">\(\bar{Q}\)</span> both driven low, and releasing
+<span class="math inline">\(S\)</span> and <span
+class="math inline">\(R\)</span> together races).</p>
 <figure>
 <img src="figs/srlatch.svg"
 alt="SR latch from cross-coupled NOR gates" />
@@ -171,33 +161,33 @@ gates</figcaption>
 </figure>
 <table>
 <thead>
-<tr>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math></th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math></th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>Q</mi><mo>+</mo></msup><annotation encoding="application/x-tex">Q^+</annotation></semantics></math></th>
+<tr class="header">
+<th><span class="math inline">\(S\)</span></th>
+<th><span class="math inline">\(R\)</span></th>
+<th><span class="math inline">\(Q^+\)</span></th>
 <th></th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>0</td>
 <td>0</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math></td>
+<td><span class="math inline">\(Q\)</span></td>
 <td>hold</td>
 </tr>
-<tr>
+<tr class="even">
 <td>0</td>
 <td>1</td>
 <td>0</td>
 <td>reset</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>1</td>
 <td>0</td>
 <td>1</td>
 <td>set</td>
 </tr>
-<tr>
+<tr class="even">
 <td>1</td>
 <td>1</td>
 <td>–</td>
@@ -206,41 +196,33 @@ gates</figcaption>
 </tbody>
 </table>
 <p>Its characteristic equation (next state as a function of inputs and
-present state, assuming
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>R</mi><mo>≠</mo><mn>11</mn></mrow><annotation encoding="application/x-tex">SR \ne 11</annotation></semantics></math>):
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>S</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>R</mi></mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^+ = S \lor \bar{R}Q</annotation></semantics></math>.
-Gating
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math>
-with an enable gives the clocked SR latch, active only while the enable
-is high.</p>
-<p>A D latch removes the illegal state by deriving
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>=</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">S = D</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>D</mi></mrow></mrow><annotation encoding="application/x-tex">R = \bar{D}</annotation></semantics></math>
-behind the enable, so
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">Q^+ = D</annotation></semantics></math>.
-It is level-sensitive: while <code>EN</code> is high it is transparent
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>
-follows
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>);
-while low it holds. Transparency makes latches hard to time, so
-synchronous RTL avoids inferring them.</p>
+present state, assuming <span class="math inline">\(SR \ne 11\)</span>):
+<span class="math inline">\(Q^+ = S \lor \bar{R}Q\)</span>. Gating <span
+class="math inline">\(S\)</span> and <span
+class="math inline">\(R\)</span> with an enable gives the clocked SR
+latch, active only while the enable is high.</p>
+<p>A D latch removes the illegal state by deriving <span
+class="math inline">\(S = D\)</span>, <span class="math inline">\(R =
+\bar{D}\)</span> behind the enable, so <span class="math inline">\(Q^+ =
+D\)</span>. It is level-sensitive: while <code>EN</code> is high it is
+transparent (<span class="math inline">\(Q\)</span> follows <span
+class="math inline">\(D\)</span>); while low it holds. Transparency
+makes latches hard to time, so synchronous RTL avoids inferring
+them.</p>
 <figure>
 <img src="figs/dlatch.svg" alt="D latch" />
 <figcaption aria-hidden="true">D latch</figcaption>
 </figure>
 <h2 id="flip-flops">Flip-Flops</h2>
-<p>A D flip-flop is edge-triggered: it samples
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
-only on the rising clock edge and holds for the rest of the cycle. The
-classic construction is <strong>master-slave</strong>: two D latches on
-opposite clock phases. While the clock is low the master is transparent
-and the slave holds; on the rising edge the master closes, freezing the
-value the slave then presents. No moment exists when input can flow
-straight through, which is what edge triggering means. The triangle on
-the clock pin marks edge sensitivity. It is the standard state
-element.</p>
+<p>A D flip-flop is edge-triggered: it samples <span
+class="math inline">\(D\)</span> only on the rising clock edge and holds
+for the rest of the cycle. The classic construction is
+<strong>master-slave</strong>: two D latches on opposite clock phases.
+While the clock is low the master is transparent and the slave holds; on
+the rising edge the master closes, freezing the value the slave then
+presents. No moment exists when input can flow straight through, which
+is what edge triggering means. The triangle on the clock pin marks edge
+sensitivity. It is the standard state element.</p>
 <figure>
 <img src="figs/dff.svg" alt="D flip-flop" />
 <figcaption aria-hidden="true">D flip-flop</figcaption>
@@ -254,52 +236,46 @@ equation:</p>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Type</th>
 <th>Characteristic</th>
 <th>Behavior</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>D</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">Q^+ = D</annotation></semantics></math></td>
+<td><span class="math inline">\(Q^+ = D\)</span></td>
 <td>load every edge</td>
 </tr>
-<tr>
+<tr class="even">
 <td>T</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>Q</mi><mo>⊕</mo><mi>T</mi></mrow><annotation encoding="application/x-tex">Q^+ = Q \oplus T</annotation></semantics></math></td>
-<td>toggle when
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">T=1</annotation></semantics></math></td>
+<td><span class="math inline">\(Q^+ = Q \oplus T\)</span></td>
+<td>toggle when <span class="math inline">\(T=1\)</span></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>JK</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>J</mi><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>Q</mi></mrow><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>K</mi></mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^+ = J\bar{Q} \lor \bar{K}Q</annotation></semantics></math></td>
-<td>set on
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>J</mi><annotation encoding="application/x-tex">J</annotation></semantics></math>,
-reset on
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>,
-toggle on both</td>
+<td><span class="math inline">\(Q^+ = J\bar{Q} \lor
+\bar{K}Q\)</span></td>
+<td>set on <span class="math inline">\(J\)</span>, reset on <span
+class="math inline">\(K\)</span>, toggle on both</td>
 </tr>
 </tbody>
 </table>
 <p>Read in reverse, the <strong>excitation table</strong> gives the
-inputs forcing a desired
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>→</mo><msup><mi>Q</mi><mo>+</mo></msup></mrow><annotation encoding="application/x-tex">Q \to Q^+</annotation></semantics></math>
+inputs forcing a desired <span class="math inline">\(Q \to Q^+\)</span>
 transition, the classical recipe for designing FSM next-state logic with
-T or JK flops (a D flop’s excitation is trivially
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>=</mo><msup><mi>Q</mi><mo>+</mo></msup></mrow><annotation encoding="application/x-tex">D = Q^+</annotation></semantics></math>,
-one reason it won). In modern synchronous design everything is a D flop;
-T and JK survive as exercises and inside counters.</p>
-<p>Each flip-flop imposes timing constraints around the edge
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">t_{setup}</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{hold}</annotation></semantics></math>,
-clock-to-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>),
-and together with the logic delay between flops they set the clock
-period. The full timing story, from the setup and hold equations to
-skew, metastability, and static timing analysis, is the subject of
-<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
-Timing and Power</a>.</p>
+T or JK flops (a D flop’s excitation is trivially <span
+class="math inline">\(D = Q^+\)</span>, one reason it won). In modern
+synchronous design everything is a D flop; T and JK survive as exercises
+and inside counters.</p>
+<p>Each flip-flop imposes timing constraints around the edge (<span
+class="math inline">\(t_{setup}\)</span>, <span
+class="math inline">\(t_{hold}\)</span>, clock-to-<span
+class="math inline">\(Q\)</span>), and together with the logic delay
+between flops they set the clock period. The full timing story, from the
+setup and hold equations to skew, metastability, and static timing
+analysis, is the subject of [[Synthesis, Timing and Power]].</p>
 <h2 id="describing-sequential-logic">Describing Sequential Logic</h2>
 <p>Model edge-triggered state with <code>always_ff</code> and the
 nonblocking assignment (<code>&lt;=</code>). Combinational blocks use
@@ -311,12 +287,10 @@ class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> (rst)     q &lt;= &#39;<span class="dv">0</span>;    <span class="co">// synchronous reset</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> (en) q &lt;= d;     <span class="co">// load only when enabled</span></span></code></pre></div>
 <h2 id="registers">Registers</h2>
-<p>A register is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-flip-flops on a shared clock storing an
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>-bit
-word, usually with an enable (conditional load) and a reset (force to a
-known value). A slash with a number marks a bus width.</p>
+<p>A register is <span class="math inline">\(n\)</span> flip-flops on a
+shared clock storing an <span class="math inline">\(n\)</span>-bit word,
+usually with an enable (conditional load) and a reset (force to a known
+value). A slash with a number marks a bus width.</p>
 <figure>
 <img src="figs/register.svg"
 alt="n-bit register with enable and reset" />
@@ -338,28 +312,21 @@ class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id
 Variants add load, enable, up/down direction, and a terminal-count
 output. Common shapes:</p>
 <ul>
-<li><strong>Mod-N</strong>: reset to 0 on reaching
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">N-1</annotation></semantics></math>;
-a BCD digit is mod-10. Cascade digits on the terminal count.</li>
-<li><strong>Divide-by-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><mi>k</mi></msup><annotation encoding="application/x-tex">2^k</annotation></semantics></math></strong>:
-bit
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k-1</annotation></semantics></math>
-of a free-running counter toggles at
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mrow><mi>c</mi><mi>l</mi><mi>k</mi></mrow></msub><mi>/</mi><msup><mn>2</mn><mi>k</mi></msup></mrow><annotation encoding="application/x-tex">f_{clk}/2^k</annotation></semantics></math>,
-a square wave.</li>
+<li><strong>Mod-N</strong>: reset to 0 on reaching <span
+class="math inline">\(N-1\)</span>; a BCD digit is mod-10. Cascade
+digits on the terminal count.</li>
+<li><strong>Divide-by-<span class="math inline">\(2^k\)</span></strong>:
+bit <span class="math inline">\(k-1\)</span> of a free-running counter
+toggles at <span class="math inline">\(f_{clk}/2^k\)</span>, a square
+wave.</li>
 <li><strong>Ripple counter</strong>: each flop clocks off the previous
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>,
-tiny but asynchronous; the count settles bit by bit, so synchronous
-counters are preferred.</li>
+<span class="math inline">\(Q\)</span>, tiny but asynchronous; the count
+settles bit by bit, so synchronous counters are preferred.</li>
 <li><strong>Ring / Johnson</strong>: a ring counter circulates a single
-one
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-states, one-hot, decode-free); a Johnson counter feeds back the inverted
-output for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>n</mi></mrow><annotation encoding="application/x-tex">2n</annotation></semantics></math>
-states from
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-bits.</li>
+one (<span class="math inline">\(n\)</span> states, one-hot,
+decode-free); a Johnson counter feeds back the inverted output for <span
+class="math inline">\(2n\)</span> states from <span
+class="math inline">\(n\)</span> bits.</li>
 </ul>
 <figure>
 <img src="figs/counter.svg"
@@ -375,26 +342,20 @@ ripple, ring/Johnson</figcaption>
 </figure>
 <p>An <strong>LFSR</strong> (linear feedback shift register) counts
 through a pseudo-random sequence: shift, with the input the XOR of taps
-given by a generator polynomial over
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>F</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">GF(2)</annotation></semantics></math>.
-A maximal polynomial such as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>x</mi><mn>4</mn></msup><mo>+</mo><msup><mi>x</mi><mn>3</mn></msup><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">x^4 + x^3 + 1</annotation></semantics></math>
-cycles through all
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>4</mn></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^4 - 1</annotation></semantics></math>
-nonzero states:</p>
+given by a generator polynomial over <span
+class="math inline">\(GF(2)\)</span>. A maximal polynomial such as <span
+class="math inline">\(x^4 + x^3 + 1\)</span> cycles through all <span
+class="math inline">\(2^4 - 1\)</span> nonzero states:</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) lfsr &lt;= {lfsr[<span class="dv">2</span>:<span class="dv">0</span>], lfsr[<span class="dv">3</span>] ^ lfsr[<span class="dv">2</span>]};</span></code></pre></div>
 <p>Reading taps off the polynomial: the register has as many bits as the
-degree (here 4), and each middle term
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>x</mi><mi>k</mi></msup><annotation encoding="application/x-tex">x^k</annotation></semantics></math>
-marks a tap after stage
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>,
-so
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>x</mi><mn>4</mn></msup><mo>+</mo><msup><mi>x</mi><mn>3</mn></msup><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">x^4 + x^3 + 1</annotation></semantics></math>
-means “feed back bit 3 XOR bit 2” in the 0-indexed code above. A bigger
-example, CRC-CCITT’s generator
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>x</mi><mn>16</mn></msup><mo>+</mo><msup><mi>x</mi><mn>12</mn></msup><mo>+</mo><msup><mi>x</mi><mn>5</mn></msup><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">x^{16} + x^{12} + x^5 + 1</annotation></semantics></math>,
-becomes a 16-bit shift register with</p>
+degree (here 4), and each middle term <span
+class="math inline">\(x^k\)</span> marks a tap after stage <span
+class="math inline">\(k\)</span>, so <span class="math inline">\(x^4 +
+x^3 + 1\)</span> means “feed back bit 3 XOR bit 2” in the 0-indexed code
+above. A bigger example, CRC-CCITT’s generator <span
+class="math inline">\(x^{16} + x^{12} + x^5 + 1\)</span>, becomes a
+16-bit shift register with</p>
 <div class="sourceCode" id="cb4"><pre
 class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) crc &lt;= {crc[<span class="dv">14</span>:<span class="dv">0</span>], crc[<span class="dv">15</span>] ^ crc[<span class="dv">11</span>] ^ crc[<span class="dv">4</span>]};</span></code></pre></div>
 <p>The next-state logic is a couple of XORs regardless of width, so
@@ -453,11 +414,9 @@ round-robin pointer</figcaption>
 <p>Inserting registers to split a long combinational path into stages
 raises throughput to one result per clock at the cost of latency; the
 slowest stage sets the period. The worked example, the forwarding
-pitfall, and the loop-carried-dependency limit are in
-<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
-Timing and Power</a>; the technique applied to a whole processor is the
-<a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">Simple
-Instruction Pipeline</a>.</p>
+pitfall, and the loop-carried-dependency limit are in [[Synthesis,
+Timing and Power]]; the technique applied to a whole processor is the
+[[Simple Instruction Pipeline]].</p>
 <h2 id="finite-state-machines">Finite State Machines</h2>
 <p>An FSM is sequential logic with named states. It has combinational
 next-state logic, a state register, and combinational output logic.</p>
@@ -520,15 +479,14 @@ arrives one cycle later since the pattern must first be registered into
 that state. That is the general trade: Mealy reacts in the same cycle
 with fewer states; Moore is a clean registered output, one cycle
 behind.</p>
-<p>State encoding trades area against speed: binary uses
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">⌈</mo><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>2</mn></msub><mi>N</mi><mo stretchy="false" form="postfix">⌉</mo></mrow><annotation encoding="application/x-tex">\lceil\log_2 N\rceil</annotation></semantics></math>
-flip-flops; one-hot uses
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
-flip-flops with simple, fast next-state logic (favored on FPGAs); Gray
-encoding changes one bit per step to cut switching and crossing hazards.
-Codes left unused are unreachable in theory but reachable after an
-upset, so safe designs give <code>unique case</code> a
-<code>default</code> routing unknown states back to reset.</p>
+<p>State encoding trades area against speed: binary uses <span
+class="math inline">\(\lceil\log_2 N\rceil\)</span> flip-flops; one-hot
+uses <span class="math inline">\(N\)</span> flip-flops with simple, fast
+next-state logic (favored on FPGAs); Gray encoding changes one bit per
+step to cut switching and crossing hazards. Codes left unused are
+unreachable in theory but reachable after an upset, so safe designs give
+<code>unique case</code> a <code>default</code> routing unknown states
+back to reset.</p>
 <hr />
 <pre class="license"><code>MIT License
 
@@ -551,9 +509,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
-<div class="note-nav">
-<a class="nav-prev" href="../../notes.html#Digital%20Design/Combinational%20Circuits" target="_top">&larr; Combinational Circuits</a>
-<a class="nav-next" href="../../notes.html#Digital%20Design/RTL%20Design%20Guide" target="_top">RTL Design Guide &rarr;</a>
-</div>
 </body>
 </html>

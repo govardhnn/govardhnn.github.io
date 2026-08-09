@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>RTL Design Guide</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -27,9 +21,8 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
-    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span { line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -58,47 +51,46 @@
       }
     pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
     div.sourceCode
-      {   }
+      {  background-color: #f8f8f8; }
     @media screen {
     pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
     }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { color: #008000; } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.al { color: #ef2929; } /* Alert */
+    code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #204a87; } /* Attribute */
+    code span.bn { color: #0000cf; } /* BaseN */
+    code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4e9a06; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #8f5902; font-style: italic; } /* Comment */
+    code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+    code span.dt { color: #204a87; } /* DataType */
+    code span.dv { color: #0000cf; } /* DecVal */
+    code span.er { color: #a40000; font-weight: bold; } /* Error */
     code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { color: #008000; font-weight: bold; } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    code span.fl { color: #0000cf; } /* Float */
+    code span.fu { color: #204a87; font-weight: bold; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+    code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+    code span.ot { color: #8f5902; } /* Other */
+    code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+    code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+    code span.ss { color: #4e9a06; } /* SpecialString */
+    code span.st { color: #4e9a06; } /* String */
+    code span.va { color: #000000; } /* Variable */
+    code span.vs { color: #4e9a06; } /* VerbatimString */
+    code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../note-style.css" />
 </head>
 <body>
+<header id="title-block-header">
+<h1 class="title">RTL Design Guide</h1>
+</header>
 <nav id="TOC" role="doc-toc">
-<ul>
-<li><a href="#rtl-design-guide" id="toc-rtl-design-guide">RTL Design
-Guide</a>
 <ul>
 <li><a href="#modules-and-ports" id="toc-modules-and-ports">Modules and
 Ports</a></li>
@@ -123,19 +115,16 @@ Simulation-Only</a></li>
 id="toc-case-statements-the-evil-twins">Case Statements: the Evil
 Twins</a></li>
 <li><a href="#references" id="toc-references">References</a></li>
-</ul></li>
 </ul>
 </nav>
-<h1 id="rtl-design-guide">RTL Design Guide</h1>
+<p># RTL Design Guide</p>
 <p>Describing hardware at the register-transfer level in SystemVerilog.
 RTL is a description, not a program: the same syntax becomes different
 gates depending on coding discipline, so always picture the circuit. The
-building blocks themselves live in
-<a href="../../notes.html#Digital%20Design/Combinational%20Circuits" target="_top">Combinational
-Circuits</a> and
-<a href="../../notes.html#Digital%20Design/Sequential%20Circuits" target="_top">Sequential
-Circuits</a>; this note is about writing them so that simulation,
-synthesis, and the engineer all agree on what the design means.</p>
+building blocks themselves live in [[Combinational Circuits]] and
+[[Sequential Circuits]]; this note is about writing them so that
+simulation, synthesis, and the engineer all agree on what the design
+means.</p>
 <h2 id="modules-and-ports">Modules and Ports</h2>
 <p>A module is the unit of hardware. <code>logic</code> is the default
 data type. Connect ports by name when instantiating, never by
@@ -150,6 +139,16 @@ class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">endmodule</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>and2 u_and <span class="dt">(.a</span>(x),<span class="dt"> .b</span>(z),<span class="dt"> .y</span>(w));   <span class="co">// instantiation</span></span></code></pre></div>
+<p>Override parameters and connect ports compactly at instantiation:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>adder #<span class="dt">(.W</span>(<span class="dv">16</span>)) u_add <span class="dt">(.a</span>,<span class="dt"> .b</span>,<span class="dt"> .sum</span>,<span class="dt"> .cout</span>);   <span class="co">// .a is shorthand for .a(a)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>fifo  #<span class="dt">(.W</span>(<span class="dv">8</span>),<span class="dt"> .DEPTH</span>(<span class="dv">32</span>)) u_fifo (.*);        <span class="co">// .* auto-connects same-named nets</span></span></code></pre></div>
+<p><code>#(.W(16))</code> redefines a parameter for this instance only.
+<code>.name</code> shorthand connects a port to the same-named signal,
+and <code>.*</code> connects all remaining same-named nets
+automatically. Prefer explicit <code>.name</code> on module boundaries
+where the connection list should stay visible; both beat positional
+connection, which silently misroutes the moment a port is added.</p>
 <h2 id="data-types-and-literals">Data Types and Literals</h2>
 <ul>
 <li><strong><code>logic</code></strong>: a 4-state bit (<code>0</code>,
@@ -166,6 +165,43 @@ size literals.</li>
 <li><strong>Parameters</strong> make modules reusable:
 <code>#(parameter int W = 8)</code>.</li>
 </ul>
+<h3 id="user-defined-types">User-defined types</h3>
+<p>Naming a type once keeps wide buses and records consistent and
+self-documenting. <code>typedef</code> builds a named type,
+<code>struct</code>/<code>union</code> group related fields, and
+<code>enum</code> names a small set of legal values (used for FSM state
+in [[Sequential Circuits]]).</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">logic</span> [<span class="dv">31</span>:<span class="dv">0</span>] word_t;                 <span class="co">// named alias</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="kw">packed</span> {                      <span class="co">// packed = one contiguous bit vector</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">logic</span>        valid;</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">logic</span> [<span class="dv">3</span>:<span class="dv">0</span>]  id;</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">logic</span> [<span class="dv">26</span>:<span class="dv">0</span>] payload;</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>} pkt_t;                                      <span class="co">// 32 bits, synthesizes as a bus</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>pkt_t p;</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> p.valid = <span class="bn">1&#39;b1</span>;                        <span class="co">// field access</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>word_t raw = p;                              <span class="co">// a packed struct casts to its bit vector</span></span></code></pre></div>
+<ul>
+<li><strong>Packed vs unpacked</strong>. A <strong>packed</strong> array
+or struct is a single contiguous vector you can slice and do arithmetic
+on (<code>logic [7:0][3:0]</code>, dimensions before the name), the
+synthesizable choice for buses. An <strong>unpacked</strong> array puts
+dimensions after the name (<code>logic [7:0] mem [0:255]</code>) and
+models memory or register arrays. Only packed types cast freely to and
+from a flat vector.</li>
+<li><strong>2-state vs 4-state</strong>. <code>logic</code> and
+<code>integer</code> are 4-state (<code>0 1 x z</code>);
+<code>bit</code> and <code>int</code> are 2-state (<code>0 1</code>
+only). Use 4-state <code>logic</code> for RTL so an uninitialized signal
+shows as <code>x</code> instead of a silently legal <code>0</code>.
+2-state types belong in testbenches and non-synthesizable models.</li>
+<li><strong>Packages</strong> collect shared <code>typedef</code>s,
+parameters, and functions so every module agrees on one definition:
+<code>package types_pkg; typedef ...; endpackage</code>, then
+<code>import types_pkg::*;</code>. One source of truth for a bus width
+beats copy-pasted <code>parameter</code>s.</li>
+</ul>
 <h2 id="combinational-modeling">Combinational Modeling</h2>
 <p>Drive combinational outputs with continuous <code>assign</code> or
 <code>always_comb</code> (blocking <code>=</code>). Operator
@@ -177,29 +213,29 @@ families:</p>
 <col style="width: 41%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Family</th>
 <th>Operators</th>
 <th>Effect</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Bitwise</td>
 <td><code>&amp; | ^ ~</code></td>
 <td>per bit on a vector</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Logical</td>
 <td><code>&amp;&amp; || !</code></td>
 <td>1-bit truth value</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Reduction</td>
 <td><code>&amp;a |a ^a</code></td>
 <td>fold a vector to one bit</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Arithmetic / compare</td>
 <td><code>+ - * &lt; == !=</code></td>
 <td>infer adders, comparators</td>
@@ -211,30 +247,36 @@ families:</p>
 <code>always_comb</code> block, or the tool infers an unintended
 transparent latch. Assign a default first or provide a
 <code>default:</code> arm:</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_comb</span> <span class="kw">begin</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  y = <span class="bn">4&#39;b0000</span>;                 <span class="co">// default prevents a latch</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> (en) y[a] = <span class="bn">1&#39;b1</span>;         <span class="co">// one-hot decoder</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_comb</span> <span class="kw">begin</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  y = <span class="bn">4&#39;b0000</span>;                 <span class="co">// default prevents a latch</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> (en) y[a] = <span class="bn">1&#39;b1</span>;         <span class="co">// one-hot decoder</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code></pre></div>
+<p><code>always_comb</code> also kills the legacy <strong>incomplete
+sensitivity list</strong> bug. An old-style
+<code>always @(a or b)</code> that forgets an input (say <code>c</code>)
+simulates as if <code>c</code> were frozen, but synthesis reads every
+signal the logic uses, so the netlist reacts to <code>c</code> and the
+two disagree. <code>always_comb</code> derives the sensitivity list
+automatically from the block’s reads, so it cannot happen: never
+hand-write a combinational sensitivity list.</p>
 <p>Replicate structure with <code>generate</code>:</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">genvar</span> i;</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">generate</span> <span class="kw">for</span> (i = <span class="dv">0</span>; i &lt; N; i++) <span class="kw">begin :</span><span class="dt"> </span><span class="kw">g</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  full_adder u <span class="dt">(.a</span>(a[i]),<span class="dt"> .b</span>(b[i]),<span class="dt"> .cin</span>(c[i]),<span class="dt"> .s</span>(<span class="kw">s</span>[i]),<span class="dt"> .cout</span>(c[i+<span class="dv">1</span>]));</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span> <span class="kw">endgenerate</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">genvar</span> i;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">generate</span> <span class="kw">for</span> (i = <span class="dv">0</span>; i &lt; N; i++) <span class="kw">begin :</span><span class="dt"> </span><span class="kw">g</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  full_adder u <span class="dt">(.a</span>(a[i]),<span class="dt"> .b</span>(b[i]),<span class="dt"> .cin</span>(c[i]),<span class="dt"> .s</span>(<span class="kw">s</span>[i]),<span class="dt"> .cout</span>(c[i+<span class="dv">1</span>]));</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span> <span class="kw">endgenerate</span></span></code></pre></div>
 <h2 id="sequential-modeling">Sequential Modeling</h2>
 <p>Model edge-triggered state with <code>always_ff</code> and the
 nonblocking assignment (<code>&lt;=</code>):</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">begin</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> (rst)     q &lt;= &#39;<span class="dv">0</span>;     <span class="co">// synchronous, active-high reset</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> (en) q &lt;= d;      <span class="co">// load only when enabled</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">begin</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> (rst)     q &lt;= &#39;<span class="dv">0</span>;     <span class="co">// synchronous, active-high reset</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> (en) q &lt;= d;      <span class="co">// load only when enabled</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code></pre></div>
 <p>For an asynchronous reset, add it to the sensitivity list:
 <code>@(posedge clk or negedge rst_n)</code>; the reset-release hazards
-this creates are covered in
-<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
-Timing and Power</a>.</p>
+this creates are covered in [[Synthesis, Timing and Power]].</p>
 <h2 id="coding-discipline">Coding Discipline</h2>
 <p>The rules that keep synthesized hardware matching simulation:</p>
 <table>
@@ -243,33 +285,33 @@ Timing and Power</a>.</p>
 <col style="width: 50%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Rule</th>
 <th>Why</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>always_comb</code> uses blocking <code>=</code></td>
 <td>matches combinational evaluation order</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>always_ff</code> uses nonblocking <code>&lt;=</code></td>
 <td>all flops update together on the edge, modelling real registers</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>One signal driven from one block</td>
 <td>multiple drivers create races and <code>x</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td>Full <code>case</code> or a <code>default</code></td>
 <td>a missing arm infers a latch</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>unique</code>/<code>priority</code> on <code>case</code></td>
 <td>states intent, lets tools warn on overlap or gaps</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Name signals by pipeline stage</td>
 <td>a stale-operand bug is visible in the name (<code>a_r[2]</code> vs
 <code>a_r[3]</code>)</td>
@@ -287,36 +329,31 @@ its home note:</p>
 <col style="width: 50%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Block</th>
 <th>Where</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>mux, decoder, encoder, adders, shifters, ALU</td>
-<td><a href="../../notes.html#Digital%20Design/Combinational%20Circuits" target="_top">Combinational
-Circuits</a></td>
+<td>[[Combinational Circuits]]</td>
 </tr>
-<tr>
+<tr class="even">
 <td>flip-flops, registers, shift registers, counters, LFSR</td>
-<td><a href="../../notes.html#Digital%20Design/Sequential%20Circuits" target="_top">Sequential
-Circuits</a></td>
+<td>[[Sequential Circuits]]</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FSMs (three-block style, Mealy/Moore, encodings)</td>
-<td><a href="../../notes.html#Digital%20Design/Sequential%20Circuits" target="_top">Sequential
-Circuits</a></td>
+<td>[[Sequential Circuits]]</td>
 </tr>
-<tr>
+<tr class="even">
 <td>register file, RAM</td>
-<td><a href="../../notes.html#Digital%20Design/Sequential%20Circuits" target="_top">Sequential
-Circuits</a></td>
+<td>[[Sequential Circuits]]</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>pipelining a datapath (worked example)</td>
-<td><a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
-Timing and Power</a></td>
+<td>[[Synthesis, Timing and Power]]</td>
 </tr>
 </tbody>
 </table>
@@ -324,26 +361,26 @@ Timing and Power</a></td>
 FIFO</h2>
 <p>One full module showing the discipline end to end, with pointers,
 flags, and the wrap-bit idiom:</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> fifo #(<span class="kw">parameter</span> W = <span class="dv">8</span>, DEPTH = <span class="dv">16</span>, A = <span class="dv">4</span>) (</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">input</span>  <span class="kw">logic</span>         clk, rst, wr, rd,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">input</span>  <span class="kw">logic</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] wdata,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">output</span> <span class="kw">logic</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] rdata,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">output</span> <span class="kw">logic</span>         full, <span class="ot">empty</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>);</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">logic</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] mem [<span class="dv">0</span>:DEPTH<span class="dv">-1</span>];</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">logic</span> [A:<span class="dv">0</span>]   wptr, rptr;                 <span class="co">// extra MSB is the wrap bit</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">assign</span> <span class="ot">empty</span> = (wptr == rptr);</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">assign</span> full  = (wptr[A<span class="dv">-1</span>:<span class="dv">0</span>] == rptr[A<span class="dv">-1</span>:<span class="dv">0</span>]) &amp;&amp; (wptr[A] != rptr[A]);</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">assign</span> rdata = mem[rptr[A<span class="dv">-1</span>:<span class="dv">0</span>]];</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">begin</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> (rst) <span class="kw">begin</span> wptr &lt;= &#39;<span class="dv">0</span>; rptr &lt;= &#39;<span class="dv">0</span>; <span class="kw">end</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">else</span> <span class="kw">begin</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>      <span class="kw">if</span> (wr &amp;&amp; !full)  <span class="kw">begin</span> mem[wptr[A<span class="dv">-1</span>:<span class="dv">0</span>]] &lt;= wdata; wptr &lt;= wptr + <span class="bn">1&#39;b1</span>; <span class="kw">end</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>      <span class="kw">if</span> (rd &amp;&amp; !<span class="ot">empty</span>) rptr &lt;= rptr + <span class="bn">1&#39;b1</span>;</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">end</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">end</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="kw">endmodule</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> fifo #(<span class="kw">parameter</span> W = <span class="dv">8</span>, DEPTH = <span class="dv">16</span>, A = <span class="dv">4</span>) (</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">input</span>  <span class="kw">logic</span>         clk, rst, wr, rd,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">input</span>  <span class="kw">logic</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] wdata,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">output</span> <span class="kw">logic</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] rdata,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">output</span> <span class="kw">logic</span>         full, <span class="ot">empty</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>);</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">logic</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] mem [<span class="dv">0</span>:DEPTH<span class="dv">-1</span>];</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">logic</span> [A:<span class="dv">0</span>]   wptr, rptr;                 <span class="co">// extra MSB is the wrap bit</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">assign</span> <span class="ot">empty</span> = (wptr == rptr);</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">assign</span> full  = (wptr[A<span class="dv">-1</span>:<span class="dv">0</span>] == rptr[A<span class="dv">-1</span>:<span class="dv">0</span>]) &amp;&amp; (wptr[A] != rptr[A]);</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">assign</span> rdata = mem[rptr[A<span class="dv">-1</span>:<span class="dv">0</span>]];</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">begin</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> (rst) <span class="kw">begin</span> wptr &lt;= &#39;<span class="dv">0</span>; rptr &lt;= &#39;<span class="dv">0</span>; <span class="kw">end</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">else</span> <span class="kw">begin</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>      <span class="kw">if</span> (wr &amp;&amp; !full)  <span class="kw">begin</span> mem[wptr[A<span class="dv">-1</span>:<span class="dv">0</span>]] &lt;= wdata; wptr &lt;= wptr + <span class="bn">1&#39;b1</span>; <span class="kw">end</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>      <span class="kw">if</span> (rd &amp;&amp; !<span class="ot">empty</span>) rptr &lt;= rptr + <span class="bn">1&#39;b1</span>;</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">end</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">end</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="kw">endmodule</span></span></code></pre></div>
 <figure>
 <img src="figs/fifoptr.svg"
 alt="FIFO occupancy and the wrap bit: in flight, empty, and full" />
@@ -354,45 +391,45 @@ flight, empty, and full</figcaption>
 <p>Testbenches are not synthesized, so the full behavioral language
 applies: <code>initial</code>, <code>#delay</code>,
 <code>$display</code>, <code>assert</code>.</p>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> tb;</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">logic</span> clk = <span class="dv">0</span>, rst = <span class="dv">1</span>, in, det;</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">always</span> <span class="bn">#5</span> clk = ~clk;              <span class="co">// 100 MHz clock</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  detector dut <span class="dt">(.clk</span>,<span class="dt"> .rst</span>,<span class="dt"> .in</span>,<span class="dt"> .det</span>);</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">initial</span> <span class="kw">begin</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    @(<span class="kw">negedge</span> clk) rst = <span class="dv">0</span>;</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">foreach</span> (stream[i]) <span class="kw">begin</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>      in = stream[i];</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>      @(<span class="kw">posedge</span> clk);</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>      <span class="kw">assert</span> (det === expected[i]) <span class="kw">else</span> <span class="kw">$error</span>(<span class="st">&quot;mismatch at %0d&quot;</span>, i);</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">end</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">$finish</span>;</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="kw">end</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="kw">endmodule</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> tb;</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">logic</span> clk = <span class="dv">0</span>, rst = <span class="dv">1</span>, in, det;</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">always</span> <span class="bn">#5</span> clk = ~clk;              <span class="co">// 100 MHz clock</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  detector dut <span class="dt">(.clk</span>,<span class="dt"> .rst</span>,<span class="dt"> .in</span>,<span class="dt"> .det</span>);</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">initial</span> <span class="kw">begin</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    @(<span class="kw">negedge</span> clk) rst = <span class="dv">0</span>;</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">foreach</span> (stream[i]) <span class="kw">begin</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>      in = stream[i];</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>      @(<span class="kw">posedge</span> clk);</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>      <span class="kw">assert</span> (det === expected[i]) <span class="kw">else</span> <span class="kw">$error</span>(<span class="st">&quot;mismatch at %0d&quot;</span>, i);</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">end</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">$finish</span>;</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="kw">end</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="kw">endmodule</span></span></code></pre></div>
 <h2 id="synthesizable-vs-simulation-only">Synthesizable vs
 Simulation-Only</h2>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Synthesizable</th>
 <th>Simulation-only</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>always_ff</code>, <code>always_comb</code>,
 <code>assign</code></td>
 <td><code>initial</code>, <code>final</code>, <code>#delay</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>case</code>, <code>if</code>,
 <code>for</code>/<code>generate</code></td>
 <td><code>$display</code>, <code>$finish</code>,
 <code>assert</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>sized literals, <code>enum</code>, parameters</td>
 <td><code>-&gt;</code>, <code>&lt;-&gt;</code>, real numbers</td>
 </tr>
@@ -421,19 +458,19 @@ are most dangerous precisely when they appear to work.</p>
 <em>in the language</em>, so simulation actively checks the claim and
 fires a runtime violation report when it is broken. The tools stay
 honest with each other:</p>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">unique</span> <span class="kw">case</span> (<span class="ot">state</span>)      <span class="co">// claim: exactly one match, no overlap</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  S0: ...</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  S1: ...</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">endcase</span>                  <span class="co">// sim reports a violation if the claim is false</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">unique</span> <span class="kw">case</span> (<span class="ot">state</span>)      <span class="co">// claim: exactly one match, no overlap</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  S0: ...</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  S1: ...</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">endcase</span>                  <span class="co">// sim reports a violation if the claim is false</span></span></code></pre></div>
 <p>For wildcard matching, use <code>casez</code> with <code>?</code> in
 the case items for don’t-care bits, and avoid <code>casex</code>
 entirely: <code>casex</code> also treats <em>x</em> as a wildcard, so an
 uninitialized input matches everything in simulation and the failure is
 invisible exactly when things are most broken.</p>
-<div class="callout callout-warning">
+<div class="callout warning">
 <div class="callout-title">
-One driver, one block, one style
+<p>One driver, one block, one style</p>
 </div>
 <p>The remaining Cummings rules worth engraving: never mix blocking and
 nonblocking assignments in one always block; never assign one signal
@@ -487,9 +524,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
-<div class="note-nav">
-<a class="nav-prev" href="../../notes.html#Digital%20Design/Sequential%20Circuits" target="_top">&larr; Sequential Circuits</a>
-<a class="nav-next" href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis, Timing and Power &rarr;</a>
-</div>
 </body>
 </html>
