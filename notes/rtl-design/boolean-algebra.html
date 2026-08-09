@@ -159,10 +159,10 @@ class="math inline">\(\overline{x \lor y}\)</span></li>
 <th>y</th>
 <th>AND</th>
 <th>OR</th>
-<th>XOR</th>
+<th>NOT(x)</th>
 <th>NAND</th>
 <th>NOR</th>
-<th>NOT(x)</th>
+<th><strong>XNOR</strong></th>
 </tr>
 </thead>
 <tbody>
@@ -171,7 +171,7 @@ class="math inline">\(\overline{x \lor y}\)</span></li>
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td>0</td>
+<td>1</td>
 <td>1</td>
 <td>1</td>
 <td>1</td>
@@ -184,14 +184,14 @@ class="math inline">\(\overline{x \lor y}\)</span></li>
 <td>1</td>
 <td>1</td>
 <td>0</td>
-<td>1</td>
+<td>0</td>
 </tr>
 <tr class="odd">
 <td>1</td>
 <td>0</td>
 <td>0</td>
 <td>1</td>
-<td>1</td>
+<td>0</td>
 <td>1</td>
 <td>0</td>
 <td>0</td>
@@ -203,8 +203,8 @@ class="math inline">\(\overline{x \lor y}\)</span></li>
 <td>1</td>
 <td>0</td>
 <td>0</td>
-<td>1</td>
 <td>0</td>
+<td>1</td>
 </tr>
 </tbody>
 </table>
@@ -672,15 +672,9 @@ and NOR are the natural primitives.</p>
 can build any function. <span class="math inline">\(\{\land, \lor,
 \lnot\}\)</span> is complete (canonical SOP uses only these). Crucially,
 <strong>NAND alone and NOR alone are each universal</strong>, which is
-why a single gate type can implement any logic in silicon. The
-constructions: tie both inputs together for NOT, invert a NAND for AND,
-and invert the <em>inputs</em> for OR (DeMorgan in gate form):</p>
-<figure>
-<img src="figs/nandgates.svg" style="width:75.0%"
-alt="NOT, AND, and OR built from NAND alone" />
-<figcaption aria-hidden="true">NOT, AND, and OR built from NAND
-alone</figcaption>
-</figure>
+why a single gate type can implement any logic in silicon. <img
+src="figs/nandgates.svg" style="width:75.0%"
+alt="NOT, AND, and OR built from NAND alone" /></p>
 <h3 id="xor-xnor">XOR / XNOR</h3>
 <p><span class="math display">\[
 a \oplus b = (a \land \bar{b}) \lor (\bar{a} \land b), \qquad
@@ -707,11 +701,12 @@ addition and <span class="math inline">\(\land\)</span> as
 multiplication, the set <span class="math inline">\(\{0, 1\}\)</span>
 satisfies every field axiom, giving the two-element <strong>Galois
 Field</strong> <span class="math inline">\(GF(2)\)</span>, the smallest
-field there is. Since <span class="math inline">\(x \oplus x =
-0\)</span>, every element is its own negative: addition and subtraction
-are the same operation. Because bits form a field, all of linear algebra
-(vectors, matrices, polynomials) works over bits, which hardware
-exploits directly:</p>
+field there is.</p>
+<p>Since <span class="math inline">\(x \oplus x = 0\)</span>, every
+element is its own negative: addition and subtraction are the same
+operation. Because bits form a field, all of linear algebra (vectors,
+matrices, polynomials) works over bits, which hardware exploits
+directly:</p>
 <ul>
 <li><strong>Parity</strong> is the XOR-sum of all the bits of a word,
 literally its “sum” in <span class="math inline">\(GF(2)\)</span>. That
@@ -733,15 +728,68 @@ bit.</li>
 </ul>
 <h2 id="number-systems">Number Systems</h2>
 <p>Logic manipulates truth values; datapaths interpret whole bit vectors
-as numbers, so the encodings deserve the same care as the operators. An
-<span class="math inline">\(N\)</span>-bit unsigned number weights bit
-<span class="math inline">\(i\)</span> by <span
-class="math inline">\(2^i\)</span>, covering <span
-class="math inline">\(0\)</span> to <span
+as numbers, so the encodings deserve the same care as the operators. A
+radix-<span class="math inline">\(r\)</span> positional number weights
+digit <span class="math inline">\(i\)</span> by <span
+class="math inline">\(r^i\)</span>; hardware uses <span
+class="math inline">\(r=2\)</span>, with octal and hexadecimal as
+human-readable shorthand:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Radix</th>
+<th>Name</th>
+<th>Digits</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2</td>
+<td>binary</td>
+<td>0-1</td>
+<td>what the hardware stores</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>octal</td>
+<td>0-7</td>
+<td>3-bit groups (Unix permissions, legacy 12/36-bit machines)</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>decimal</td>
+<td>0-9</td>
+<td>human arithmetic</td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td>hexadecimal</td>
+<td>0-9, A-F</td>
+<td>4-bit nibbles, standard for addresses and registers</td>
+</tr>
+</tbody>
+</table>
+<p>An <span class="math inline">\(N\)</span>-bit unsigned number covers
+<span class="math inline">\(0\)</span> to <span
 class="math inline">\(2^N-1\)</span>: <span class="math display">\[
 1011_2 = 1{\cdot}2^3 + 0{\cdot}2^2 + 1{\cdot}2^1 + 1{\cdot}2^0 = 11_{10}
-\]</span> Hexadecimal is shorthand: each hex digit is one 4-bit nibble,
-so conversion is table lookup, no arithmetic.</p>
+\]</span> Because <span class="math inline">\(8 = 2^3\)</span> and <span
+class="math inline">\(16 = 2^4\)</span>, conversion to octal or hex is
+pure regrouping of bits from the right, no arithmetic: <span
+class="math display">\[
+11011101_2 =
+\underbrace{011}_{3}\underbrace{011}_{3}\underbrace{101}_{5} = 335_8 =
+\underbrace{1101}_{D}\underbrace{1101}_{D} = \mathrm{DD}_{16} = 221_{10}
+\]</span> Hex won because word sizes settled on multiples of 4 bits;
+octal survives where fields are 3 bits wide
+(<code>chmod 755</code>).</p>
 <h3 id="signed-twos-complement">Signed: two’s complement</h3>
 <p>The standard signed encoding gives the most significant bit weight
 <span class="math inline">\(-2^{N-1}\)</span> instead of <span
@@ -815,9 +863,9 @@ equivalent</li>
 </ul>
 <figure>
 <img src="figs/overflow.svg"
-alt="signed-overflow detector: XNOR the operand signs, XOR the result sign, AND|484" />
+alt="signed-overflow detector: XNOR the operand signs, XOR the result sign, AND|576" />
 <figcaption aria-hidden="true">signed-overflow detector: XNOR the
-operand signs, XOR the result sign, AND|484</figcaption>
+operand signs, XOR the result sign, AND|576</figcaption>
 </figure>
 <h3 id="fixed-point">Fixed-point</h3>
 <p>An implied binary point splits integer and fractional bits.
@@ -835,9 +883,9 @@ class="math inline">\(\Delta/2\)</span> for round-to-nearest versus
 <h3 id="binary-codes">Binary codes</h3>
 <table>
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 6%" />
+<col style="width: 47%" />
+<col style="width: 45%" />
 </colgroup>
 <thead>
 <tr class="header">
