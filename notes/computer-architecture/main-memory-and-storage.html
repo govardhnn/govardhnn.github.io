@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Main Memory and Storage</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -50,14 +44,9 @@ SSDs</a></li>
 </ul>
 </nav>
 <h1 id="main-memory-and-storage">Main Memory and Storage</h1>
-<p><a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches
-and Virtual Memory</a> treats main memory as the slow tier a miss falls
-through to. This note opens that box. Main memory is
-<strong>DRAM</strong>, and every awkward property it has (refresh,
-variable latency, scheduling, RowHammer) traces to one design decision:
-the bit is charge on a leaky capacitor. Below DRAM sits flash, whose own
-physics (charge trapped on a floating gate) shapes an entire firmware
-layer built to hide it.</p>
+<p>DRAM stores bits as charge that needs refresh; NAND flash stores
+persistent threshold-voltage states. Their physical constraints shape
+memory controllers and SSD firmware.</p>
 <h2 id="the-dram-cell">The DRAM Cell</h2>
 <table>
 <colgroup>
@@ -66,43 +55,41 @@ layer built to hide it.</p>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th></th>
 <th>SRAM (caches)</th>
 <th>DRAM (main memory)</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>cell</td>
 <td>6 transistors, bistable</td>
 <td><strong>1 transistor + 1 capacitor</strong>; the charge <em>is</em>
 the bit</td>
 </tr>
-<tr>
+<tr class="even">
 <td>density</td>
 <td>low</td>
 <td>high: why main memory is DRAM</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>speed</td>
-<td>sub-ns</td>
-<td>tens of ns: tiny analog signals must be sensed</td>
+<td>lower latency; depends on array size</td>
+<td>higher array-access latency; sensing and restoration required</td>
 </tr>
-<tr>
+<tr class="even">
 <td>retention</td>
 <td>holds while powered</td>
 <td>leaks; must be <strong>refreshed</strong> (the “dynamic”)</td>
 </tr>
 </tbody>
 </table>
-<p>A cell’s capacitor is far too small to drive an output directly, so a
-bank reads an entire row at once: <strong>ACTIVATE</strong> dumps the
-row’s charge onto the bitlines, where <strong>sense amplifiers</strong>
-detect and latch it, draining the capacitors in the process. The sense
-amps write the row back as part of activation, so every DRAM read is a
-read-and-restore cycle, and the same mechanism, run on a timer, is
-refresh.</p>
+<p><strong>ACTIVATE</strong> connects a row’s cells to bitlines; sense
+amplifiers detect the small voltage changes, latch the values, and
+restore disturbed cell charge. Subsequent READ/WRITE commands access the
+open row buffer. PRECHARGE prepares the bank for another row; refresh
+performs restoration without returning user data.</p>
 <h2 id="organization">Organization</h2>
 <p>DRAM is a hierarchy, each level exposing parallelism or amortizing
 cost:</p>
@@ -118,30 +105,31 @@ banks, row buffer</figcaption>
 <col style="width: 50%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Level</th>
 <th>Role</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>channel</td>
 <td>independent bus + controller; channels run fully in parallel</td>
 </tr>
-<tr>
+<tr class="even">
 <td>rank</td>
-<td>chips ganged to supply one cache line per access</td>
+<td>chips selected together to supply the rank’s data width; bursts
+transfer larger blocks</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>bank</td>
 <td>independent array within a rank; <strong>bank-level
 parallelism</strong> hides latency</td>
 </tr>
-<tr>
+<tr class="even">
 <td>row (page)</td>
 <td>a few KiB read into the row buffer by one ACTIVATE</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>column</td>
 <td>the cache-line slice a READ/WRITE actually moves</td>
 </tr>
@@ -149,123 +137,89 @@ parallelism</strong> hides latency</td>
 </table>
 <p>Three commands drive a bank: ACTIVATE (open a row into the row
 buffer), READ/WRITE (move a column), PRECHARGE (close the row so another
-can open). Latency depends entirely on the row buffer’s state:</p>
+can open). Bank-access command latency depends on row-buffer state;
+queueing, bus contention, and refresh add further delay:</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Case</th>
 <th>Commands needed</th>
 <th>Latency</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>row hit</td>
 <td>READ</td>
 <td>fast</td>
 </tr>
-<tr>
+<tr class="even">
 <td>row empty</td>
 <td>ACTIVATE, READ</td>
 <td>medium</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>row conflict</td>
 <td>PRECHARGE, ACTIVATE, READ</td>
 <td>slow</td>
 </tr>
 </tbody>
 </table>
-<p>It is a cache hit/miss one level down: the same address stream can
-see wildly different latency depending on row locality (streaming ~96%
-row hits; random ~3%). After each access the controller bets:
-<strong>open-page</strong> policy keeps the row latched (wins on
-locality, pays the conflict), <strong>closed-page</strong> precharges
-immediately, adaptive policies predict per bank.</p>
-<div class="callout callout-question">
-<div class="callout-title">
-Why hasn’t DRAM latency improved in 20 years?
-</div>
-<p>Capacity per dollar is what sells DRAM, so the cell and its sensing
-are optimized for density, not speed, and the analog
-activate-sense-restore sequence (~15 ns) barely budges across
-generations. What <em>does</em> scale is everything around the cell:
-more banks, more channels, faster interfaces. DRAM’s answer to the
-memory wall is parallelism and bandwidth, never latency, which is why
-the core’s answer is tolerance:
-<a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">out-of-order
-execution</a>, MSHRs, prefetching, and multithreading all exist to
-overlap the latency nobody can shrink.</p>
-</div>
+<p><strong>Open-page</strong> policy keeps a row open for likely reuse;
+<strong>closed-page</strong> policy precharges after access. Adaptive
+policies balance row locality against future conflicts.</p>
+<p>DRAM generations have increased density and bandwidth much more than
+they have reduced fundamental array-access latency. Banks, channels, and
+request concurrency help hide latency; they do not eliminate it.</p>
 <h2 id="the-memory-controller">The Memory Controller</h2>
-<p>The controller turns cache-miss streams into legal command sequences
-under dozens of timing constraints, and it <em>schedules</em>: from a
-buffer of pending requests, <strong>FR-FCFS</strong> issues ready
-row-hit commands first, oldest first among them, opening new rows only
-when no hits remain. Throughput-optimal, but a fairness hazard: a
-streaming thread’s row hits keep jumping the queue and can starve a
-random-access neighbor: the memory-side twin of the
-<a href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">LLC
-partitioning</a> problem, and the reason fairness-aware schedulers
-exist.</p>
+<p>The controller schedules commands under DRAM timing constraints.
+<strong>FR-FCFS</strong> favors ready commands (often row hits), then
+age. This can improve throughput but is not universally optimal and may
+starve other request streams; fairness-aware policies bound the
+interference.</p>
 <p>The controller also chooses how address bits map to
 channel/rank/bank/row. The two goods are in tension: consecutive
 addresses in the same row maximize row hits, consecutive addresses
 across banks maximize parallelism. Real mappings (XOR-based bank hashes)
 balance the two and break pathological strides.</p>
-<p><strong>Refresh</strong> is the standing tax: every row within the
-retention window (64 ms), stealing bandwidth and burning idle power,
-with overhead growing as chips get denser. The window is set by the
-<em>worst</em> cell on the chip; most cells could go far longer,
-motivating retention-aware schemes, complicated by cells that randomly
-flip between strong and weak retention states.</p>
+<p><strong>Refresh</strong> restores rows within the device’s specified
+retention interval, consuming bandwidth and energy. Requirements depend
+on device and temperature; 64 ms is a common historical example, not a
+universal constant.</p>
 <h2 id="rowhammer">RowHammer</h2>
-<p>Repeatedly activating one row (the <strong>aggressor</strong>) before
-the next refresh drains charge from physically adjacent
-<strong>victim</strong> rows through cell-to-cell coupling, flipping
-bits in memory the attacker never touched (Kim et al., ISCA 2014). Most
-commodity DRAM tested was vulnerable, and denser DRAM is <em>more</em>
-vulnerable: the scaling that makes memory cheap strengthens exactly the
-coupling that breaks it.</p>
-<div class="callout callout-note">
-<div class="callout-title">
-A circuit bug that pierces every abstraction
-</div>
-<p>A bit flip an attacker can induce on demand in memory they don’t own
-is a security primitive, not a glitch: flip a page-table bit and
-userspace gains write access to the kernel; demonstrated from JavaScript
-and across cloud VMs. Mitigations have been a cat-and-mouse decade:
-extra refresh, then Target Row Refresh (defeated by many-sided hammering
-patterns that overflow its tracking tables), now per-row activation
-counting (PRAC) in the DDR5 standard. The lesson matches
-<a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">OpenTitan’s
-threat model</a>: the analog layer is part of the attack surface.</p>
-</div>
+<p>Repeated activation can disturb nearby DRAM cells and flip bits
+(<strong>RowHammer</strong>). This can violate isolation even when
+software never directly accesses a victim address. Mitigations include
+refresh/activation controls, physical isolation, and error protection;
+effectiveness depends on device and access pattern. See Kim et al. (ISCA
+2014) for the original characterization.</p>
 <h2 id="bandwidth-ddr-and-hbm">Bandwidth: DDR and HBM</h2>
 <p>DRAM’s interface scales where its cell cannot. <strong>DDR</strong>
-transfers on both clock edges in bursts of a full cache line; each
-generation (DDR3 → DDR4 → DDR5) roughly doubles transfer rate and adds
-banks. <strong>LPDDR</strong> trades bandwidth for energy;
-<strong>GDDR</strong> the reverse. <strong>HBM</strong> stacks DRAM dies
-on the package and connects them with thousands of through-silicon vias:
-an interface ~10x wider at modest clock, feeding the bandwidth-bound
+transfers on both clock edges in bursts whose size depends on the
+interface and configuration; successive generations increase transfer
+rates and bank-level concurrency. <strong>LPDDR</strong> targets
+low-power systems; <strong>GDDR</strong> targets graphics bandwidth.
+Bandwidth and energy depend on the specific interface and configuration.
+<strong>HBM</strong> stacks DRAM dies on the package and connects them
+with thousands of through-silicon vias: a wide interface at modest
+clock, feeding the bandwidth-bound
 <a href="../../notes.html#Computer%20Architecture/Deep%20Learning%20Accelerators" target="_top">accelerators</a>
 and GPUs. Achieved bandwidth still depends on the request stream keeping
 many banks busy: the memory-level parallelism that
 <a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">MSHRs</a>
 exist to generate.</p>
 <h2 id="flash-and-ssds">Flash and SSDs</h2>
-<p>Storage is now NAND flash: charge trapped on an insulated
-<strong>floating gate</strong>, shifting the transistor’s threshold
-voltage: non-volatile, and readable as one of several charge bands. Bits
-per cell is a density-versus-margin trade: SLC (2 levels) through QLC
-(16 levels) buys 4x density while shrinking noise margins, cutting speed
-and endurance, the same slicing trade as quantization in
+<p>SSDs commonly use NAND flash: charge stored in a <strong>floating
+gate or charge-trap structure</strong>, shifting the transistor’s
+threshold voltage: non-volatile, and readable as one of several charge
+bands. Bits per cell is a density-versus-margin trade: SLC (2 levels)
+through QLC (16 levels) buys 4x density while shrinking noise margins,
+cutting speed and endurance, the same slicing trade as quantization in
 <a href="../../notes.html#Computer%20Architecture/Deep%20Learning%20Accelerators" target="_top">Deep
 Learning Accelerators</a>.</p>
 <div class="callout callout-warning">
 <div class="callout-title">
-The constraint that shapes every SSD
+<p>The constraint that shapes every SSD</p>
 </div>
 <p>Flash reads and programs at <strong>page</strong> granularity (4-16
 KiB) but erases only whole <strong>blocks</strong> (hundreds of pages),
@@ -287,63 +241,26 @@ amplification</strong> (one host write becoming several flash writes),
 which is why SSDs slow down as they fill (fuller victim blocks mean more
 copying per erase).</li>
 <li><strong>Wear leveling</strong>: each block survives a limited number
-of program/erase cycles (~100k SLC down to ~1k QLC) as erasing degrades
-the gate insulation; the FTL spreads wear so the drive ages evenly
-instead of dying in patches.</li>
+of program/erase cycles (depending on technology and operating
+conditions) as erasing degrades the gate insulation; the FTL spreads
+wear so the drive ages evenly instead of dying in patches.</li>
 </ul>
-<p>Flash also has DRAM’s analog failure modes in its own dialect:
-<strong>read disturb</strong> (reading one page nudges its block-mates:
-flash’s RowHammer), long-term <strong>retention</strong> loss, and
-wear-driven error rates. SSDs therefore run ECC far stronger than DRAM’s
-on every read: raw flash is <em>expected</em> to return bit errors, and
-the code is what turns a noisy analog device into the clean block
-abstraction the OS sees.</p>
+<p>Flash suffers read disturb, retention loss, and wear-induced errors.
+SSD controllers use ECC, retry, bad-block management, and spare capacity
+to provide reliable logical storage.</p>
 <hr />
 <p>Author: Sai Govardhan (saigov14@gmail.com)</p>
 <h2 id="references">References</h2>
-<p><strong>Courses</strong></p>
 <ul>
-<li>ETH Zürich, Onur Mutlu, <em>Computer Architecture</em> (memory
-lectures)</li>
+<li>Hennessy &amp; Patterson, Computer Architecture: A Quantitative
+Approach, 5th ed. — ch. 2.</li>
+<li>Patterson &amp; Hennessy, Computer Organization and Design: RISC-V
+Edition — ch. 5.</li>
 </ul>
-<p><strong>Textbooks</strong></p>
-<ul>
-<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
-Quantitative Approach</em>, ch. 2</li>
-<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
-Design, RISC-V Edition</em>, ch. 5</li>
-</ul>
-<p><strong>Standards, Papers, and Wikipedia</strong></p>
-<ul>
-<li>Y. Kim et al., <em>Flipping Bits in Memory Without Accessing
-Them</em> (RowHammer), ISCA 2014</li>
-<li>JEDEC DDR5 / LPDDR5 / HBM standards</li>
-<li>Wikipedia: DRAM, Flash memory, Solid-state drive</li>
-</ul>
-<pre class="license"><code>MIT License
-
-Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</code></pre>
-<div class="note-nav">
-<a class="nav-prev" href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">&larr; RISC-V ISA</a>
-<a class="nav-next" href="../../notes.html#Computer%20Architecture/Deep%20Learning%20Accelerators" target="_top">Deep Learning Accelerators &rarr;</a>
-</div>
+<p>License: <a href="LICENSE.txt">MIT</a>.</p>
+<nav class="note-nav" aria-label="Adjacent notes">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">← Exceptions</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/I-O%20and%20System%20Interconnect" target="_top">I-O and System Interconnect →</a>
+</nav>
 </body>
 </html>

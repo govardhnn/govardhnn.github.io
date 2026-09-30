@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Caches and Virtual Memory</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -27,9 +21,8 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
-    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span { line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -116,69 +109,27 @@ id="toc-caches-meet-translation">Caches Meet Translation</a></li>
 </ul>
 </nav>
 <h1 id="caches-and-virtual-memory">Caches and Virtual Memory</h1>
-<p>Processor speed grew ~50%/year for decades while DRAM latency
-improved a few percent: the <strong>memory wall</strong>. The memory
-hierarchy hides it by exploiting <strong>locality</strong>: temporal
-(recently used data is used again) and spatial (nearby data is used
-soon). Caches make average access time approach SRAM speed at DRAM
-capacity; virtual memory extends the same illusion to protection and
-disk. Both matter more to real performance than anything in
-<a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">Simple
-Instruction Pipeline</a>.</p>
-<table>
-<thead>
-<tr>
-<th>Level</th>
-<th>Typical size</th>
-<th>Latency (cycles)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>register file</td>
-<td>~1 KiB</td>
-<td>0</td>
-</tr>
-<tr>
-<td>L1 cache</td>
-<td>32-64 KiB</td>
-<td>3-5</td>
-</tr>
-<tr>
-<td>L2 cache</td>
-<td>256 KiB-2 MiB</td>
-<td>12-20</td>
-</tr>
-<tr>
-<td>L3 (LLC)</td>
-<td>8-64 MiB shared</td>
-<td>30-50</td>
-</tr>
-<tr>
-<td>DRAM</td>
-<td>GiB</td>
-<td>200-400</td>
-</tr>
-<tr>
-<td>SSD/disk</td>
-<td>TiB</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mn>4</mn></msup><annotation encoding="application/x-tex">10^4</annotation></semantics></math>-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mn>7</mn></msup><annotation encoding="application/x-tex">10^7</annotation></semantics></math></td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> i<span class="op">++)</span> sum <span class="op">+=</span> a<span class="op">[</span>i<span class="op">];</span>   <span class="co">// spatial: a[i+1] is in a[i]&#39;s line</span></span>
+<p>Caches exploit <strong>temporal locality</strong> (reuse) and
+<strong>spatial locality</strong> (nearby addresses). Virtual memory
+provides address translation and protection; demand paging can also move
+data between DRAM and storage.</p>
+<p>Latency and capacity depend on implementation. Registers are small
+and fast; SRAM caches trade capacity for latency; DRAM provides larger,
+slower main memory; storage has much higher access latency. Compare
+times in nanoseconds when clock rates differ.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> i<span class="op">++)</span> sum <span class="op">+=</span> a<span class="op">[</span>i<span class="op">];</span>   <span class="co">// spatial: nearby elements often share a cache line</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>                                        <span class="co">// temporal: sum, i every iteration</span></span></code></pre></div>
 <h2 id="cache-anatomy">Cache Anatomy</h2>
-<p>Data moves in <strong>lines</strong> (blocks) of 32-128 B (64 B
-standard): fetching a whole line amortizes DRAM access and prefetches
-spatially. A cache holds a subset of lines plus bookkeeping: a
-<strong>valid</strong> bit and a <strong>tag</strong> identifying which
-memory line occupies the slot.</p>
+<p>Data moves in <strong>lines</strong> (blocks), often 64 B; size is
+implementation-dependent: fetching a whole line amortizes DRAM access
+and prefetches spatially. A cache holds a subset of lines plus
+bookkeeping: a <strong>valid</strong> bit and a <strong>tag</strong>
+identifying which memory line occupies the slot.</p>
 <p>The address splits into three fields (line size
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><mi>b</mi></msup><annotation encoding="application/x-tex">2^b</annotation></semantics></math>,
 number of sets
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><mi>s</mi></msup><annotation encoding="application/x-tex">2^s</annotation></semantics></math>):</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">address</mtext><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mspace width="0.222em"></mspace><munder><munder><mtext mathvariant="normal">tag</mtext><mo accent="true">⏟</mo></munder><mtext mathvariant="normal">rest</mtext></munder><mspace width="0.222em"></mspace><mo stretchy="false" form="prefix">|</mo><mspace width="0.222em"></mspace><munder><munder><mtext mathvariant="normal">index</mtext><mo accent="true">⏟</mo></munder><mrow><mi>s</mi><mspace width="0.222em"></mspace><mtext mathvariant="normal">bits</mtext></mrow></munder><mspace width="0.222em"></mspace><mo stretchy="false" form="prefix">|</mo><mspace width="0.222em"></mspace><munder><munder><mtext mathvariant="normal">offset</mtext><mo accent="true">⏟</mo></munder><mrow><mi>b</mi><mspace width="0.222em"></mspace><mtext mathvariant="normal">bits</mtext></mrow></munder><mspace width="0.222em"></mspace><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\text{address} = [\ \underbrace{\text{tag}}_{\text{rest}}\ |\ \underbrace{\text{index}}_{s\ \text{bits}}\ |\ \underbrace{\text{offset}}_{b\ \text{bits}}\ ]</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">address</mtext><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mspace width="0.222em"></mspace><munder><munder><mtext mathvariant="normal">tag</mtext><mo accent="true">⏟</mo></munder><mtext mathvariant="normal">rest</mtext></munder><mspace width="0.222em"></mspace><mrow><mo stretchy="true" form="prefix">|</mo><mspace width="0.222em"></mspace><munder><munder><mtext mathvariant="normal">index</mtext><mo accent="true">⏟</mo></munder><mrow><mi>s</mi><mspace width="0.222em"></mspace><mtext mathvariant="normal">bits</mtext></mrow></munder><mspace width="0.222em"></mspace><mo stretchy="true" form="postfix">|</mo></mrow><mspace width="0.222em"></mspace><munder><munder><mtext mathvariant="normal">offset</mtext><mo accent="true">⏟</mo></munder><mrow><mi>b</mi><mspace width="0.222em"></mspace><mtext mathvariant="normal">bits</mtext></mrow></munder><mspace width="0.222em"></mspace><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">\text{address} = [\ \underbrace{\text{tag}}_{\text{rest}}\ |\ \underbrace{\text{index}}_{s\ \text{bits}}\ |\ \underbrace{\text{offset}}_{b\ \text{bits}}\ ]</annotation></semantics></math></p>
 <figure>
 <img src="figs/cachelookup.svg" alt="direct-mapped cache lookup" />
 <figcaption aria-hidden="true">direct-mapped cache lookup</figcaption>
@@ -194,7 +145,7 @@ policies differ only in how many slots a line may occupy:</p>
 <col style="width: 25%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Organization</th>
 <th>Line can live in</th>
 <th>Cost</th>
@@ -202,13 +153,13 @@ policies differ only in how many slots a line may occupy:</p>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>direct-mapped</td>
 <td>exactly 1 slot</td>
 <td>1 comparator</td>
 <td>worst</td>
 </tr>
-<tr>
+<tr class="even">
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>-way
 set-associative</td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
@@ -218,7 +169,7 @@ comparators + way mux</td>
 <td>low for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>≥</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">N \ge 4</annotation></semantics></math></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>fully associative</td>
 <td>anywhere</td>
 <td>comparator per line (CAM)</td>
@@ -231,7 +182,7 @@ comparators + way mux</td>
 <figcaption aria-hidden="true">4-way set-associative lookup</figcaption>
 </figure>
 <p>Worked example: 32 KiB, 8-way, 64 B lines, 48-bit addresses. Sets
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>32768</mn><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>8</mn><mo>×</mo><mn>64</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>64</mn></mrow><annotation encoding="application/x-tex">= 32768/(8 \times 64) = 64</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>32768</mn><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>8</mn><mo>×</mo><mn>64</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>64</mn></mrow><annotation encoding="application/x-tex">= 32768/(8 \times 64) = 64</annotation></semantics></math>,
 so offset
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">b=6</annotation></semantics></math>,
 index
@@ -251,23 +202,19 @@ latency-versus-frequency trade:</p>
 <ul>
 <li><strong>Parallel</strong>: read <em>all</em> ways of the set while
 the tags are compared, then a <strong>way multiplexor</strong> picks the
-winner. One cycle faster, but the mux sits on the critical path and
-every way’s data is read (and its energy spent) for nothing.</li>
+winner. This reduces lookup latency but reads unused ways and adds a
+way-selection mux.</li>
 <li><strong>Serial</strong>: compare tags first, then enable only the
-winning way: no way mux, less energy, a faster clock, one more cycle of
-latency.</li>
+winning way: this can save energy at the cost of added access latency;
+cycle count depends on implementation.</li>
 </ul>
-<p>An out-of-order core hides D-cache latency, so serial access suits
-the D-cache when the cache limits frequency. The I-cache leans the other
-way: every added fetch cycle grows the
-<a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">misprediction
-restart penalty</a>, so I-caches typically read tags and data in
-parallel.</p>
+<p>OOO execution can hide some cache latency when independent work
+exists. Instruction and data caches each choose their latency,
+bandwidth, and energy tradeoffs.</p>
 <h3 id="bandwidth-ports-and-banks">Bandwidth: Ports and Banks</h3>
-<p>A wide core issues ~2 memory operations per cycle, but a <strong>true
-multiported</strong> SRAM (every cell readable twice at once) is slow
-enough that no commercial processor ships one. Three ways to fake
-it:</p>
+<p>Serving multiple memory operations per cycle requires bandwidth. A
+<strong>true multiported</strong> SRAM supports multiple accesses but
+costs area and may lengthen access time. Alternatives include:</p>
 <figure>
 <img src="figs/cacheports.svg"
 alt="array replication vs multibanking" />
@@ -282,7 +229,7 @@ multibanking</figcaption>
 <col style="width: 25%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Approach</th>
 <th>Idea</th>
 <th>Cost</th>
@@ -290,54 +237,52 @@ multibanking</figcaption>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>array replication</td>
 <td>two full copies, one load port each; stores write both</td>
 <td>2x area</td>
 <td>Alpha 21164</td>
 </tr>
-<tr>
-<td>virtual multiporting</td>
-<td>double-pump one array, two accesses per cycle</td>
-<td>abandoned: does not scale with GHz</td>
-<td>Power2, Alpha 21264</td>
+<tr class="even">
+<td>time multiplexing</td>
+<td>multiple array accesses per core cycle</td>
+<td>requires faster array timing</td>
+<td>implementation-dependent</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>multibanking</td>
 <td>split into single-ported banks; an index bit routes each
 request</td>
 <td>bank conflicts stall</td>
-<td>R10000, Opteron, everything modern</td>
+<td>R10000, Opteron; widely used</td>
 </tr>
 </tbody>
 </table>
-<div class="callout callout-question">
-<div class="callout-title">
-Why are instruction caches single-ported and blocking?
-</div>
-<p>Fetch is sequential: one access returns a whole line of consecutive
-instructions, so a single port already feeds the machine. And a
-lockup-free I-cache would buy nothing: every instruction implicitly
-depends on fetching its predecessor, so there is no independent later
-fetch to overlap with an I-miss. The properties that justify D-cache
-complexity (random access, independent misses) are exactly the ones
-instruction streams lack.</p>
-</div>
+<p>Instruction-cache accesses often return several sequential
+instructions per lookup. Predicted targets, prefetching, and decoupled
+fetch can create independent outstanding requests, so I-caches need not
+be single-ported or blocking.</p>
 <h2 id="performance">Performance</h2>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>M</mi><mi>A</mi><mi>T</mi><mo>=</mo><msub><mi>t</mi><mrow><mi>h</mi><mi>i</mi><mi>t</mi></mrow></msub><mo>+</mo><mtext mathvariant="normal">miss rate</mtext><mo>×</mo><mtext mathvariant="normal">miss penalty</mtext></mrow><annotation encoding="application/x-tex">AMAT = t_{hit} + \text{miss rate} \times \text{miss penalty}</annotation></semantics></math></p>
 <p>Multilevel:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>M</mi><mi>A</mi><mi>T</mi><mo>=</mo><msub><mi>t</mi><mrow><mi>L</mi><mn>1</mn></mrow></msub><mo>+</mo><msub><mi>m</mi><mrow><mi>L</mi><mn>1</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow></msub><mo>+</mo><msub><mi>m</mi><mrow><mi>L</mi><mn>2</mn></mrow></msub><mo>×</mo><msub><mi>t</mi><mrow><mi>m</mi><mi>e</mi><mi>m</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">AMAT = t_{L1} + m_{L1}(t_{L2} + m_{L2} \times t_{mem})</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>M</mi><mi>A</mi><mi>T</mi><mo>=</mo><msub><mi>t</mi><mrow><mi>L</mi><mn>1</mn></mrow></msub><mo>+</mo><msub><mi>m</mi><mrow><mi>L</mi><mn>1</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow></msub><mo>+</mo><msub><mi>m</mi><mrow><mi>L</mi><mn>2</mn></mrow></msub><mo>×</mo><msub><mi>t</mi><mrow><mi>m</mi><mi>e</mi><mi>m</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">AMAT = t_{L1} + m_{L1}(t_{L2} + m_{L2} \times t_{mem})</annotation></semantics></math>.
 With
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>L</mi><mn>1</mn></mrow></msub><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">t_{L1}=2</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>m</mi><mrow><mi>L</mi><mn>1</mn></mrow></msub><mo>=</mo><mn>5</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">m_{L1}=5\%</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow></msub><mo>=</mo><mn>15</mn></mrow><annotation encoding="application/x-tex">t_{L2}=15</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>m</mi><mrow><mi>L</mi><mn>2</mn></mrow></msub><mo>=</mo><mn>20</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">m_{L2}=20\%</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>m</mi><mi>e</mi><mi>m</mi></mrow></msub><mo>=</mo><mn>300</mn></mrow><annotation encoding="application/x-tex">t_{mem}=300</annotation></semantics></math>:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>M</mi><mi>A</mi><mi>T</mi><mo>=</mo><mn>2</mn><mo>+</mo><mn>0.05</mn><mo stretchy="false" form="prefix">(</mo><mn>15</mn><mo>+</mo><mn>0.2</mn><mo>×</mo><mn>300</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>5.75</mn></mrow><annotation encoding="application/x-tex">AMAT = 2 + 0.05(15 + 0.2 \times 300) = 5.75</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>M</mi><mi>A</mi><mi>T</mi><mo>=</mo><mn>2</mn><mo>+</mo><mn>0.05</mn><mrow><mo stretchy="true" form="prefix">(</mo><mn>15</mn><mo>+</mo><mn>0.2</mn><mo>×</mo><mn>300</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>5.75</mn></mrow><annotation encoding="application/x-tex">AMAT = 2 + 0.05(15 + 0.2 \times 300) = 5.75</annotation></semantics></math>
 cycles. Distinguish <strong>local</strong> miss rate (misses/accesses
 <em>to that level</em>) from <strong>global</strong> (misses/all
 accesses); L2’s local rate looks bad because L1 already filtered the
 easy hits.</p>
+<p>This AMAT model describes serial average access cost, not CPU stall
+time when misses overlap. Miss concurrency and bandwidth matter too. In
+steady state, <strong>Little’s law</strong> gives average requests in
+flight = completion rate × average latency. Sustaining 32 GB/s with
+64-byte transfers and 100 ns latency needs roughly 50 concurrent
+requests; queues and MSHRs must support that concurrency.</p>
 <p>The <strong>3 Cs</strong> classify misses by what would have
 prevented them:</p>
 <table>
@@ -347,24 +292,24 @@ prevented them:</p>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Miss class</th>
 <th>Cause</th>
 <th>Fix</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>compulsory</td>
 <td>first touch ever</td>
 <td>larger lines, prefetching</td>
 </tr>
-<tr>
+<tr class="even">
 <td>capacity</td>
 <td>working set &gt; cache size</td>
 <td>bigger cache, blocking in software</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>conflict</td>
 <td>too many lines map to one set</td>
 <td>more associativity, victim cache</td>
@@ -384,37 +329,38 @@ useful data (fewer lines for the same capacity).</p>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Policy</th>
 <th>State per set</th>
 <th>Idea</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>random</td>
-<td>none</td>
+<td>no per-set recency state</td>
 <td>surprisingly close to LRU at high associativity</td>
 </tr>
-<tr>
+<tr class="even">
 <td>FIFO / round-robin</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>2</mn></msub><mi>N</mi></mrow><annotation encoding="application/x-tex">\log_2 N</annotation></semantics></math>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>log</mo><mn>2</mn></msub><mi>N</mi></mrow><annotation encoding="application/x-tex">\log_2 N</annotation></semantics></math>
 bits</td>
 <td>evict oldest <em>filled</em>, ignores reuse</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>true LRU</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>N</mi><mi>!</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log_2(N!)</annotation></semantics></math>
+<td>at least
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">⌈</mo><msub><mo>log</mo><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mi>!</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">⌉</mo></mrow><annotation encoding="application/x-tex">\lceil\log_2(N!)\rceil</annotation></semantics></math>
 bits</td>
 <td>evict least recently <em>used</em>; exact but costly past 4-way</td>
 </tr>
-<tr>
+<tr class="even">
 <td>tree pseudo-LRU</td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">N-1</annotation></semantics></math>
 bits</td>
 <td>binary tree of “which half was used less” bits</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>RRIP family</td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>N</mi></mrow><annotation encoding="application/x-tex">2N</annotation></semantics></math>
 bits</td>
@@ -430,61 +376,38 @@ recording an access is flipping the bits on the path to point away:</p>
 <img src="figs/treeplru.svg" alt="4-way tree pseudo-LRU" />
 <figcaption aria-hidden="true">4-way tree pseudo-LRU</figcaption>
 </figure>
-<p>LRU’s weakness is a scan: streaming data marches through and evicts
-the whole working set, earning nothing. LLCs therefore use
-<strong>RRIP</strong> (re-reference interval prediction): each line gets
-a small counter guessing how soon it will be re-referenced; new lines
-are inserted as “probably distant” rather than “just used”, so a scan’s
-lines age out before they displace resident hot lines, and a line only
-earns “near” status by actually being re-referenced (SRRIP; the D in
-DRRIP set-duels the insertion choice, the same
-<a href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">set-dueling</a>
-trick used for LLC partitioning).</p>
+<p>Streaming accesses can displace reusable data under LRU.
+<strong>RRIP</strong> tracks predicted reuse with small per-line
+counters; insertion and promotion policies resist scans.
+<strong>DRRIP</strong> uses sampled sets to choose between policies.</p>
 <h3 id="writes">Writes</h3>
 <ul>
 <li><strong>Write-through</strong>: every store goes to the next level
-too. Simple, coherent, but needs a write buffer to hide latency and
-burns bandwidth.</li>
-<li><strong>Write-back</strong>: stores dirty the line; memory is
-updated only on eviction (dirty bit). Standard everywhere beyond tiny
-L1s; the eviction write-back traffic reappears in
-<a href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">Multicore
-Cache Coherence</a> as the Owned state problem.</li>
+too. Simple, but does not itself provide coherence; needs a write buffer
+to hide latency and burns bandwidth.</li>
+<li><strong>Write-back</strong>: stores dirty the line; the next level
+is updated on dirty eviction, explicit cleaning, or protocol-required
+actions. Coherence manages other cached copies.</li>
 <li><strong>Write-allocate</strong> (fetch line on store miss, standard
 with write-back) vs <strong>no-allocate</strong> (send the store on,
 standard with write-through).</li>
 </ul>
-<p><strong>Latency-hiding</strong>:</p>
-<p><strong>non-blocking</strong> (lockup-free) caches keep servicing
-hits under outstanding misses, which is what lets
-<a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">out-of-order
-cores</a> overlap misses (memory-level parallelism). The bookkeeping
-lives in <strong>MSHRs</strong> (miss status holding registers): a
-<strong>primary miss</strong> allocates one and sends the fetch; a
-<strong>secondary miss</strong> to the same in-flight line just adds
-itself to the existing entry; a miss that finds no free MSHR stalls (a
-structural hazard, so MSHR count caps memory-level parallelism). Kroft’s
-original <strong>implicitly addressed</strong> MSHR holds one
-destination slot per word of the line; the <strong>explicitly
-addressed</strong> variant stores the block offset per slot, allowing
-several misses to one word; <strong>in-cache</strong> MSHRs go further
-and use the awaiting cache line itself as the storage, one transient bit
-in the tag marking it. <strong>Victim caches</strong> (small fully
-associative side buffer of recent evictions) mop up conflict misses.
-<strong>Prefetchers</strong> (next-line, stride, stream) fetch ahead of
-demand; accurate ones hide most compulsory/capacity latency, inaccurate
-ones pollute. <strong>Critical-word-first</strong> returns the needed
-word of a line before the rest.</p>
-<p><strong>Hit-time tricks</strong>: <strong>way prediction</strong>
-guesses which way of a set-associative cache will hit and reads only
-that way first (direct-mapped speed and energy on a correct guess, an
-extra cycle on a miss); a mispredict costs little because the check is
-the normal tag compare. A <strong>sum-addressed decoder</strong> folds
-the <code>base + offset</code> addition of the
-<a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">address
-computation</a> into the SRAM row decoder itself, comparing against
-<code>base</code> and <code>offset</code> directly and shaving the adder
-off the load-to-use path.</p>
+<h3 id="hiding-latency">Hiding Latency</h3>
+<ul>
+<li><strong>Nonblocking caches</strong> serve hits and possibly new
+misses while misses are outstanding.</li>
+<li><strong>MSHRs</strong> track outstanding line fills and waiting
+requests. Requests to the same line can merge; MSHR capacity bounds
+concurrency.</li>
+<li><strong>Victim caches</strong> retain recent evictions to reduce
+conflict misses.</li>
+<li><strong>Prefetching</strong> fetches ahead; useful predictions hide
+latency, while inaccurate ones waste bandwidth and cache capacity.</li>
+<li><strong>Critical-word-first</strong> returns the requested word
+before the rest of a line.</li>
+<li><strong>Way prediction</strong> reads a likely way first, then
+checks the tags; a wrong prediction adds latency.</li>
+</ul>
 <p>Software helps: loop <strong>blocking</strong> restructures matrix
 code so the working tile fits in cache, turning capacity misses into
 hits.</p>
@@ -492,10 +415,11 @@ hits.</p>
 <p>Virtual memory gives every process its own address space, mapped to
 physical frames by the OS:</p>
 <ul>
-<li><strong>Protection/isolation</strong>: a process cannot name
-another’s memory; per-page permissions (R/W/X, user/supervisor).</li>
-<li><strong>Relocation</strong>: all programs link at the same
-addresses; sharing (libraries, copy-on-write fork).</li>
+<li><strong>Protection/isolation</strong>: mappings and permissions
+control which physical memory a process may access; per-page permissions
+(R/W/X, user/supervisor).</li>
+<li><strong>Relocation</strong>: virtual addresses need not equal
+physical addresses; sharing (libraries, copy-on-write fork).</li>
 <li><strong>Demand paging</strong>: run programs bigger than DRAM,
 faulting pages in from disk.</li>
 </ul>
@@ -521,23 +445,19 @@ either fetches the page from disk and retries the instruction, grows the
 mapping (stack, heap), or kills the process (segfault). Restarting
 faulted instructions is why precise exceptions exist.</p>
 <h2 id="the-tlb">The TLB</h2>
-<p>A page-table walk costs 2-4 memory accesses; doing it per load would
-be ruinous. The <strong>TLB</strong> (translation lookaside buffer)
-caches PTEs: 64-128 entries fully or highly associative for L1, ~1-2K
-entries in L2 TLB, reaching ~99%+ hit rates. TLB <strong>reach</strong>
-= entries × page size (128 × 4 KiB = 512 KiB), the reason huge pages
-help big-data workloads. Misses trigger the hardware walker (x86,
-RISC-V) or a software handler (old MIPS). Context switches either flush
-the TLB or tag entries with an <strong>ASID</strong>.</p>
+<p>A <strong>TLB</strong> caches translations and permissions, avoiding
+most page-table walks. Reach is entries × page size (128 × 4 KiB = 512
+KiB). A miss triggers a hardware walk or software refill, depending on
+the ISA. ASIDs distinguish address spaces; page-table changes still
+require the architecture’s translation-invalidation protocol.</p>
 <h2 id="caches-meet-translation">Caches Meet Translation</h2>
 <p>Where does the cache sit relative to translation?</p>
 <ul>
 <li><strong>PIPT</strong> (physically indexed, physically tagged):
 translate first, then look up. Simple, but adds TLB latency to every L1
 hit. Used for L2/L3.</li>
-<li><strong>VIVT</strong>: fast but broken by homonyms (same VA,
-different PA per process) and synonyms (different VAs, same PA);
-requires flushes.</li>
+<li><strong>VIVT</strong>: lookup uses virtual addresses. Homonyms need
+address-space tags or flushing; synonyms need alias management.</li>
 <li><strong>VIPT</strong>: index with page-offset bits (untranslated),
 fetch tags in parallel with the TLB, compare physical tags:</li>
 </ul>
@@ -546,64 +466,33 @@ fetch tags in parallel with the TLB, compare physical tags:</li>
 <figcaption aria-hidden="true">VIPT: TLB and L1 accessed in
 parallel</figcaption>
 </figure>
-<p>The constraint: index + offset must fit in the page offset,
-i.e. cache size ≤ page size × associativity (4 KiB × 8 = 32 KiB, the
-classic L1 size). VIPT gets PIPT correctness at VIVT speed, which is why
-the worked example above has exactly 64 sets.</p>
+<p>For simple alias-free VIPT, index + offset must fit in the page
+offset, i.e. cache size ≤ page size × associativity (4 KiB × 8 = 32 KiB,
+the classic L1 size). VIPT gets PIPT correctness at VIVT speed, which is
+why the worked example above has exactly 64 sets.</p>
 <p>Multicore hierarchy notes: private L1/L2 per core with a shared LLC
 is standard; <strong>inclusive</strong> LLCs duplicate all inner
 contents (wasteful, but the LLC can filter coherence traffic),
 <strong>exclusive</strong> maximize capacity,
-<strong>non-inclusive</strong> split the difference. Coherence itself is
+<strong>non-inclusive</strong> make no inclusion guarantee. Coherence
+itself is
 <a href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">Multicore
 Cache Coherence</a>.</p>
 <hr />
 <p>Author: Sai Govardhan (saigov14@gmail.com)</p>
 <h2 id="references">References</h2>
-<p><strong>Courses</strong></p>
 <ul>
-<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lectures 7-10</li>
+<li>Patterson &amp; Hennessy, Computer Organization and Design: RISC-V
+Edition — ch. 5.</li>
+<li>González, Latorre &amp; Magklis, Processor Microarchitecture —
+caches.</li>
+<li>Balasubramonian, Jouppi &amp; Muralimanohar, Multi-Core Cache
+Hierarchies — cache hierarchy design.</li>
 </ul>
-<p><strong>Textbooks</strong></p>
-<ul>
-<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
-Design, RISC-V Edition</em>, ch. 5</li>
-<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
-Quantitative Approach</em>, App. B</li>
-<li>A. González, F. Latorre &amp; G. Magklis, <em>Processor
-Microarchitecture: An Implementation Perspective</em>, ch. 2</li>
-<li>R. Balasubramonian et al., <em>Multi-Core Cache
-Hierarchies</em></li>
-</ul>
-<p><strong>Standards, Papers, and Wikipedia</strong></p>
-<ul>
-<li>Wikipedia: CPU cache, Translation lookaside buffer</li>
-</ul>
-<pre class="license"><code>MIT License
-
-Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</code></pre>
-<div class="note-nav">
-<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">&larr; Branch Prediction</a>
-<a class="nav-next" href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">Multicore Cache Coherence &rarr;</a>
-</div>
+<p>License: <a href="LICENSE.txt">MIT</a>.</p>
+<nav class="note-nav" aria-label="Adjacent notes">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">← Branch Prediction</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">Out of Order Execution and Register Renaming →</a>
+</nav>
 </body>
 </html>

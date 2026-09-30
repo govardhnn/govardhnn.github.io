@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Simple Instruction Pipeline</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -37,6 +31,8 @@ id="toc-simple-instruction-pipeline">Simple Instruction Pipeline</a>
 <ul>
 <li><a href="#unpipelined-baselines"
 id="toc-unpipelined-baselines">Unpipelined Baselines</a></li>
+<li><a href="#datapath-and-control"
+id="toc-datapath-and-control">Datapath and Control</a></li>
 <li><a href="#the-classic-5-stage-pipeline"
 id="toc-the-classic-5-stage-pipeline">The Classic 5-Stage
 Pipeline</a></li>
@@ -46,9 +42,8 @@ id="toc-data-hazards-stalls-and-forwarding">Data Hazards: Stalls and
 Forwarding</a></li>
 <li><a href="#control-hazards" id="toc-control-hazards">Control
 Hazards</a></li>
-<li><a href="#real-pipelines-two-four-and-five-stages"
-id="toc-real-pipelines-two-four-and-five-stages">Real Pipelines: Two,
-Four, and Five Stages</a></li>
+<li><a href="#pipeline-depth" id="toc-pipeline-depth">Pipeline
+Depth</a></li>
 <li><a href="#exceptions-in-the-pipeline"
 id="toc-exceptions-in-the-pipeline">Exceptions in the Pipeline</a></li>
 <li><a href="#references" id="toc-references">References</a></li>
@@ -56,18 +51,9 @@ id="toc-exceptions-in-the-pipeline">Exceptions in the Pipeline</a></li>
 </ul>
 </nav>
 <h1 id="simple-instruction-pipeline">Simple Instruction Pipeline</h1>
-<p>A pipeline overlaps the execution of consecutive instructions the way
-an assembly line overlaps cars: each instruction occupies one stage per
-cycle, and every stage works on a different instruction. Pipelining is
-the single largest lever on the Iron Law from
-<a href="../../notes.html#Computer%20Architecture/History%20of%20Computing" target="_top">History
-of Computing</a>: it cuts cycle time by the pipeline depth while keeping
-CPI near 1. This note builds the classic 5-stage RISC pipeline and its
-hazards; deeper machines follow in
-<a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">Out
-of Order Execution and Register Renaming</a> and
-<a href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">Advanced
-Superscalar Architectures</a>.</p>
+<p>A pipeline overlaps instructions across stages. It can shorten the
+clock period and approach one completed instruction per cycle after
+filling; imbalance, register overhead, and hazards limit the gain.</p>
 <h2 id="unpipelined-baselines">Unpipelined Baselines</h2>
 <p><strong>Single-cycle.</strong> Every instruction fetches, decodes,
 executes, accesses memory, and writes back in one long combinational
@@ -75,44 +61,41 @@ pass; the clock period must cover the slowest instruction. Budget for
 <code>lw</code> (the critical path):</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Element</th>
 <th>Delay</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>I-mem read</td>
 <td>250 ps</td>
 </tr>
-<tr>
+<tr class="even">
 <td>register file read</td>
 <td>150 ps</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>ALU (address)</td>
 <td>200 ps</td>
 </tr>
-<tr>
+<tr class="even">
 <td>D-mem read</td>
 <td>250 ps</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>register file write</td>
 <td>150 ps</td>
 </tr>
-<tr>
+<tr class="even">
 <td><strong>Total
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>c</mi></msub><annotation encoding="application/x-tex">T_c</annotation></semantics></math>)</strong></td>
 <td><strong>1000 ps</strong></td>
 </tr>
 </tbody>
 </table>
-<p>An R-type instruction needing only 600 ps still waits the full 1000
-ps: CPI = 1 but
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>c</mi></msub><annotation encoding="application/x-tex">T_c</annotation></semantics></math>
-is terrible, and the adder, memories, and register file each sit idle
-most of the cycle.</p>
+<p>In this simplified budget, an R-type path takes 750 ps but still uses
+the 1000 ps single-cycle clock.</p>
 <p><strong>Multicycle.</strong> Break execution into steps (one per
 cycle), so
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>c</mi></msub><annotation encoding="application/x-tex">T_c</annotation></semantics></math>
@@ -120,9 +103,73 @@ shrinks to the slowest <em>step</em> and each instruction takes only the
 cycles it needs (3-5). Hardware is reused across steps, but CPI rises to
 ~4 and the machine still runs one instruction at a time.</p>
 <p><strong>Pipelined.</strong> Keep the multicycle stage boundaries but
-start a new instruction every cycle. Ideal: CPI = 1 <em>and</em>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>c</mi></msub><mo>≈</mo><mn>1000</mn><mi>/</mi><mn>5</mn><mo>=</mo><mn>200</mn></mrow><annotation encoding="application/x-tex">T_c \approx 1000/5 = 200</annotation></semantics></math>
-ps.</p>
+start a new instruction every cycle. Ideal CPI is 1. For the stage
+delays above,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>c</mi></msub><mo>≥</mo><mo>max</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>250</mn><mo>,</mo><mn>150</mn><mo>,</mo><mn>200</mn><mo>,</mo><mn>250</mn><mo>,</mo><mn>150</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>250</mn></mrow><annotation encoding="application/x-tex">T_c\ge\max(250,150,200,250,150)=250</annotation></semantics></math>
+ps, plus pipeline-register overhead. Dividing total delay by five would
+incorrectly assume balanced stages.</p>
+<h2 id="datapath-and-control">Datapath and Control</h2>
+<p>The <strong>datapath</strong> contains PC, register file, ALU,
+memories, and routing muxes. The <strong>controller</strong> decodes the
+instruction and enables only its intended state changes. For a small
+RV32I subset:</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Instruction</th>
+<th>ALU inputs/work</th>
+<th>Memory action</th>
+<th>Register writeback</th>
+<th>Next PC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>add</code></td>
+<td>rs1 + rs2</td>
+<td>none</td>
+<td>ALU result</td>
+<td>PC + 4</td>
+</tr>
+<tr class="even">
+<td><code>lw</code></td>
+<td>rs1 + immediate</td>
+<td>read word</td>
+<td>loaded value</td>
+<td>PC + 4</td>
+</tr>
+<tr class="odd">
+<td><code>sw</code></td>
+<td>rs1 + immediate</td>
+<td>write rs2</td>
+<td>none</td>
+<td>PC + 4</td>
+</tr>
+<tr class="even">
+<td><code>beq</code></td>
+<td>compare rs1, rs2</td>
+<td>none</td>
+<td>none</td>
+<td>PC + offset if equal; else PC + 4</td>
+</tr>
+</tbody>
+</table>
+<p>Branch-target addition needs an adder or a separate step when the
+main ALU is busy comparing. Single-cycle control is combinational
+decode; multicycle control uses an FSM to sequence shared resources.
+Pipeline control travels with the instruction: destination register,
+write enables, branch information, and valid state must remain aligned
+with its data.</p>
+<p>A <strong>stall</strong> holds selected pipeline registers; a
+<strong>flush</strong> invalidates younger work. Invalid entries must
+not write registers, memory, or other architectural state.</p>
 <h2 id="the-classic-5-stage-pipeline">The Classic 5-Stage Pipeline</h2>
 <figure>
 <img src="figs/pipe5.svg" alt="5-stage pipeline datapath" />
@@ -130,34 +177,34 @@ ps.</p>
 </figure>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Stage</th>
 <th>Work</th>
 <th>For <code>lw x1, 8(x2)</code></th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>IF</td>
 <td>fetch instruction at PC, PC+4</td>
 <td>read I-mem</td>
 </tr>
-<tr>
+<tr class="even">
 <td>ID</td>
 <td>decode, read register file</td>
 <td>read <code>x2</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>EX</td>
 <td>ALU operation</td>
 <td>compute <code>x2+8</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td>MEM</td>
 <td>data memory access</td>
 <td>read D-mem</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>WB</td>
 <td>write result to register file</td>
 <td>write <code>x1</code></td>
@@ -172,10 +219,10 @@ signals down the pipe, so five instructions coexist, one per stage.
 Control is decoded once in ID and travels with the instruction.</p>
 <div class="callout callout-note">
 <div class="callout-title">
-Name signals by stage
+<p>Name signals by stage</p>
 </div>
 <p>The stage-naming discipline from
-<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
+<a href="../../notes.html#Digital%20Design/Synthesis%2C%20Timing%20and%20Power" target="_top">Synthesis,
 Timing and Power</a>’s pipelined adder (<code>a_r[i]</code>, one name
 per stage copy) is exactly how the Wally core writes an entire
 processor: <code>InstrD</code>, <code>PCE</code>, <code>StallM</code>,
@@ -190,9 +237,11 @@ pipeline:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>+</mo><mi>k</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">N + k - 1</annotation></semantics></math>
 cycles (fill and drain cost
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k-1</annotation></semantics></math>).
-Speedup over single-cycle approaches
+Ignoring hazards, speedup is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><msub><mi>T</mi><mrow><mi>s</mi><mi>i</mi><mi>n</mi><mi>g</mi><mi>l</mi><mi>e</mi></mrow></msub><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>+</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>T</mi><mrow><mi>p</mi><mi>i</mi><mi>p</mi><mi>e</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">N T_{single}/((N+k-1)T_{pipe})</annotation></semantics></math>.
+It approaches
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
-but never reaches it:</p>
+only with perfectly balanced stages and no register overhead:</p>
 <ul>
 <li>Stages are unbalanced;
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>c</mi></msub><annotation encoding="application/x-tex">T_c</annotation></semantics></math>
@@ -200,7 +249,7 @@ is set by the slowest stage.</li>
 <li>Each pipeline register adds sequencing overhead
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>p</mi><mi>c</mi><mi>q</mi></mrow></msub><mo>+</mo><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub></mrow><annotation encoding="application/x-tex">t_{pcq} + t_{setup}</annotation></semantics></math>,
 the per-stage tax in
-<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
+<a href="../../notes.html#Digital%20Design/Synthesis%2C%20Timing%20and%20Power" target="_top">Synthesis,
 Timing and Power</a>).</li>
 <li>Hazards insert bubbles, pushing CPI above 1:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>P</mi><mi>I</mi><mo>=</mo><mn>1</mn><mo>+</mo><mtext mathvariant="normal">stall cycles per instruction</mtext></mrow><annotation encoding="application/x-tex">CPI = 1 + \text{stall cycles per instruction}</annotation></semantics></math>.</li>
@@ -214,9 +263,9 @@ fetch) with MEM (load/store) every load; split I/D memories or caches
 (the modified Harvard organization in
 <a href="../../notes.html#Computer%20Architecture/History%20of%20Computing" target="_top">History
 of Computing</a>) remove it. The register file is read in ID and written
-in WB in the same cycle; making writes happen in the first half-cycle
-and reads in the second half (write-first) resolves it for free and
-shortens the RAW distance by one.</p>
+in WB in the same cycle; a write-first register file or explicit
+WB-to-ID bypass permits same-cycle use and shortens the RAW distance by
+one.</p>
 <p><strong>Data</strong>: an instruction needs a value that an older,
 still-in-flight instruction has not yet written (read-after-write, RAW).
 Write-after-read and write-after-write cannot happen in this in-order
@@ -228,12 +277,13 @@ not resolved.</p>
 <h2 id="data-hazards-stalls-and-forwarding">Data Hazards: Stalls and
 Forwarding</h2>
 <pre><code>add x1, x2, x3    # x1 written in WB (cycle 5)
-sub x4, x1, x5    # x1 needed in EX (cycle 4): 2 cycles too early</code></pre>
+sub x4, x1, x5    # x1 needed in ID (cycle 3) without forwarding; EX is cycle 4</code></pre>
 <p><strong>Interlock (stall).</strong> Hazard-detection logic in ID
 compares the source registers <code>rs1</code>/<code>rs2</code> against
-destination registers in flight (ID/EX, EX/MEM). On a match it freezes
-PC and IF/ID and injects a bubble (a NOP’s control signals) into ID/EX.
-Correct but slow: two bubbles for the case above.</p>
+destination registers in flight (ID/EX, EX/MEM). Ignoring unused source
+fields and writes to <code>x0</code>, it freezes PC and IF/ID and
+injects a bubble (a NOP’s control signals) into ID/EX. Correct but slow:
+two bubbles for the case above.</p>
 <p><strong>Forwarding (bypassing).</strong> The value exists in the
 datapath (ALU output at end of EX) long before WB writes it. Route it
 back:</p>
@@ -248,30 +298,20 @@ ignoring <code>x0</code>. With full forwarding, back-to-back ALU
 dependences cost zero cycles.</p>
 <p><strong>The load-use hazard survives forwarding.</strong> A load’s
 data appears at the end of MEM, but a dependent instruction in the next
-slot needs it at the start of its EX, one stage earlier. One bubble is
-unavoidable:</p>
+slot needs it at the start of its EX, one stage earlier. In this timing
+model, the immediately dependent EX operation needs one bubble:</p>
 <figure>
 <img src="figs/pipediag.svg" alt="load-use stall with forwarding" />
 <figcaption aria-hidden="true">load-use stall with
 forwarding</figcaption>
 </figure>
-<p>The compiler hides it by <strong>scheduling</strong> an independent
-instruction into the slot after every load; when it cannot, the
-interlock inserts the bubble (early MIPS instead <em>documented</em> the
-slot and let wrong code be wrong, hence “Microprocessor without
-Interlocked Pipeline Stages”).</p>
-<div class="callout callout-question">
-<div class="callout-title">
-Why can’t more forwarding paths fix the load-use hazard?
-</div>
-<p>Forwarding moves a value backward in <em>space</em> (between stages),
-never backward in <em>time</em>. The load’s data physically does not
-exist until the SRAM read completes at the end of MEM; the dependent EX
-needed it one cycle before that moment. No wire can deliver a value
-before it is computed, so the bubble is fundamental; the only cures are
-scheduling around it or moving the cache access earlier (which lengthens
-the cycle).</p>
-</div>
+<p>Scheduling independent work after a load can hide the load-use delay.
+Otherwise the interlock stalls; an architecturally exposed load-delay
+slot instead makes scheduling part of the ISA contract.</p>
+<p>Forwarding cannot supply data before it exists. The bubble depends on
+this pipeline’s load and consumer timing; other organizations can have
+different load-use penalties. Store-data forwarding also needs its own
+path.</p>
 <h2 id="control-hazards">Control Hazards</h2>
 <p>The branch outcome (<code>beq</code> compare) and target are known in
 EX (cycle 3), but IF needed the next PC in cycle 2. Naively every taken
@@ -286,163 +326,45 @@ taken. Cost = penalty only on taken branches.</li>
 in ID, cutting the taken penalty to 1 cycle at the price of tighter ID
 timing and new RAW hazards against instructions ahead of the
 branch.</li>
-<li><strong>Delay slots</strong>: architecturally declare that the
-instruction after a branch always executes (MIPS, SPARC). Fills ~70% of
-slots with useful work but bakes one specific pipeline depth into the
-ISA forever; abandoned by every modern ISA including
-<a href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V
-ISA</a>.</li>
-<li><strong>Dynamic prediction</strong>: covered in
+<li><strong>Delay slots</strong>: an ISA may require the instruction
+after a branch to execute (e.g. classic MIPS). This exposes a pipeline
+scheduling constraint; RISC-V has no branch delay slots.</li>
+<li><strong>Dynamic prediction</strong>:
 <a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">Branch
-Prediction</a>.</li>
+Prediction</a> describes direction and target prediction.</li>
 </ul>
 <p>Effective CPI example: 20% of instructions are branches, 60% taken,
 2-cycle taken penalty, plus load-use stalls on 25% of the 25% that are
 loads:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>P</mi><mi>I</mi><mo>=</mo><mn>1</mn><mo>+</mo><munder><munder><mrow><mn>0.20</mn><mo>×</mo><mn>0.60</mn><mo>×</mo><mn>2</mn></mrow><mo accent="true">⏟</mo></munder><mn>0.24</mn></munder><mo>+</mo><munder><munder><mrow><mn>0.25</mn><mo>×</mo><mn>0.25</mn><mo>×</mo><mn>1</mn></mrow><mo accent="true">⏟</mo></munder><mn>0.0625</mn></munder><mo>≈</mo><mn>1.30</mn></mrow><annotation encoding="application/x-tex">CPI = 1 + \underbrace{0.20 \times 0.60 \times 2}_{0.24} + \underbrace{0.25 \times 0.25 \times 1}_{0.0625} \approx 1.30</annotation></semantics></math></p>
-<p>A “5x speedup” pipeline delivers ~3.8x. Reducing the branch penalty
-and filling load slots is where the next 30% lives.</p>
-<h2 id="real-pipelines-two-four-and-five-stages">Real Pipelines: Two,
-Four, and Five Stages</h2>
-<p>Five stages is a design point, not a law. Three production
-open-source RISC-V cores show the depth knob at work:</p>
-<figure>
-<img src="figs/pipecompare.svg"
-alt="two, four, and five stage pipelines, aligned to the classic stages" />
-<figcaption aria-hidden="true">two, four, and five stage pipelines,
-aligned to the classic stages</figcaption>
-</figure>
-<table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
-<thead>
-<tr>
-<th></th>
-<th>Ibex</th>
-<th>CV32E40P</th>
-<th>Wally</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Stages</td>
-<td>2 (IF, ID/EX) + optional WB</td>
-<td>4 (IF, ID, EX, WB)</td>
-<td>5 (F, D, E, M, W)</td>
-</tr>
-<tr>
-<td>Taken branch</td>
-<td>2 cycles (1 with a dedicated target adder in IF)</td>
-<td>3-4 cycles, every time (no predictor)</td>
-<td>1 with prediction</td>
-</tr>
-<tr>
-<td>Load-use</td>
-<td>stall in the 3-stage config</td>
-<td>1 cycle</td>
-<td>1 cycle</td>
-</tr>
-<tr>
-<td>Target</td>
-<td>secure microcontroller (OpenTitan)</td>
-<td>embedded DSP</td>
-<td>RV64GC, boots Linux</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>Ibex</strong> folds decode, execute, and register write into
-a single ID/EX cycle: a longer critical path at a lower clock, but
-almost no pipeline registers, no forwarding network, and a 2-cycle taken
-branch. Its optional third stage (WB) buys back clock frequency at the
-price of exactly the machinery this note built: EX→ID and WB→ID
-forwarding paths plus a load-use stall.</li>
-<li><strong>CV32E40P</strong> has no MEM stage at all: the load-store
-unit issues its memory request from EX, and WB exists only to catch load
-data returning a cycle later. ALU results skip WB entirely, forwarding
-straight from EX into ID’s pipeline registers; jumps resolve in ID
-(JAL/JALR), conditional branches in EX.</li>
-<li><strong>Wally</strong> is the textbook machine made synthesizable: a
-literal F/D/E/M/W pipeline in which every RTL signal carries its stage
-letter (<code>StallF</code>, <code>InstrD</code>, <code>PCE</code>),
-scaling from RV32E to an RV64GC application core.</li>
-</ul>
-<div class="callout callout-note">
-<div class="callout-title">
-Depth is a price paid for clock rate
-</div>
-<p>Each stage added buys a shorter critical path and costs pipeline
-registers, forwarding paths, and branch penalty. A 2-stage secure
-microcontroller and a 20-stage laptop core sit at opposite ends of the
-same trade: the fewer the stages, the less speculation machinery is
-worth building, which is why CV32E40P carries no
-<a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">branch
-predictor</a> at all: at 4 stages, the fixed 3-cycle penalty is cheaper
-than the predictor that would remove it.</p>
-</div>
+<p>With the 250 ps stage limit above and no register overhead, speedup
+is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1000</mn><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>250</mn><mo>×</mo><mn>1.3025</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>≈</mo><mn>3.07</mn></mrow><annotation encoding="application/x-tex">1000/(250\times1.3025)\approx3.07</annotation></semantics></math>.
+Register overhead reduces it further.</p>
+<h2 id="pipeline-depth">Pipeline Depth</h2>
+<p>Depth trades shorter combinational stages against register overhead,
+forwarding complexity, and recovery latency. Two-stage microcontrollers
+and deep application cores make different choices. Compare cores only
+with their configuration, memory interface, and definition of “branch
+penalty” specified.</p>
 <h2 id="exceptions-in-the-pipeline">Exceptions in the Pipeline</h2>
 <p>A page fault in MEM, an illegal opcode in ID, and an external
 interrupt can all be pending at once, in different stages. The pipeline
-handles this by tagging, not acting: fault flags ride the pipeline
-registers and are honored only at the commit point, giving precise
-state. Mechanics are in
+handles this by recording faults and deferring architectural effects:
+fault flags ride the pipeline registers and are honored only at the
+commit point, giving precise state. Mechanics are in
 <a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">Exceptions</a>.</p>
 <hr />
 <p>Author: Sai Govardhan (saigov14@gmail.com)</p>
 <h2 id="references">References</h2>
-<p><strong>Courses</strong></p>
 <ul>
-<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lectures 5-6</li>
+<li>Patterson &amp; Hennessy, Computer Organization and Design: RISC-V
+Edition — ch. 4.</li>
 </ul>
-<p><strong>Textbooks</strong></p>
-<ul>
-<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
-Design, RISC-V Edition</em>, ch. 4</li>
-<li>Arvind et al., <em>Computer Architecture: A Constructive
-Approach</em></li>
-</ul>
-<p><strong>Standards, Papers, and Wikipedia</strong></p>
-<ul>
-<li>Wikipedia: Classic RISC pipeline, Operand forwarding</li>
-</ul>
-<p><strong>Microarchitecture References</strong></p>
-<ul>
-<li>lowRISC, <em>Ibex Documentation</em> (pipeline details),
-ibex-core.readthedocs.io</li>
-<li>OpenHW Group, <em>CV32E40P User Manual</em> (pipeline),
-docs.openhwgroup.org</li>
-<li>OpenHW Group, <em>CORE-V Wally</em> (cvw),
-github.com/openhwgroup/cvw</li>
-</ul>
-<pre class="license"><code>MIT License
-
-Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</code></pre>
-<div class="note-nav">
-<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Floating%20Point%20Architecture" target="_top">&larr; Floating Point Architecture</a>
-<a class="nav-next" href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">Branch Prediction &rarr;</a>
-</div>
+<p>License: <a href="LICENSE.txt">MIT</a>.</p>
+<nav class="note-nav" aria-label="Adjacent notes">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Floating%20Point%20Architecture" target="_top">← Floating Point Architecture</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">Branch Prediction →</a>
+</nav>
 </body>
 </html>

@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Memory Model</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -27,9 +21,8 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
-    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span { line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -116,47 +109,40 @@ DRF-SC</a></li>
 </nav>
 <h1 id="memory-model">Memory Model</h1>
 <p><a href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">Coherence</a>
-makes the caches invisible, but it says nothing about the <em>order</em>
-in which one core’s loads and stores become visible to another. A
-<strong>memory consistency model</strong> (memory model) is that missing
-contract: for a multithreaded program, it specifies which values each
-load may return. It is the only part of the memory system the programmer
-actually sees, and unlike single-threaded semantics it deliberately
-allows <em>multiple</em> correct outcomes.</p>
+coordinates copies of individual locations. A <strong>memory consistency
+model</strong> specifies allowed outcomes across locations and threads,
+including which program-order relations must be preserved.</p>
 <h2 id="why-hardware-reorders">Why Hardware Reorders</h2>
-<p>A core that is perfectly correct in isolation reorders memory
-accesses to different addresses, because nothing single-threaded can
-tell:</p>
+<p>Hardware can execute operations out of order only when the resulting
+observations obey the ISA. The following mechanisms can expose
+reorderings between different addresses:</p>
 <table>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Reordering</th>
 <th>Mechanism</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>store → store</td>
-<td>non-FIFO / coalescing store buffer (first store misses, second
-hits)</td>
+<td>non-FIFO store buffering</td>
 </tr>
-<tr>
+<tr class="even">
 <td>load → load</td>
-<td><a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">out-of-order</a>
-issue of independent loads</td>
+<td>independent loads execute out of order</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>load → store</td>
-<td>OOO scheduling; a load slips after a later store</td>
+<td>a later store becomes visible before an older load completes</td>
 </tr>
-<tr>
+<tr class="even">
 <td>store → load</td>
-<td>the <strong>store buffer</strong>: stores wait to drain while
-younger loads read the cache directly</td>
+<td>a younger load bypasses buffered stores to other addresses</td>
 </tr>
 </tbody>
 </table>
@@ -176,21 +162,22 @@ operations appear in program order. Memory behaves as if one switch
 served one core at a time. All four orderings above (load/store →
 load/store) are preserved.</p>
 <p>Two <strong>litmus tests</strong> capture what SC promises (all
-variables initially 0):</p>
+variables initially 0). These are machine-memory pseudocode, not
+unsynchronized C/C++ programs:</p>
 <p><strong>Message passing</strong>: can <code>r2 = 0</code>?</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Core C1</th>
 <th>Core C2</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>S1: <code>data = NEW</code></td>
 <td>L1: <code>r1 = flag</code> (spin until SET)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>S2: <code>flag = SET</code></td>
 <td>L2: <code>r2 = data</code></td>
 </tr>
@@ -200,38 +187,32 @@ variables initially 0):</p>
 <code>r1 = r2 = 0</code>?</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Core C1</th>
 <th>Core C2</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>S1: <code>x = NEW</code></td>
 <td>S2: <code>y = NEW</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td>L1: <code>r1 = y</code></td>
 <td>L2: <code>r2 = x</code></td>
 </tr>
 </tbody>
 </table>
-<p>Under SC, both outcomes are forbidden: any interleaving puts some
-store before both loads. Both outcomes <em>happen on real machines</em>,
-and each corresponds to one row of the reorder table: message passing
-breaks under store→store or load→load reordering, Dekker under
-store→load.</p>
-<p><strong>Implementing SC</strong> does not require the one-at-a-time
-switch. It suffices that each core presents its memory operations in
-program order and the coherence protocol serializes conflicting accesses
-(a snooping bus’s total order makes this almost free). The naive version
-forbids the store buffer, which is why nobody ships it. Aggressive SC
-(MIPS R10000) keeps the speculation machinery: loads execute out of
-order, but the core watches coherence invalidations; if another core
-writes a location a not-yet-retired load already read, the load and
-everything after it is squashed and replayed, exactly the
-<a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">precise-state
-rollback</a> mechanism reused for consistency.</p>
+<p>Under SC, both outcomes are forbidden. Message passing orders the
+data store before the observed flag and subsequent data load. In SB,
+both zero reads would require a cycle in the global order. Both outcomes
+<em>happen on real machines</em>, and each corresponds to one row of the
+reorder table: message passing breaks under store→store or load→load
+reordering, Dekker under store→load.</p>
+<p><strong>Implementing SC</strong> does not require physically serial
+execution. A conservative design completes operations in order; an
+aggressive design speculates and replays when observed ordering would
+violate SC. Coherence alone is insufficient.</p>
 <h2 id="tso-what-x86-actually-does">TSO: What x86 Actually Does</h2>
 <p><strong>Total Store Order</strong> (SPARC, x86, RISC-V’s Ztso option)
 is SC plus one legalized optimization: the FIFO store buffer. Program
@@ -246,23 +227,19 @@ does.</li>
 once (<strong>write atomicity</strong>), so there is a single total
 order of all stores, hence the name.</li>
 </ul>
-<p>When the programmer needs the forbidden ordering (Dekker, spinlock
-handoff), TSO provides a <strong>FENCE</strong> (<code>mfence</code> on
-x86) that drains the store buffer before younger loads execute; atomic
-read-modify-write instructions imply the same. Fences are rare in
-practice, which is why TSO is considered a good compromise: hardware
-keeps its store buffer, and most code never notices.</p>
+<p>For ordinary cacheable x86 memory, <code>mfence</code> or an
+appropriately ordered locked operation can enforce Store→Load ordering.
+Details differ for device memory, non-temporal accesses, and other TSO
+ISAs.</p>
 <h2 id="relaxed-models">Relaxed Models</h2>
-<p>SC and TSO still force each core to present most operations in order,
-which serializes cache-miss latency
-(<a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches
-and Virtual Memory</a> misses vary 10-100x). Relaxed models let the
-hardware overlap and reorder everything by default; the programmer marks
-the few places where order matters. Two idioms cover almost all of
-them:</p>
+<p>SC and TSO constrain observable ordering, even when implementations
+overlap misses speculatively. Relaxed models preserve selected
+dependency, same-address, and synchronization orders while allowing
+other reorderings; the programmer marks the few places where order
+matters. Two idioms cover almost all of them:</p>
 <ul>
-<li><strong>FENCE</strong> instructions: order everything before against
-everything after (weak ordering / the Primer’s XC model).</li>
+<li><strong>FENCE</strong> instructions: order selected predecessor and
+successor classes (weak ordering / the Primer’s XC model).</li>
 <li><strong>Acquire/release</strong> annotations (release consistency):
 a lock <em>acquire</em> is a one-way barrier downward (later accesses
 cannot float above it), a <em>release</em> is one-way upward (earlier
@@ -275,41 +252,43 @@ alt="acquire and release as one-way barriers: code may move into the critical se
 <figcaption aria-hidden="true">acquire and release as one-way barriers:
 code may move into the critical section, never out</figcaption>
 </figure>
-<p>The asymmetry is the whole point. A full fence forbids motion in both
-directions and stalls both ways; acquire/release each forbid only the
-direction that could leak the critical section, so the hardware keeps
-every reordering that does not matter. Independent code migrating
-<em>into</em> the locked region is harmless (it just executes under the
-lock); anything escaping <em>out</em> would run unprotected.</p>
+<p>Acquire prevents subsequent protected accesses moving before
+acquisition; release prevents earlier protected accesses moving after
+release. These ordering descriptions are not blanket permission to move
+arbitrary operations across synchronization.</p>
 <h3 id="rvwmo">RVWMO</h3>
-<p>RISC-V’s default model
-(<a href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V
-ISA</a>, the A and Zam extensions interact with it) combines both
-idioms:</p>
+<p>RISC-V’s default model is <strong>RVWMO</strong>. Base memory
+operations, atomics, and fences obey its preserved-program-order
+rules:</p>
 <ul>
-<li><code>fence rw,rw</code> is the full barrier; weaker variants
-(<code>fence r,r</code>, <code>fence w,w</code>, <code>fence.tso</code>)
-order only the named combinations.</li>
-<li>Loads can carry <strong>acquire</strong>, stores
-<strong>release</strong> (in RCpc or RCsc strength); AMOs can carry
-both, making lock implementations fence-free.</li>
-<li><strong>Dependencies order</strong>: unlike a pure fence model, an
-address, data, or control dependency from a load to a later access
-enforces ordering (pointer-chasing publishes correctly without a fence,
-and out-of-thin-air results from load buffering are forbidden).</li>
-<li>Same-address accesses keep TSO-like rules (load→store, store→store
-ordered; store→load not).</li>
+<li><code>fence rw,rw</code> orders prior memory reads/writes before
+subsequent memory reads/writes. <code>fence r,r</code> and
+<code>fence w,w</code> select subsets; <code>fence.tso</code> omits
+ordinary Store→Load ordering. Device I/O needs the appropriate
+<code>i</code>/<code>o</code> classes.</li>
+<li>The A extension gives LR/SC and AMOs
+<code>.aq</code>/<code>.rl</code> ordering bits. Ordinary base
+loads/stores do not have these bits; the separate Zalasr extension adds
+load-acquire/store-release instructions.</li>
+<li><strong>Dependencies</strong>: specified address and data
+dependencies preserve order. A control dependency alone orders a later
+store, not a later load. Do not replace synchronization with a branch
+and assume message passing is safe.</li>
+<li>Overlapping-address rules preserve specified coherence relations;
+consult the formal rules rather than treating all same-address pairs
+alike.</li>
 </ul>
 <p>Arm (AArch64) is a close cousin (weak + acquire/release + dependency
 ordering); IBM Power is weaker still (stores may become visible to
 different cores at different times, i.e. no write atomicity).</p>
 <h3 id="atomics-amo-and-lrsc">Atomics: AMO and LR/SC</h3>
-<p>RISC-V offers two RMW primitives: single-instruction
-<strong>AMOs</strong> (<code>amoadd</code>, <code>amoswap</code>: load
-and store adjacent in the global order) and the <strong>LR/SC</strong>
-pair, where <code>sc</code> succeeds only if no other store touched the
-reserved address since the <code>lr</code> (the general building block
-for lock-free operations, and the RISC answer to compare-and-swap). A
+<p>The RISC-V A extension provides two RMW mechanisms:
+single-instruction <strong>AMOs</strong> (<code>amoadd</code>,
+<code>amoswap</code>: load and store adjacent in the global order) and
+the <strong>LR/SC</strong> pair, where <code>sc</code> succeeds only if
+the reservation remains valid; conflicting writes to the reservation set
+cause failure, and other failures are permitted (a building block for
+lock-free operations; Zacas separately provides compare-and-swap). A
 spinlock in RVWMO:</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode asm"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>        li   t0<span class="op">,</span> <span class="dv">1</span></span>
@@ -323,73 +302,39 @@ class="sourceCode asm"><code class="sourceCode fasm"><span id="cb1-1"><a href="#
 <code>.rl</code> from leaking downward; no full fence needed.</p>
 <h2 id="the-programmers-contract-drf-sc">The Programmer’s Contract:
 DRF-SC</h2>
-<p>Programmers do not reason about RVWMO directly; languages define the
-model one level up. C, C++, Java, and Rust all promise <strong>SC for
-data-race-free programs (DRF-SC)</strong>: if every conflicting access
-pair is separated by synchronization (locks, atomics), the program
-behaves as if the hardware were SC, and the compiler + runtime insert
-the right fences/annotations underneath. Programs <em>with</em> data
-races get undefined behavior (C/C++) or very weak guarantees (Java). So
-the division of labor is:</p>
+<p>Language memory models govern source programs; ISA models govern
+machine instructions. Compilers must preserve the language contract when
+mapping between them.</p>
 <ul>
-<li>hardware: relaxed model + cheap ordering primitives,</li>
-<li>compiler/library: map <code>mutex</code> and <code>atomic</code>
-onto them,</li>
-<li>programmer: no data races, and SC reasoning for free.</li>
+<li>Mutex-protected code and programs using appropriate sequentially
+consistent atomics support SC-style reasoning.</li>
+<li>C/C++ relaxed atomics avoid data races but do <strong>not</strong>
+imply SC. Acquire/release publishes prior writes only through the
+required synchronization relation.</li>
+<li>Unsynchronized conflicting non-atomic accesses are data races and
+cause undefined behavior in C/C++ and Rust; Java defines different
+guarantees.</li>
 </ul>
-<p>The lesson mirrors the whole chapter stack: coherence keeps the
-caches honest per location, consistency defines cross-location order,
-and the strength chosen (SC, TSO, RVWMO) is a bandwidth-and-complexity
-trade just like every other one in
-<a href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">Advanced
-Superscalar Architectures</a>.</p>
+<p>“No data race” alone is not a universal promise of SC for every
+language-level atomic ordering.</p>
 <hr />
 <p>Author: Sai Govardhan (saigov14@gmail.com)</p>
 <h2 id="references">References</h2>
-<p><strong>Courses</strong></p>
 <ul>
-<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lectures 16, 20</li>
+<li>Nagarajan, Sorin, Hill &amp; Wood, A Primer on Memory Consistency
+and Cache Coherence, 2nd ed. — ch. 3–5.</li>
+<li>RISC-V ISA Manual, local 20260618 intermediate release — RVWMO, A,
+and Zalasr.</li>
+<li><a href="https://eel.is/c++draft/intro.races">C++ draft: data races
+and synchronization</a></li>
+<li><a
+href="https://docs.riscv.org/reference/isa/unpriv/zalasr.html">RISC-V
+Zalasr specification</a></li>
 </ul>
-<p><strong>Textbooks</strong></p>
-<ul>
-<li>D. Sorin, M. Hill &amp; D. Wood, <em>A Primer on Memory Consistency
-and Cache Coherence</em>, 2nd ed., ch. 3-5</li>
-</ul>
-<p><strong>Standards, Papers, and Wikipedia</strong></p>
-<ul>
-<li><em>The RISC-V Instruction Set Manual, Volume I</em>, ch. 14 (RVWMO)
-and A extension</li>
-<li>L. Lamport, <em>How to Make a Multiprocessor Computer That Correctly
-Executes Multiprocess Programs</em> (1979)</li>
-<li>S. Adve &amp; M. Hill, <em>Weak Ordering: A New Definition</em>
-(1990)</li>
-<li>Wikipedia: Memory ordering, Sequential consistency</li>
-</ul>
-<pre class="license"><code>MIT License
-
-Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</code></pre>
-<div class="note-nav">
-<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">&larr; Multicore Cache Coherence</a>
-<a class="nav-next" href="../../notes.html#Computer%20Architecture/Advanced%20Superscalar%20Architectures" target="_top">Advanced Superscalar Architectures &rarr;</a>
-</div>
+<p>License: <a href="LICENSE.txt">MIT</a>.</p>
+<nav class="note-nav" aria-label="Adjacent notes">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Multicore%20Cache%20Coherence" target="_top">← Multicore Cache Coherence</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">Exceptions →</a>
+</nav>
 </body>
 </html>

@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>RISC-V ISA</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -27,9 +21,8 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
-    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span { line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -113,64 +106,62 @@ Convention</a></li>
 </ul>
 </nav>
 <h1 id="risc-v-isa">RISC-V ISA</h1>
-<p>RISC-V (Berkeley, 2010) is an open, royalty-free ISA designed from
-the lessons in
-<a href="../../notes.html#Computer%20Architecture/History%20of%20Computing" target="_top">History
-of Computing</a>: a minimal base integer ISA that a student can
-implement in a term, plus optional standard extensions, with the
-encoding frozen forever. It is the ISA these notes use everywhere; this
-note is the reference.</p>
+<p>RISC-V is an open ISA with base integer instruction sets and modular
+extensions. These notes use RV32I/RV64I conventions unless specified; an
+implementation supports only its declared extensions and privilege
+modes.</p>
 <p>Design decisions and their reasons:</p>
 <table>
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 37%" />
+<col style="width: 62%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Decision</th>
 <th>Why</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>load-store, 32 registers</td>
 <td>simple pipelines, compiler-friendly
 (<a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">Simple
 Instruction Pipeline</a>)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>no condition codes</td>
-<td>no implicit dependencies to rename or track between
-instructions</td>
+<td>no integer condition-code register to rename or save</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>compare-and-branch in one instruction</td>
 <td>no flags to save on context switch, fewer instructions</td>
 </tr>
-<tr>
+<tr class="even">
 <td>no delay slots</td>
-<td>nothing microarchitectural leaks into the ISA</td>
+<td>no architecturally required instruction after a branch</td>
 </tr>
-<tr>
-<td>fixed 32-bit instructions (16-bit with C)</td>
-<td>trivial fetch/decode; variable length only as compression</td>
+<tr class="odd">
+<td>32-bit base instructions, 16-bit with C</td>
+<td>regular register fields; the encoding also reserves longer
+instructions</td>
 </tr>
-<tr>
+<tr class="even">
 <td>modular extensions</td>
 <td>one ISA from microcontroller to server, no forced baggage</td>
 </tr>
 </tbody>
 </table>
 <h2 id="registers">Registers</h2>
-<p>32 integer registers (<code>x0-x31</code>), 64-bit in RV64, plus
-<code>pc</code>. <code>x0</code> is hardwired zero: reading gives 0,
-writes vanish. That one trick synthesizes many instructions
-(<code>mv</code>, <code>nop</code>, <code>neg</code>, compares against
-zero) from existing ones.</p>
+<p>RV32I/RV64I have 32 integer registers (<code>x0-x31</code>), XLEN
+bits each, plus <code>pc</code>. E bases have 16 integer registers.
+<code>x0</code> is hardwired zero: reading gives 0, writes vanish. That
+one trick synthesizes many instructions (<code>mv</code>,
+<code>nop</code>, <code>neg</code>, compares against zero) from existing
+ones.</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Reg</th>
 <th>ABI name</th>
 <th>Role</th>
@@ -178,49 +169,49 @@ zero) from existing ones.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>x0</td>
 <td>zero</td>
 <td>constant 0</td>
 <td>-</td>
 </tr>
-<tr>
+<tr class="even">
 <td>x1</td>
 <td>ra</td>
 <td>return address</td>
 <td>caller</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>x2</td>
 <td>sp</td>
 <td>stack pointer</td>
 <td>callee</td>
 </tr>
-<tr>
+<tr class="even">
 <td>x3, x4</td>
 <td>gp, tp</td>
 <td>global / thread pointer</td>
 <td>-</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>x5-x7, x28-x31</td>
 <td>t0-t6</td>
 <td>temporaries</td>
 <td>caller</td>
 </tr>
-<tr>
+<tr class="even">
 <td>x8, x9</td>
 <td>s0/fp, s1</td>
 <td>saved / frame pointer</td>
 <td>callee</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>x10-x17</td>
 <td>a0-a7</td>
 <td>arguments, a0-a1 returns</td>
 <td>caller</td>
 </tr>
-<tr>
+<tr class="even">
 <td>x18-x27</td>
 <td>s2-s11</td>
 <td>saved</td>
@@ -229,75 +220,71 @@ zero) from existing ones.</p>
 </tbody>
 </table>
 <h2 id="instruction-formats">Instruction Formats</h2>
-<p>Six formats, all 32 bits, and the register fields never move:
-<code>rs1</code>, <code>rs2</code>, <code>rd</code> are always in the
-same bit positions, so the register file can be read before the
-instruction type is even known, and the sign bit of every immediate is
-always bit 31 (one sign-extension circuit, no critical-path decode):</p>
+<p>The base encodings use R/I/S/U formats plus B/J immediate variants.
+Register fields stay at fixed positions where present. Most signed
+immediates use instruction bit 31 as the sign bit; shift amounts and CSR
+immediate operands are exceptions.</p>
 <figure>
-<img src="figs/rvformats.svg" alt="RISC-V instruction formats|609" />
-<figcaption aria-hidden="true">RISC-V instruction
-formats|609</figcaption>
+<img src="figs/rvformats.svg" alt="RISC-V instruction formats" />
+<figcaption aria-hidden="true">RISC-V instruction formats</figcaption>
 </figure>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Format</th>
 <th>Used by</th>
 <th>Immediate</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>R</td>
 <td>register-register ALU</td>
 <td>none</td>
 </tr>
-<tr>
+<tr class="even">
 <td>I</td>
 <td>ALU immediates, loads, <code>jalr</code></td>
 <td>12-bit signed</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>S</td>
 <td>stores</td>
 <td>12-bit signed, split around rs2/rs1</td>
 </tr>
-<tr>
+<tr class="even">
 <td>B</td>
 <td>branches</td>
-<td>13-bit signed, ×2, scrambled</td>
+<td>13-bit signed byte offset, bit 0 fixed to 0</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>U</td>
 <td><code>lui</code>, <code>auipc</code></td>
 <td>upper 20 bits</td>
 </tr>
-<tr>
+<tr class="even">
 <td>J</td>
 <td><code>jal</code></td>
-<td>21-bit signed, ×2, scrambled</td>
+<td>21-bit signed byte offset, bit 0 fixed to 0</td>
 </tr>
 </tbody>
 </table>
 <p>The B/J immediates look scrambled precisely to keep every other bit
-in its I/S position. Reconstructing the B-type immediate:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mi>i</mi><mi>m</mi><mi>m</mi><mo stretchy="false" form="prefix">[</mo><mn>12</mn><mo stretchy="false" form="postfix">]</mo><mo>,</mo><mi>i</mi><mi>m</mi><mi>m</mi><mo stretchy="false" form="prefix">[</mo><mn>11</mn><mo stretchy="false" form="postfix">]</mo><mo>,</mo><mi>i</mi><mi>m</mi><mi>m</mi><mo stretchy="false" form="prefix">[</mo><mn>10</mn><mo>:</mo><mn>5</mn><mo stretchy="false" form="postfix">]</mo><mo>,</mo><mi>i</mi><mi>m</mi><mi>m</mi><mo stretchy="false" form="prefix">[</mo><mn>4</mn><mo>:</mo><mn>1</mn><mo stretchy="false" form="postfix">]</mo><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{imm[12], imm[11], imm[10{:}5], imm[4{:}1], 0\}</annotation></semantics></math>
+in its I/S position. Reconstructing the B-type immediate (the low zero
+is already included in its 13-bit byte offset):
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mi>i</mi><mi>m</mi><mi>m</mi><mrow><mo stretchy="true" form="prefix">[</mo><mn>12</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo><mi>i</mi><mi>m</mi><mi>m</mi><mrow><mo stretchy="true" form="prefix">[</mo><mn>11</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo><mi>i</mi><mi>m</mi><mi>m</mi><mrow><mo stretchy="true" form="prefix">[</mo><mn>10</mn><mo>:</mo><mn>5</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo><mi>i</mi><mi>m</mi><mi>m</mi><mrow><mo stretchy="true" form="prefix">[</mo><mn>4</mn><mo>:</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{imm[12], imm[11], imm[10{:}5], imm[4{:}1], 0\}</annotation></semantics></math>
 = bits
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mn>31</mn><mo>,</mo><mn>7</mn><mo>,</mo><mn>30</mn><mo>:</mo><mn>25</mn><mo>,</mo><mn>11</mn><mo>:</mo><mn>8</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{31, 7, 30{:}25, 11{:}8\}</annotation></semantics></math>
 followed by a hardwired 0 (branch targets are even), then sign-extend
 from bit 12.</p>
-<p>The hardware payoff, bit by bit: because each immediate bit has at
-most a few fixed source positions across all five immediate formats, the
-entire 32-bit immediate assembles through mostly 2:1 muxes, one
-shared-source range that needs no mux at all, and a single 4:1 at the
-worst bit. A format-agnostic encoding would need a shifter here; RISC-V
-needs wires:</p>
+<p>Rotating B/J immediate bits reuses source positions and reduces
+immediate-generation muxing. Exact mux sizes depend on supported formats
+and synthesis:</p>
 <figure>
 <img src="figs/rvimm.svg"
-alt="the immediate mux, per bit range: mostly 2:1, one 4:1, nothing bigger|422" />
+alt="the immediate mux, per bit range: mostly 2:1, one 4:1, nothing bigger" />
 <figcaption aria-hidden="true">the immediate mux, per bit range: mostly
-2:1, one 4:1, nothing bigger|422</figcaption>
+2:1, one 4:1, nothing bigger</figcaption>
 </figure>
 <h2 id="the-instruction-classes">The Instruction Classes</h2>
 <p><strong>ALU</strong>: <code>add/sub/and/or/xor</code>, shifts
@@ -311,50 +298,54 @@ signed offset. <code>lw x5, 8(x2)</code>; sized variants
 (zero-extending), <code>sb/sh/sw/sd</code>.</p>
 <p><strong>Branches</strong>:
 <code>beq/bne/blt/bge/bltu/bgeu rs1, rs2, offset</code>, comparing two
-registers directly. PC-relative ±4 KiB.</p>
+registers directly. PC-relative offsets from −4096 to +4094 bytes, in
+steps of 2.</p>
 <p><strong>Jumps</strong>: <code>jal rd, offset</code> (call: rd gets
 PC+4, typically <code>ra</code>), <code>jalr rd, offset(rs1)</code>
-(indirect: returns, function pointers, long calls).</p>
-<p><strong>Constants and addressing idioms</strong>: <code>lui</code>
-loads a 20-bit upper immediate; <code>auipc</code> adds one to the PC.
-Any 32-bit constant = <code>lui</code> + <code>addi</code>; any
-PC-relative address = <code>auipc</code> + 12-bit offset, which makes
-all code position-independent by construction.</p>
+computes <code>(rs1 + signed_offset) &amp; ~1</code> and writes PC+4 to
+<code>rd</code> (32-bit form).</p>
+<p><strong>Constants/addressing</strong>: <code>lui</code> forms an
+upper immediate; <code>auipc</code> adds one to the current PC. A
+following signed 12-bit operation supplies the low part, with carry
+adjustment in the upper immediate. These pairs have finite reach, not
+arbitrary address range. In RV64, constructing a sign-extended 32-bit
+constant may require <code>addiw</code>; use <code>li</code> and
+relocation-aware assembler forms.</p>
 <p><strong>Pseudo-instructions</strong> the assembler expands:</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Written</th>
 <th>Actual</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>li x5, 42</code></td>
 <td><code>addi x5, x0, 42</code> (or
 <code>lui</code>+<code>addi</code>)</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>mv x5, x6</code></td>
 <td><code>addi x5, x6, 0</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>not x5, x6</code></td>
 <td><code>xori x5, x6, -1</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>j label</code></td>
 <td><code>jal x0, label</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>call f</code></td>
 <td><code>auipc ra</code> + <code>jalr ra</code></td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>ret</code></td>
 <td><code>jalr x0, 0(ra)</code></td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>nop</code></td>
 <td><code>addi x0, x0, 0</code></td>
 </tr>
@@ -371,22 +362,22 @@ restore them before returning.</p>
 <figcaption aria-hidden="true">stack frame layout</figcaption>
 </figure>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode asm"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a># <span class="bu">int</span> sumsq<span class="op">(</span>int a<span class="op">,</span> int b<span class="op">)</span> <span class="op">{</span> return helper<span class="op">(</span>a<span class="op">*</span>a<span class="op">)</span> <span class="op">+</span> b<span class="co">; }</span></span>
+class="sourceCode asm"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a># RV64IM<span class="op">:</span> int sumsq<span class="op">(</span>int a<span class="op">,</span> int b<span class="op">)</span> <span class="op">{</span> return helper<span class="op">(</span>a<span class="op">*</span>a<span class="op">)</span> <span class="op">+</span> b<span class="co">; }</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sumsq:</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    addi <span class="kw">sp</span><span class="op">,</span> <span class="kw">sp</span><span class="op">,</span> <span class="op">-</span><span class="dv">16</span>      <span class="op">#</span> prologue<span class="op">:</span> grow stack <span class="op">(</span><span class="dv">16</span> B aligned<span class="op">)</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    sd   ra<span class="op">,</span> <span class="dv">8</span><span class="op">(</span><span class="kw">sp</span><span class="op">)</span>        <span class="op">#</span> save return address <span class="op">(</span>we make a call<span class="op">)</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    sd   s0<span class="op">,</span> <span class="dv">0</span><span class="op">(</span><span class="kw">sp</span><span class="op">)</span>        <span class="op">#</span> save a callee<span class="op">-</span>saved reg</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    mv   s0<span class="op">,</span> a1           <span class="op">#</span> b survives the call in s0</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mul</span>  a0<span class="op">,</span> a0<span class="op">,</span> a0       <span class="op">#</span> a<span class="op">*</span>a into argument register</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    mulw a0<span class="op">,</span> a0<span class="op">,</span> a0       <span class="op">#</span> a<span class="op">*</span>a into argument register</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">call</span> helper           <span class="op">#</span> clobbers t<span class="op">*,</span> a<span class="op">*,</span> ra</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span>  a0<span class="op">,</span> a0<span class="op">,</span> s0       <span class="op">#</span> result <span class="op">+=</span> b</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    addw a0<span class="op">,</span> a0<span class="op">,</span> s0       <span class="op">#</span> result <span class="op">+=</span> b</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    ld   s0<span class="op">,</span> <span class="dv">0</span><span class="op">(</span><span class="kw">sp</span><span class="op">)</span>        <span class="op">#</span> epilogue<span class="op">:</span> restore</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    ld   ra<span class="op">,</span> <span class="dv">8</span><span class="op">(</span><span class="kw">sp</span><span class="op">)</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    addi <span class="kw">sp</span><span class="op">,</span> <span class="kw">sp</span><span class="op">,</span> <span class="dv">16</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div>
 <h2 id="extensions">Extensions</h2>
-<p>The base is RV32I or RV64I (~47 instructions). Everything else is
-opt-in:</p>
+<p>Select a base ISA and supported extensions; RV32I and RV64I have
+different instruction sets:</p>
 <table>
 <colgroup>
 <col style="width: 33%" />
@@ -394,51 +385,51 @@ opt-in:</p>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Ext</th>
 <th>Adds</th>
 <th>Notes</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>M</td>
 <td><code>mul/mulh/div/rem</code></td>
 <td>multiply/divide</td>
 </tr>
-<tr>
+<tr class="even">
 <td>A</td>
 <td><code>lr/sc</code>, <code>amoadd/amoswap/...</code></td>
 <td>atomics for the
 <a href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">Memory
 Model</a></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>F, D</td>
 <td>single/double FP, <code>f0-f31</code></td>
 <td><a href="../../notes.html#Computer%20Architecture/Floating%20Point%20Architecture" target="_top">Floating
 Point Architecture</a></td>
 </tr>
-<tr>
+<tr class="even">
 <td>C</td>
 <td>16-bit compressed forms</td>
 <td>~25-30% code size cut; frequent ops, popular regs</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>V</td>
 <td>vector registers, <code>vsetvli</code>, vector ops</td>
 <td>true vector model
-(<a href="../../notes.html#Computer%20Architecture/Flynn's%20Taxonomy" target="_top">Flynn’s
+(<a href="../../notes.html#Computer%20Architecture/Flynn%27s%20Taxonomy" target="_top">Flynn's
 Taxonomy</a>)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Zicsr</td>
 <td><code>csrrw/csrrs/csrrc</code></td>
 <td>CSR access, prerequisite for
 <a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">Exceptions</a>
 handling</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>B (Zba/Zbb/Zbs)</td>
 <td>bit-manipulation</td>
 <td>address gen, popcount, rotates</td>
@@ -448,24 +439,12 @@ handling</td>
 <p><strong>G</strong> = IMAFD + Zicsr + Zifencei; a Linux-class core is
 typically <strong>RV64GC</strong>. Profiles (RVA23 etc.) bundle
 extensions so software has a stable target.</p>
-<div class="callout callout-example">
-<div class="callout-title">
-What a custom extension looks like
-</div>
-<p>CV32E40P’s Xpulp extensions show extensibility in action:
-zero-overhead hardware loops via CSRs, post-increment addressing
-(<code>cv.lb rD,(rs1),Imm</code>), compare-with-immediate branches, and
-SIMD on packed bytes, each worth real cycles in DSP loops. The cost is
-equally visible: every one needs its own <code>-march=...xcv*</code>
-toolchain flag, and code using them runs nowhere else.</p>
-</div>
-<p><strong>Privilege</strong> in brief: three modes, M (machine,
-mandatory, firmware), S (supervisor, OS with virtual memory from
-<a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches
-and Virtual Memory</a>), U (user). ~4096 CSR addresses carry per-mode
-state (<code>mstatus</code>, <code>mtvec</code>, <code>satp</code>, …);
-trap mechanics are in
-<a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">Exceptions</a>.</p>
+<p><strong>Privilege</strong>: M-mode is mandatory; U/S and
+virtualization support are optional. The 12-bit CSR address space has
+4096 encodings, not 4096 implemented registers.
+<a href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">Exceptions</a>
+covers trap entry and return. Custom extensions need matching hardware
+and toolchain support.</p>
 <h2 id="compared">Compared</h2>
 <table>
 <colgroup>
@@ -475,7 +454,7 @@ trap mechanics are in
 <col style="width: 25%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th></th>
 <th>RISC-V</th>
 <th>ARMv8 (AArch64)</th>
@@ -483,37 +462,37 @@ trap mechanics are in
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>encoding</td>
 <td>32-bit (+16 C)</td>
 <td>32-bit fixed</td>
 <td>1-15 B variable</td>
 </tr>
-<tr>
+<tr class="even">
 <td>integer regs</td>
-<td>32</td>
+<td>32 (I base; x0 fixed)</td>
 <td>31 + SP</td>
-<td>16</td>
+<td>16 in the baseline ISA</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>flags</td>
 <td>none</td>
 <td>NZCV</td>
 <td>EFLAGS</td>
 </tr>
-<tr>
+<tr class="even">
 <td>addressing modes</td>
 <td>base+offset</td>
 <td>base+offset, indexed, pre/post</td>
 <td>base+index×scale+disp</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>memory model</td>
 <td>RVWMO (weak)</td>
 <td>weak</td>
 <td>TSO (strong)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>lineage</td>
 <td>clean-slate 2010</td>
 <td>evolved 1985-</td>
@@ -529,42 +508,16 @@ the C extension gets both.</p>
 <hr />
 <p>Author: Sai Govardhan (saigov14@gmail.com)</p>
 <h2 id="references">References</h2>
-<p><strong>Textbooks</strong></p>
 <ul>
-<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
-Design, RISC-V Edition</em>, ch. 2</li>
-<li>D. Patterson &amp; A. Waterman, <em>The RISC-V Reader</em></li>
+<li>Patterson &amp; Hennessy, Computer Organization and Design: RISC-V
+Edition — ch. 2.</li>
+<li>RISC-V ISA Manual, local 20260618 intermediate release — base ISA
+and extensions.</li>
 </ul>
-<p><strong>Standards, Papers, and Wikipedia</strong></p>
-<ul>
-<li><em>The RISC-V Instruction Set Manual, Volume I: Unprivileged
-ISA</em></li>
-<li>Wikipedia: RISC-V</li>
-</ul>
-<pre class="license"><code>MIT License
-
-Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</code></pre>
-<div class="note-nav">
-<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Exceptions" target="_top">&larr; Exceptions</a>
-<a class="nav-next" href="../../notes.html#Computer%20Architecture/Main%20Memory%20and%20Storage" target="_top">Main Memory and Storage &rarr;</a>
-</div>
+<p>License: <a href="LICENSE.txt">MIT</a>.</p>
+<nav class="note-nav" aria-label="Adjacent notes">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Instruction%20Set%20Architecture" target="_top">← Instruction Set Architecture</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Benchmarking" target="_top">Benchmarking →</a>
+</nav>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
@@ -51,48 +51,43 @@
       }
     pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
     div.sourceCode
-      {  background-color: #f8f8f8; }
+      {   }
     @media screen {
     pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
     }
-    code span.al { color: #ef2929; } /* Alert */
-    code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #204a87; } /* Attribute */
-    code span.bn { color: #0000cf; } /* BaseN */
-    code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4e9a06; } /* Char */
-    code span.cn { color: #8f5902; } /* Constant */
-    code span.co { color: #8f5902; font-style: italic; } /* Comment */
-    code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
-    code span.dt { color: #204a87; } /* DataType */
-    code span.dv { color: #0000cf; } /* DecVal */
-    code span.er { color: #a40000; font-weight: bold; } /* Error */
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
     code span.ex { } /* Extension */
-    code span.fl { color: #0000cf; } /* Float */
-    code span.fu { color: #204a87; font-weight: bold; } /* Function */
-    code span.im { } /* Import */
-    code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
-    code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
-    code span.ot { color: #8f5902; } /* Other */
-    code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
-    code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
-    code span.ss { color: #4e9a06; } /* SpecialString */
-    code span.st { color: #4e9a06; } /* String */
-    code span.va { color: #000000; } /* Variable */
-    code span.vs { color: #4e9a06; } /* VerbatimString */
-    code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="../note-style.css" />
-  <script
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-  type="text/javascript"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">Sequential Circuits</h1>
-</header>
 <nav id="TOC" role="doc-toc">
 <ul>
 <li><a href="#sequential-circuits"
@@ -114,45 +109,40 @@ Registers</a></li>
 <li><a href="#pipelining" id="toc-pipelining">Pipelining</a></li>
 <li><a href="#finite-state-machines"
 id="toc-finite-state-machines">Finite State Machines</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
 </ul>
 </nav>
 <h1 id="sequential-circuits">Sequential Circuits</h1>
 <h2 id="introduction">Introduction</h2>
-<p>A <strong>sequential circuit</strong>’s outputs depend on the current
-inputs <em>and</em> on stored state, a summary of the input history (a
-TV tuner must remember the current channel to act on “channel up”).
-Structurally it is combinational logic plus memory elements in a
-feedback loop: state feeds the logic, the logic computes the next
-state.</p>
-<p>Two disciplines exist:</p>
+<p>A <strong>sequential circuit</strong> combines stored state with
+logic that computes outputs and next state.</p>
 <ul>
-<li><strong>Synchronous</strong>: state lives in flip-flops that all
-update on the edge of a shared clock. Between edges, signals may glitch
-and settle freely; only the settled value at the next edge matters. The
-slowest register-to-register path bounds the clock frequency.</li>
-<li><strong>Asynchronous</strong>: no clock, state changes ride directly
-on input changes through gate feedback and delays. Response is
-immediate, but correctness depends on <strong>races</strong>: when two
-signals change close together, which one wins a feedback loop can decide
-the next state, so behavior can hinge on physical delays.</li>
+<li><strong>Synchronous</strong>: state updates on clock edges
+(flip-flops) or during controlled clock phases (latches). Setup and hold
+constraints must be met.</li>
+<li><strong>Asynchronous</strong>: state updates without a shared clock;
+correctness depends on delays and handshake protocols.</li>
 </ul>
-<p>Race conditions and hazard sensitivity make asynchronous design hard,
-so virtually all practical design is synchronous, with asynchronous
-techniques reserved for interfaces between clock domains or reset
-circuitry. The rest of this note is the synchronous toolkit. Latches and
-flip-flops themselves are small asynchronous circuits, designed once,
-characterized carefully, and reused as black boxes.</p>
+<p>The following examples use edge-triggered synchronous design.</p>
 <h2 id="latches">Latches</h2>
 <p>A bistable holds one bit using feedback. Cross-coupling two NOR gates
-gives an SR latch: <span class="math inline">\(S\)</span> sets <span
-class="math inline">\(Q=1\)</span>, <span
-class="math inline">\(R\)</span> resets <span
-class="math inline">\(Q=0\)</span>, both low holds, both high is illegal
-(<span class="math inline">\(Q\)</span> and <span
-class="math inline">\(\bar{Q}\)</span> both driven low, and releasing
-<span class="math inline">\(S\)</span> and <span
-class="math inline">\(R\)</span> together races).</p>
+gives an SR latch:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
+sets
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">Q=1</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math>
+resets
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">Q=0</annotation></semantics></math>,
+both low holds, both high is illegal
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>Q</mi></mrow><annotation encoding="application/x-tex">\bar{Q}</annotation></semantics></math>
+both driven low, and releasing
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math>
+together races).</p>
 <figure>
 <img src="figs/srlatch.svg"
 alt="SR latch from cross-coupled NOR gates" />
@@ -162,9 +152,9 @@ gates</figcaption>
 <table>
 <thead>
 <tr class="header">
-<th><span class="math inline">\(S\)</span></th>
-<th><span class="math inline">\(R\)</span></th>
-<th><span class="math inline">\(Q^+\)</span></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>Q</mi><mo>+</mo></msup><annotation encoding="application/x-tex">Q^+</annotation></semantics></math></th>
 <th></th>
 </tr>
 </thead>
@@ -172,7 +162,7 @@ gates</figcaption>
 <tr class="odd">
 <td>0</td>
 <td>0</td>
-<td><span class="math inline">\(Q\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math></td>
 <td>hold</td>
 </tr>
 <tr class="even">
@@ -196,33 +186,41 @@ gates</figcaption>
 </tbody>
 </table>
 <p>Its characteristic equation (next state as a function of inputs and
-present state, assuming <span class="math inline">\(SR \ne 11\)</span>):
-<span class="math inline">\(Q^+ = S \lor \bar{R}Q\)</span>. Gating <span
-class="math inline">\(S\)</span> and <span
-class="math inline">\(R\)</span> with an enable gives the clocked SR
-latch, active only while the enable is high.</p>
-<p>A D latch removes the illegal state by deriving <span
-class="math inline">\(S = D\)</span>, <span class="math inline">\(R =
-\bar{D}\)</span> behind the enable, so <span class="math inline">\(Q^+ =
-D\)</span>. It is level-sensitive: while <code>EN</code> is high it is
-transparent (<span class="math inline">\(Q\)</span> follows <span
-class="math inline">\(D\)</span>); while low it holds. Transparency
-makes latches hard to time, so synchronous RTL avoids inferring
-them.</p>
+present state, assuming
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>R</mi><mo>≠</mo><mn>11</mn></mrow><annotation encoding="application/x-tex">SR \ne 11</annotation></semantics></math>):
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>S</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>R</mi></mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^+ = S \lor \bar{R}Q</annotation></semantics></math>.
+Gating
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math>
+with an enable gives the clocked SR latch, active only while the enable
+is high.</p>
+<p>A D latch removes the illegal state by deriving
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>=</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">S = D</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>D</mi></mrow></mrow><annotation encoding="application/x-tex">R = \bar{D}</annotation></semantics></math>
+behind the enable, so
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>E</mi><mi>N</mi><mspace width="0.167em"></mspace><mi>D</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>E</mi><mi>N</mi></mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^+ = EN\,D \lor \overline{EN}Q</annotation></semantics></math>.
+It is level-sensitive: while <code>EN</code> is high it is transparent
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>
+follows
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>);
+while low it holds. Transparency makes latches hard to time, so
+synchronous RTL avoids inferring them.</p>
 <figure>
 <img src="figs/dlatch.svg" alt="D latch" />
 <figcaption aria-hidden="true">D latch</figcaption>
 </figure>
 <h2 id="flip-flops">Flip-Flops</h2>
-<p>A D flip-flop is edge-triggered: it samples <span
-class="math inline">\(D\)</span> only on the rising clock edge and holds
-for the rest of the cycle. The classic construction is
-<strong>master-slave</strong>: two D latches on opposite clock phases.
-While the clock is low the master is transparent and the slave holds; on
-the rising edge the master closes, freezing the value the slave then
-presents. No moment exists when input can flow straight through, which
-is what edge triggering means. The triangle on the clock pin marks edge
-sensitivity. It is the standard state element.</p>
+<p>A D flip-flop is edge-triggered: it samples
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
+only on the rising clock edge and holds for the rest of the cycle. The
+classic construction is <strong>master-slave</strong>: two D latches on
+opposite clock phases. While the clock is low the master is transparent
+and the slave holds; on the rising edge the master closes, freezing the
+value the slave then presents. No moment exists when input can flow
+straight through, which is what edge triggering means. The triangle on
+the clock pin marks edge sensitivity. It is the standard state
+element.</p>
 <figure>
 <img src="figs/dff.svg" alt="D flip-flop" />
 <figcaption aria-hidden="true">D flip-flop</figcaption>
@@ -245,52 +243,59 @@ equation:</p>
 <tbody>
 <tr class="odd">
 <td>D</td>
-<td><span class="math inline">\(Q^+ = D\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">Q^+ = D</annotation></semantics></math></td>
 <td>load every edge</td>
 </tr>
 <tr class="even">
 <td>T</td>
-<td><span class="math inline">\(Q^+ = Q \oplus T\)</span></td>
-<td>toggle when <span class="math inline">\(T=1\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>Q</mi><mo>⊕</mo><mi>T</mi></mrow><annotation encoding="application/x-tex">Q^+ = Q \oplus T</annotation></semantics></math></td>
+<td>toggle when
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">T=1</annotation></semantics></math></td>
 </tr>
 <tr class="odd">
 <td>JK</td>
-<td><span class="math inline">\(Q^+ = J\bar{Q} \lor
-\bar{K}Q\)</span></td>
-<td>set on <span class="math inline">\(J\)</span>, reset on <span
-class="math inline">\(K\)</span>, toggle on both</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mo>+</mo></msup><mo>=</mo><mi>J</mi><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>Q</mi></mrow><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>K</mi></mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^+ = J\bar{Q} \lor \bar{K}Q</annotation></semantics></math></td>
+<td>set on
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>J</mi><annotation encoding="application/x-tex">J</annotation></semantics></math>,
+reset on
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>,
+toggle on both</td>
 </tr>
 </tbody>
 </table>
 <p>Read in reverse, the <strong>excitation table</strong> gives the
-inputs forcing a desired <span class="math inline">\(Q \to Q^+\)</span>
+inputs forcing a desired
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>→</mo><msup><mi>Q</mi><mo>+</mo></msup></mrow><annotation encoding="application/x-tex">Q \to Q^+</annotation></semantics></math>
 transition, the classical recipe for designing FSM next-state logic with
-T or JK flops (a D flop’s excitation is trivially <span
-class="math inline">\(D = Q^+\)</span>, one reason it won). In modern
-synchronous design everything is a D flop; T and JK survive as exercises
-and inside counters.</p>
-<p>Each flip-flop imposes timing constraints around the edge (<span
-class="math inline">\(t_{setup}\)</span>, <span
-class="math inline">\(t_{hold}\)</span>, clock-to-<span
-class="math inline">\(Q\)</span>), and together with the logic delay
-between flops they set the clock period. The full timing story, from the
-setup and hold equations to skew, metastability, and static timing
-analysis, is the subject of [[Synthesis, Timing and Power]].</p>
+T or JK flops (a D flop’s excitation is trivially
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>=</mo><msup><mi>Q</mi><mo>+</mo></msup></mrow><annotation encoding="application/x-tex">D = Q^+</annotation></semantics></math>,
+one reason it won). D flops dominate RTL implementations; toggle and JK
+behavior can be built with next-state logic.</p>
+<p>Each flip-flop imposes timing constraints around the edge
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>s</mi><mi>e</mi><mi>t</mi><mi>u</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">t_{setup}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>h</mi><mi>o</mi><mi>l</mi><mi>d</mi></mrow></msub><annotation encoding="application/x-tex">t_{hold}</annotation></semantics></math>,
+clock-to-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>),
+and together with the logic delay between flops they set the clock
+period. The full timing story, from the setup and hold equations to
+skew, metastability, and static timing analysis, is the subject of
+<a href="../../notes.html#Digital%20Design/Synthesis%2C%20Timing%20and%20Power" target="_top">Synthesis,
+Timing and Power</a>.</p>
 <h2 id="describing-sequential-logic">Describing Sequential Logic</h2>
 <p>Model edge-triggered state with <code>always_ff</code> and the
 nonblocking assignment (<code>&lt;=</code>). Combinational blocks use
-blocking <code>=</code>; sequential blocks use <code>&lt;=</code>.
-Mixing them is the main source of simulation versus synthesis
-mismatch.</p>
+blocking <code>=</code>; sequential blocks use <code>&lt;=</code>. This
+convention avoids common simulation races.</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> (rst)     q &lt;= &#39;<span class="dv">0</span>;    <span class="co">// synchronous reset</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> (en) q &lt;= d;     <span class="co">// load only when enabled</span></span></code></pre></div>
 <h2 id="registers">Registers</h2>
-<p>A register is <span class="math inline">\(n\)</span> flip-flops on a
-shared clock storing an <span class="math inline">\(n\)</span>-bit word,
-usually with an enable (conditional load) and a reset (force to a known
-value). A slash with a number marks a bus width.</p>
+<p>A register is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+flip-flops on a shared clock storing an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>-bit
+word, usually with an enable (conditional load) and a reset (force to a
+known value). A slash with a number marks a bus width.</p>
 <figure>
 <img src="figs/register.svg"
 alt="n-bit register with enable and reset" />
@@ -312,21 +317,29 @@ class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id
 Variants add load, enable, up/down direction, and a terminal-count
 output. Common shapes:</p>
 <ul>
-<li><strong>Mod-N</strong>: reset to 0 on reaching <span
-class="math inline">\(N-1\)</span>; a BCD digit is mod-10. Cascade
-digits on the terminal count.</li>
-<li><strong>Divide-by-<span class="math inline">\(2^k\)</span></strong>:
-bit <span class="math inline">\(k-1\)</span> of a free-running counter
-toggles at <span class="math inline">\(f_{clk}/2^k\)</span>, a square
-wave.</li>
+<li><strong>Mod-N</strong>: reset to 0 on reaching
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">N-1</annotation></semantics></math>;
+a BCD digit is mod-10. Cascade digits on the terminal count.</li>
+<li><strong>Divide-by-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><mi>k</mi></msup><annotation encoding="application/x-tex">2^k</annotation></semantics></math></strong>:
+bit
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k-1</annotation></semantics></math>
+of a free-running counter has output frequency
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mrow><mi>c</mi><mi>l</mi><mi>k</mi></mrow></msub><mi>/</mi><msup><mn>2</mn><mi>k</mi></msup></mrow><annotation encoding="application/x-tex">f_{clk}/2^k</annotation></semantics></math>,
+a square wave.</li>
 <li><strong>Ripple counter</strong>: each flop clocks off the previous
-<span class="math inline">\(Q\)</span>, tiny but asynchronous; the count
-settles bit by bit, so synchronous counters are preferred.</li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>,
+tiny but asynchronous; the count settles bit by bit, so synchronous
+counters are preferred.</li>
 <li><strong>Ring / Johnson</strong>: a ring counter circulates a single
-one (<span class="math inline">\(n\)</span> states, one-hot,
-decode-free); a Johnson counter feeds back the inverted output for <span
-class="math inline">\(2n\)</span> states from <span
-class="math inline">\(n\)</span> bits.</li>
+one
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+states, one-hot, decode-free); a Johnson counter feeds back the inverted
+output for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>n</mi></mrow><annotation encoding="application/x-tex">2n</annotation></semantics></math>
+states from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+bits. Initialize the ring to one-hot and the Johnson counter to a valid
+state (e.g. all zeros).</li>
 </ul>
 <figure>
 <img src="figs/counter.svg"
@@ -342,63 +355,83 @@ ripple, ring/Johnson</figcaption>
 </figure>
 <p>An <strong>LFSR</strong> (linear feedback shift register) counts
 through a pseudo-random sequence: shift, with the input the XOR of taps
-given by a generator polynomial over <span
-class="math inline">\(GF(2)\)</span>. A maximal polynomial such as <span
-class="math inline">\(x^4 + x^3 + 1\)</span> cycles through all <span
-class="math inline">\(2^4 - 1\)</span> nonzero states:</p>
+given by a generator polynomial over
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">GF(2)</annotation></semantics></math>.
+A maximal polynomial such as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>x</mi><mn>4</mn></msup><mo>+</mo><msup><mi>x</mi><mn>3</mn></msup><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">x^4 + x^3 + 1</annotation></semantics></math>
+cycles through all
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>4</mn></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^4 - 1</annotation></semantics></math>
+nonzero states:</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) lfsr &lt;= {lfsr[<span class="dv">2</span>:<span class="dv">0</span>], lfsr[<span class="dv">3</span>] ^ lfsr[<span class="dv">2</span>]};</span></code></pre></div>
-<p>Reading taps off the polynomial: the register has as many bits as the
-degree (here 4), and each middle term <span
-class="math inline">\(x^k\)</span> marks a tap after stage <span
-class="math inline">\(k\)</span>, so <span class="math inline">\(x^4 +
-x^3 + 1\)</span> means “feed back bit 3 XOR bit 2” in the 0-indexed code
-above. A bigger example, CRC-CCITT’s generator <span
-class="math inline">\(x^{16} + x^{12} + x^5 + 1\)</span>, becomes a
-16-bit shift register with</p>
+<p>Seed this XOR-feedback LFSR with a nonzero value; zero is a lock-up
+state. Tap numbering depends on shift direction and implementation, so
+verify the recurrence’s period.</p>
+<p>A <strong>CRC</strong> also needs message input. For a non-reflected,
+MSB-first CRC with polynomial
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>x</mi><mn>16</mn></msup><mo>+</mo><msup><mi>x</mi><mn>12</mn></msup><mo>+</mo><msup><mi>x</mi><mn>5</mn></msup><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">x^{16}+x^{12}+x^5+1</annotation></semantics></math>,
+one input bit updates the remainder as:</p>
 <div class="sourceCode" id="cb4"><pre
-class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) crc &lt;= {crc[<span class="dv">14</span>:<span class="dv">0</span>], crc[<span class="dv">15</span>] ^ crc[<span class="dv">11</span>] ^ crc[<span class="dv">4</span>]};</span></code></pre></div>
-<p>The next-state logic is a couple of XORs regardless of width, so
-LFSRs make the cheapest “counters” when the count order is irrelevant,
-and the same structure computes CRCs, scramblers, and test-pattern
-generators.</p>
+class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">logic</span> feedback;</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> feedback = crc[<span class="dv">15</span>] ^ data_bit;</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> (rst) crc &lt;= <span class="bn">16&#39;hFFFF</span>;</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span> <span class="kw">if</span> (en)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    crc &lt;= {crc[<span class="dv">14</span>:<span class="dv">0</span>], <span class="bn">1&#39;b0</span>} ^ (feedback ? <span class="bn">16&#39;h1021</span> : <span class="bn">16&#39;h0000</span>);</span></code></pre></div>
+<p>Initialization, bit order, and final XOR define the CRC variant. This
+example uses initial <code>FFFF</code>, MSB-first data, and no final XOR
+(CRC-16/IBM-3740).</p>
 <h2 id="memory">Memory</h2>
-<p>A <strong>register file</strong> is a small multi-port array:
-combinational (asynchronous and instantaneous) read ports and a clocked
-(next cycle reflecting) write port. It backs a CPU’s architectural
-registers.</p>
+<p>A <strong>register file</strong> is a small multi-port array: often
+with combinational reads (nonzero propagation delay) and clocked writes.
+It backs a CPU’s architectural registers.</p>
 <figure>
 <img src="figs/regfile.svg"
-alt="Register file with two read ports and one write port|393" />
+alt="Register file with two read ports and one write port" />
 <figcaption aria-hidden="true">Register file with two read ports and one
-write port|393</figcaption>
+write port</figcaption>
 </figure>
 <div class="sourceCode" id="cb5"><pre
 class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">logic</span> [<span class="dv">31</span>:<span class="dv">0</span>] rf [<span class="dv">0</span>:<span class="dv">31</span>];</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> rd1 = rf[ra1];</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">if</span> (we) rf[wa] &lt;= wd;</span></code></pre></div>
-<p>Larger storage uses RAM, typically a single port with a registered
-read so it maps to a dense block-RAM primitive.</p>
+<p>Larger storage uses RAM. Registered reads are common in FPGA block
+RAM; supported ports and read-during-write behavior depend on the memory
+primitive.</p>
 <figure>
-<img src="figs/ram.svg" alt="Synchronous RAM|387" />
-<figcaption aria-hidden="true">Synchronous RAM|387</figcaption>
+<img src="figs/ram.svg" alt="Synchronous RAM" />
+<figcaption aria-hidden="true">Synchronous RAM</figcaption>
 </figure>
 <div class="sourceCode" id="cb6"><pre
 class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">logic</span> [W<span class="dv">-1</span>:<span class="dv">0</span>] mem [<span class="dv">0</span>:DEPTH<span class="dv">-1</span>];</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk) <span class="kw">begin</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> (we) mem[addr] &lt;= din;</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  dout &lt;= mem[addr];          <span class="co">// registered read</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  dout &lt;= mem[addr];          <span class="co">// read-first: old data on a same-address write</span></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code></pre></div>
 <h2 id="fifo">FIFO</h2>
 <p>A FIFO buffers data between producer and consumer using a circular
 buffer with write and read pointers. <code>full</code> and
 <code>empty</code> flags come from comparing the pointers; a wrap bit
-distinguishes the two equal-pointer cases. A dual-clock FIFO with
-Gray-coded pointers safely crosses clock domains.</p>
+distinguishes the two equal-pointer cases. A dual-clock FIFO uses
+synchronized, registered Gray pointers and CDC timing constraints; Gray
+encoding alone is insufficient.</p>
 <figure>
-<img src="figs/fifo.svg" alt="FIFO with status flags|395" />
-<figcaption aria-hidden="true">FIFO with status flags|395</figcaption>
+<img src="figs/fifo.svg" alt="FIFO with status flags" />
+<figcaption aria-hidden="true">FIFO with status flags</figcaption>
 </figure>
+<h3 id="readyvalid-interfaces">Ready/Valid Interfaces</h3>
+<p>For a synchronous ready/valid channel, a transfer occurs on an edge
+with both signals high. The producer asserts <code>valid</code> when
+data is available and holds it and the payload stable until acceptance;
+it must not wait for <code>ready</code> before asserting
+<code>valid</code>. The consumer may deassert <code>ready</code> to
+apply <strong>backpressure</strong>.</p>
+<p>Buffers absorb short stalls, not a permanently slower consumer. Avoid
+combinational loops through connected interfaces. This protocol alone
+does not cross clock domains; use an asynchronous FIFO or CDC handshake
+from
+<a href="../../notes.html#Digital%20Design/Synthesis%2C%20Timing%20and%20Power" target="_top">Synthesis,
+Timing and Power</a>.</p>
 <h2 id="arbiter">Arbiter</h2>
 <p>An arbiter grants a shared resource to one of several requesters, one
 grant per cycle. A fixed-priority arbiter always favors the lowest index
@@ -412,11 +445,12 @@ round-robin pointer</figcaption>
 </figure>
 <h2 id="pipelining">Pipelining</h2>
 <p>Inserting registers to split a long combinational path into stages
-raises throughput to one result per clock at the cost of latency; the
-slowest stage sets the period. The worked example, the forwarding
-pitfall, and the loop-carried-dependency limit are in [[Synthesis,
-Timing and Power]]; the technique applied to a whole processor is the
-[[Simple Instruction Pipeline]].</p>
+can increase clock frequency while sustaining one result per cycle, at
+the cost of added latency; the slowest stage sets the period. The worked
+example, the forwarding pitfall, and the loop-carried-dependency limit
+are in
+<a href="../../notes.html#Digital%20Design/Synthesis%2C%20Timing%20and%20Power" target="_top">Synthesis,
+Timing and Power</a>.</p>
 <h2 id="finite-state-machines">Finite State Machines</h2>
 <p>An FSM is sequential logic with named states. It has combinational
 next-state logic, a state register, and combinational output logic.</p>
@@ -427,18 +461,18 @@ alt="FSM structure (dashed input path is Mealy)" />
 Mealy)</figcaption>
 </figure>
 <ul>
-<li>Moore: outputs depend only on the state. Glitch-free, may need extra
-states.</li>
-<li>Mealy: outputs depend on state and inputs. Fewer states, outputs can
-change mid-cycle.</li>
+<li>Moore: outputs depend only on state. Combinational state decoding
+can glitch; register outputs when glitch-free behavior is required.</li>
+<li>Mealy: outputs depend on state and inputs. May use fewer states;
+outputs can change mid-cycle.</li>
 </ul>
 <p>The design procedure:</p>
 <ol type="1">
 <li><strong>State diagram</strong> from the spec: circles are states,
 labelled arrows are transitions.</li>
 <li><strong>State table</strong>: rows of (present state, input) → (next
-state, output). Merge states with identical rows (state
-minimization).</li>
+state, output). Merge states with equal outputs and equivalent successor
+states for every input (repeat until stable).</li>
 <li><strong>Encoding</strong>: assign each state a binary code.</li>
 <li><strong>Equations</strong>: derive next-state and output logic from
 the table (in RTL, write the <code>case</code> and let synthesis
@@ -453,61 +487,53 @@ alt="State diagram of a Mealy 101 sequence detector" />
 <figcaption aria-hidden="true">State diagram of a Mealy 101 sequence
 detector</figcaption>
 </figure>
-<p>Code it in the three-block style: one <code>always_ff</code> for the
-state register, one <code>always_comb</code> for next state, one for
-outputs.</p>
+<p>Separate state storage, next-state logic, and output logic:</p>
 <div class="sourceCode" id="cb7"><pre
 class="sourceCode systemverilog"><code class="sourceCode systemverilog"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">enum</span> <span class="kw">logic</span> [<span class="dv">1</span>:<span class="dv">0</span>] { S0, S1, S2 } state_t;</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>state_t <span class="ot">state</span>, <span class="ot">next</span>;</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">always_ff</span> @(<span class="kw">posedge</span> clk)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="ot">state</span> &lt;= rst ? S0 : <span class="ot">next</span>;</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="kw">always_comb</span> <span class="kw">begin</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="ot">next</span> = <span class="ot">state</span>;</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">unique</span> <span class="kw">case</span> (<span class="ot">state</span>)</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    S0: <span class="kw">if</span> (in) <span class="ot">next</span> = S1;</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    S1: <span class="ot">next</span> = in ? S1 : S2;</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    S2: <span class="ot">next</span> = in ? S1 : S0;</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">endcase</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> det = (<span class="ot">state</span> == S2) &amp;&amp; in;   <span class="co">// Mealy output</span></span></code></pre></div>
-<p>A Moore version of the same detector needs a fourth state, “just saw
-101”, whose mere occupancy asserts <code>det</code>, and its output
-arrives one cycle later since the pattern must first be registered into
-that state. That is the general trade: Mealy reacts in the same cycle
-with fewer states; Moore is a clean registered output, one cycle
-behind.</p>
-<p>State encoding trades area against speed: binary uses <span
-class="math inline">\(\lceil\log_2 N\rceil\)</span> flip-flops; one-hot
-uses <span class="math inline">\(N\)</span> flip-flops with simple, fast
-next-state logic (favored on FPGAs); Gray encoding changes one bit per
-step to cut switching and crossing hazards. Codes left unused are
-unreachable in theory but reachable after an upset, so safe designs give
-<code>unique case</code> a <code>default</code> routing unknown states
-back to reset.</p>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> (rst) <span class="ot">state</span> &lt;= S0;</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">else</span>     <span class="ot">state</span> &lt;= <span class="ot">next</span>;</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="kw">always_comb</span> <span class="kw">begin</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="ot">next</span> = <span class="ot">state</span>;</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">unique</span> <span class="kw">case</span> (<span class="ot">state</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    S0: <span class="kw">if</span> (in) <span class="ot">next</span> = S1;</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    S1: <span class="kw">if</span> (in) <span class="ot">next</span> = S1; <span class="kw">else</span> <span class="ot">next</span> = S2;</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    S2: <span class="kw">if</span> (in) <span class="ot">next</span> = S1; <span class="kw">else</span> <span class="ot">next</span> = S0;</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">default</span>: <span class="ot">next</span> = S0;</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="kw">endcase</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> det = (<span class="ot">state</span> == S2) &amp;&amp; in;   <span class="co">// Mealy output</span></span></code></pre></div>
+<p>A Moore detector adds a “just saw 101” state and asserts after the
+edge that captures the final bit. A Mealy detector can assert before
+that edge. Moore outputs are not inherently registered.</p>
+<p><strong>Encoding</strong>: binary uses
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">⌈</mo><msub><mo>log</mo><mn>2</mn></msub><mi>N</mi><mo stretchy="false" form="postfix">⌉</mo></mrow><annotation encoding="application/x-tex">\lceil\log_2N\rceil</annotation></semantics></math>
+flops; one-hot uses
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+with simpler decoding. Gray codes change one bit only along selected
+adjacent transitions, not arbitrary FSM edges. A <code>default</code>
+defines RTL recovery from unused codes; synthesis may remove
+unreachable-state logic, so use and verify safe-FSM options when
+hardware recovery is required.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><p>Harris &amp; Harris, Digital Design and Computer Architecture,
+RISC-V Edition — ch. 3–5.</p></li>
+<li><p>Dally &amp; Harting, Digital Design: A Systems Approach —
+sequential building blocks and system design.</p></li>
+<li><p><a
+href="https://reveng.sourceforge.io/crc-catalogue/16.htm#crc.cat.crc-16-ibm-3740">CRC
+catalogue: CRC-16/IBM-3740 parameters</a></p></li>
+</ul>
 <hr />
-<pre class="license"><code>MIT License
-
-Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</code></pre>
+<p>License: <a href="LICENSE.txt">MIT</a>.</p>
+<nav class="note-nav" aria-label="Adjacent notes">
+<a class="nav-prev" href="../../notes.html#Digital%20Design/Combinational%20Circuits" target="_top">← Combinational Circuits</a>
+<a class="nav-next" href="../../notes.html#Digital%20Design/RTL%20Design%20Guide" target="_top">RTL Design Guide →</a>
+</nav>
 </body>
 </html>

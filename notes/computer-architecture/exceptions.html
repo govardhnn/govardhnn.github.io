@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Exceptions</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -26,71 +20,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    /* CSS for syntax highlighting */
-    html { -webkit-text-size-adjust: 100%; }
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {   }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { color: #008000; } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { color: #008000; font-weight: bold; } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -115,71 +44,57 @@ Machines</a></li>
 </ul>
 </nav>
 <h1 id="exceptions">Exceptions</h1>
-<p>An exception transfers control to a handler because something
-happened that the normal instruction stream cannot express: a page
-fault, an illegal opcode, a system call, a device interrupt. The
-mechanism (<strong>trap</strong>) is the same for all of them; what
-differs is the trigger. Exceptions are how the OS exists at all: system
-calls, demand paging in
-<a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches
-and Virtual Memory</a>, preemptive scheduling, and device I/O are all
-built on this machinery.</p>
+<p>A <strong>trap</strong> transfers control to a handler. In RISC-V, an
+<strong>exception</strong> is synchronous with an instruction; an
+<strong>interrupt</strong> is asynchronous. Terminology differs across
+ISAs: x86’s fault/trap/abort classification should not be applied
+directly to RISC-V.</p>
 <table>
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
+<col style="width: 50%" />
+<col style="width: 50%" />
 </colgroup>
 <thead>
-<tr>
-<th>Term</th>
-<th>Trigger</th>
-<th>Sync?</th>
-<th>Resume where?</th>
+<tr class="header">
+<th>Event</th>
+<th>Saved PC / resume policy</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>exception (fault)</td>
-<td>the instruction itself (page fault, illegal op, misalign,
-divide)</td>
-<td>synchronous</td>
-<td>re-execute the faulting instruction</td>
+<tr class="odd">
+<td>recoverable page fault</td>
+<td>retry the faulting instruction after repair</td>
 </tr>
-<tr>
-<td>trap (e.g. <code>ecall</code>)</td>
-<td>deliberate, by the instruction</td>
-<td>synchronous</td>
-<td>after the instruction</td>
+<tr class="even">
+<td><code>ecall</code></td>
+<td>saved PC points to <code>ecall</code>; software advances it by 4 to
+resume after it</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>interrupt</td>
-<td>external event (timer, device, IPI)</td>
-<td>asynchronous</td>
-<td>between any two instructions</td>
+<td>resume at the interrupted instruction boundary</td>
 </tr>
-<tr>
-<td>abort</td>
-<td>machine failure</td>
-<td>either</td>
-<td>often not resumable</td>
+<tr class="even">
+<td>unrecoverable error</td>
+<td>recovery is platform-specific</td>
 </tr>
 </tbody>
 </table>
+<p>RISC-V integer division by zero returns a defined result rather than
+trapping. FP exceptional conditions normally set flags; see
+<a href="../../notes.html#Computer%20Architecture/Floating%20Point%20Architecture" target="_top">Floating
+Point Architecture</a>.</p>
 <h2 id="precise-exceptions">Precise Exceptions</h2>
 <p>An exception is <strong>precise</strong> when the saved state matches
 a clean point in program order: every older instruction has fully
 committed, and no younger instruction has changed any architectural
 state. The reported PC identifies exactly where execution logically
 stopped.</p>
-<p>Software depends on this. A page fault handler must be able to fix
-the mapping and <em>re-execute</em> the faulting load as if nothing
-happened; a debugger must show a consistent stopped program; a context
-switch must be able to save and rebuild the exact state. Imprecise
-exceptions (some 1960s-90s FP units reported overflow “somewhere in the
-last few instructions”) made all three nearly impossible, which is why
-precision won everywhere.</p>
+<p>Precise state permits restart after a page fault, debugger
+inspection, and context switching. The faulting instruction must not
+expose incomplete ordinary architectural effects; restartable vector
+instructions and other specified cases may use additional progress
+state.</p>
 <h2 id="in-the-5-stage-pipeline">In the 5-Stage Pipeline</h2>
 <p>Different stages detect different exceptions, and detection order is
 not program order: an older instruction’s page fault (MEM, cycle
@@ -188,24 +103,19 @@ may be detected <em>after</em> a younger instruction’s illegal opcode
 (ID, cycle
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>).
 Acting immediately on the younger one would be wrong.</p>
-<p>The rule: <strong>tag, don’t act</strong>. Each instruction carries
-an exception flag and cause through the pipeline registers of the
-<a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">Simple
-Instruction Pipeline</a>; a flagged instruction is turned into a NOP for
-later stages (it must not write memory or registers). Only at the
-<strong>commit point</strong> (end of MEM, the last place an exception
-can arise) does the machine act on the <em>oldest</em> flagged
-instruction: flush all younger stages, and redirect fetch to the
-handler:</p>
+<p>Carry fault metadata with each instruction and suppress its side
+effects. Take the oldest fault at a boundary where older instructions
+can finish and younger effects can be discarded. The exact commit stage
+depends on the pipeline and where errors can be detected:</p>
 <figure>
 <img src="figs/excflush.svg"
 alt="exception flags resolved at the commit point" />
 <figcaption aria-hidden="true">exception flags resolved at the commit
 point</figcaption>
 </figure>
-<p>Asynchronous interrupts are simply injected as the flag of some
-convenient instruction at commit, giving them a precise boundary for
-free.</p>
+<p>Take asynchronous interrupts at an architectural instruction
+boundary. Drain or discard in-flight work so the saved PC and state
+describe a valid restart point.</p>
 <h2 id="in-out-of-order-machines">In Out-of-Order Machines</h2>
 <p>The same principle scales up: an OOO core marks the exception in the
 instruction’s reorder-buffer entry, and acts only when that entry
@@ -215,41 +125,41 @@ of Order Execution and Register Renaming</a>). Everything younger,
 including speculatively executed work, is squashed and the rename state
 rolled back, exactly the recovery machinery of a
 <a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">branch
-misprediction</a>. This is why “add an exception” is cheap in modern
-cores: the hard part was already built for speculation.</p>
+misprediction</a>. Recovery structures can be shared, but precise
+exceptions still require correct side-effect suppression.</p>
 <h2 id="the-risc-v-trap-mechanism">The RISC-V Trap Mechanism</h2>
 <p>Machine-mode CSRs (accessed via Zicsr instructions of the
 <a href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V
 ISA</a>) implement traps:</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>CSR</th>
 <th>Holds</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>mtvec</code></td>
 <td>handler base address (+ mode: direct or vectored)</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>mepc</code></td>
 <td>PC of the interrupted/faulting instruction</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>mcause</code></td>
 <td>interrupt bit + cause code</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>mtval</code></td>
 <td>extra info (faulting address, bad instruction bits)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>mstatus</code></td>
 <td>interrupt-enable stack: MIE, MPIE, MPP</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>mie</code> / <code>mip</code></td>
 <td>per-source interrupt enable / pending bits</td>
 </tr>
@@ -259,45 +169,35 @@ ISA</a>) implement traps:</p>
 <img src="figs/trapflow.svg" alt="trap entry and mret" />
 <figcaption aria-hidden="true">trap entry and mret</figcaption>
 </figure>
-<div class="callout callout-note">
-<div class="callout-title">
-CSRs sit outside the speculation machinery
-</div>
-<p>Out-of-order cores do not rename or speculate through CSRs: BOOM
-marks CSR instructions as serializing, draining the entire ROB before
-one executes. Privileged state is rare enough that real cores simply
-stop the world for it.</p>
-</div>
-<p>The <code>MPIE</code>/<code>MPP</code> fields make trap entry
-re-entrant-safe: entry saves the interrupt-enable bit and privilege
-mode, <code>mret</code> restores them. Common <code>mcause</code> codes:
-2 illegal instruction, 8/11 <code>ecall</code> from U/M, 12/13/15
-instruction/load/store page fault; interrupt bit set: 3 machine
-software, 7 machine timer, 11 machine external.</p>
-<p>Handler skeleton:</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode asm"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">trap_handler:</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    csrrw <span class="kw">sp</span><span class="op">,</span> mscratch<span class="op">,</span> <span class="kw">sp</span>     <span class="op">#</span> swap in a trusted stack pointer</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    addi  <span class="kw">sp</span><span class="op">,</span> <span class="kw">sp</span><span class="op">,</span> <span class="op">-</span><span class="dv">128</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    sd    x1<span class="op">,</span> <span class="dv">8</span><span class="op">(</span><span class="kw">sp</span><span class="op">)</span>            <span class="op">#</span> save caller<span class="op">-</span>visible state</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    # ... save x5<span class="op">-</span>x31 <span class="op">...</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    csrr  a0<span class="op">,</span> mcause           <span class="op">#</span> dispatch on cause</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    csrr  a1<span class="op">,</span> mepc</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">call</span>  dispatch             <span class="op">#</span> C code from here</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    # ... <span class="pp">restore</span> registers <span class="op">...</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    addi  <span class="kw">sp</span><span class="op">,</span> <span class="kw">sp</span><span class="op">,</span> <span class="dv">128</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    csrrw <span class="kw">sp</span><span class="op">,</span> mscratch<span class="op">,</span> <span class="kw">sp</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    mret                       <span class="op">#</span> pc <span class="op">&lt;-</span> mepc<span class="op">,</span> mode<span class="op">/</span>MIE restored</span></code></pre></div>
-<p>For a synchronous <code>ecall</code> the handler must
-<code>mepc += 4</code> before <code>mret</code>, or it will loop; for a
-page fault it must <em>not</em>, so the faulting access retries.</p>
+<p>CSR ordering and serialization depend on the implementation and the
+CSR; do not assume every CSR access drains every core’s ROB.</p>
+<p>Trap entry copies MIE→MPIE and the previous privilege→MPP, clears
+MIE, and records trap state. This is one hardware save level, not
+automatic nesting support. Software must preserve trap CSRs before
+enabling nesting.</p>
+<p>A handler must:</p>
+<ol type="1">
+<li>Establish a trusted, aligned stack and preserve interrupted
+registers before using them.</li>
+<li>Save trap CSRs and any additional state required by the handler or
+context switch.</li>
+<li>Dispatch on cause; repair restartable faults or arrange
+termination.</li>
+<li>Advance <code>mepc</code> by 4 for a handled <code>ecall</code>;
+leave it unchanged when retrying a page fault.</li>
+<li>Restore state and execute <code>mret</code> (or <code>sret</code>
+for a supervisor trap).</li>
+</ol>
+<p>A function-call ABI save set alone is insufficient: an interrupt can
+occur while any caller-saved register is live. Stack swapping through
+<code>mscratch</code> requires a defined entry/nesting convention. Size
+the frame for all saved registers and maintain ABI alignment.</p>
 <h2 id="interrupts">Interrupts</h2>
-<p>An interrupt is taken when it is pending (<code>mip</code>), enabled
-(<code>mie</code>), and interrupts are globally on
-(<code>mstatus.MIE</code>), with fixed priority among sources.
-<strong>Nested</strong> interrupts need software help: entry hardware
-clears MIE, and a handler that wants to be preemptible saves
-<code>mepc</code>/<code>mcause</code> and re-enables MIE.</p>
+<p>An interrupt must be pending and individually enabled, and meet
+privilege/delegation rules. For an M-mode interrupt while already in
+M-mode, MIE must be set; while running below M-mode, MIE does not mask
+that higher-privilege interrupt. Software-managed nesting must preserve
+overwritten trap state.</p>
 <ul>
 <li><strong>Timer</strong>: memory-mapped
 <code>mtime</code>/<code>mtimecmp</code> raise the timer interrupt when
@@ -311,37 +211,12 @@ software and timer interrupts.</li>
 S-mode so the OS handles its own page faults without firmware
 round-trips.</li>
 </ul>
-<p>Latency note: interrupt latency = longest uninterruptible window (one
-instruction, or one handler critical section). Real-time systems care
-about the worst case, not the mean, which argues against very
-long-running instructions.</p>
-<p>Two production cores show the spec’s flexibility.
-<strong>CV32E40P</strong> implements M-mode only, widens
-<code>mip</code>/<code>mie</code> to 32 lines (16 of them
-platform-defined “fast” interrupts above the standard three), and leaves
-nesting entirely to software: hardware clears MIE on entry, and an
-<code>irq_ack</code>/<code>irq_id</code> handshake tells the external
-controller which interrupt was taken. <strong>Ibex</strong> is
-vectored-only, adds a non-maskable interrupt at ID 31 that ignores
-<code>mstatus.MIE</code> entirely, and keeps hardware-managed shadow
-copies of <code>mepc</code>/<code>mcause</code>/<code>mstatus</code> so
-even the NMI is recoverable.</p>
-<div class="callout callout-note">
-<div class="callout-title">
-Traps as a security perimeter
-</div>
-<p>In OpenTitan’s threat model the attacker has physical access and a
-glitching rig, so Ibex’s exception machinery doubles as fault-injection
-defense: a <code>cpuctrl</code> CSR tracks whether a synchronous
-exception is already in flight and flags a <strong>double
-fault</strong>; critical CSRs (<code>mstatus</code>, <code>mtvec</code>,
-PMP registers) keep complemented shadow copies whose mismatch raises an
-alert; a second lockstep core runs a few cycles delayed and compares
-outputs; and the fetch stage checks that each PC is the predecessor’s PC
-plus the correct increment. The same “tag, don’t act; commit precisely”
-discipline that makes exceptions restartable is what makes them
-auditable.</p>
-</div>
+<p>Interrupt latency includes masking intervals, time to a permitted
+boundary, pipeline recovery, and handler entry. Real-time analysis needs
+a worst-case bound for the configured system.</p>
+<p>Interrupt controllers and optional fast/NMI mechanisms are
+platform-specific. PLIC/CLINT describe one common platform organization,
+not a requirement of every RISC-V system.</p>
 <h2 id="virtual-machines">Virtual Machines</h2>
 <p>The trap mechanism generalizes one level up: a
 <strong>hypervisor</strong> runs whole guest OSes the way an OS runs
@@ -350,21 +225,13 @@ recipe is <strong>trap-and-emulate</strong>: run the guest OS
 deprivileged; every privileged action it attempts (writing a page table
 pointer, disabling interrupts) traps to the hypervisor, which emulates
 the effect against per-guest virtual state and returns.</p>
-<p>This only works if the ISA cooperates. <strong>Popek and Goldberg
-(1974)</strong>: an ISA is classically virtualizable iff every
-<em>sensitive</em> instruction (one that reads or changes privileged
-state) is also <em>privileged</em> (traps when deprivileged). Pre-2005
-x86 famously failed this: instructions like <code>popf</code> silently
-changed behavior instead of trapping, forcing VMware-era hypervisors
-into dynamic binary translation. Hardware extensions (Intel VT-x, AMD-V,
-RISC-V’s <strong>H extension</strong>) fixed it by adding a guest mode
-in which <em>everything</em> sensitive traps to the hypervisor. RISC-V’s
-version turns S-mode into HS-mode for the hypervisor, adds VS/VU modes
-for the guest, duplicates the trap CSRs (<code>vsepc</code>,
-<code>vscause</code>, …) so the guest OS can take its own traps without
-hypervisor involvement, and delegates via
-<code>hedeleg</code>/<code>hideleg</code>, the same pattern as
-<code>medeleg</code> one level down.</p>
+<p>The Popek–Goldberg theorem gives a <strong>sufficient
+condition</strong> for classical trap-and-emulate virtualization:
+sensitive instructions are a subset of privileged instructions, under
+its machine assumptions. It is not a general “if and only if” test for
+every virtualization method. Hardware virtualization adds guest state
+and controlled interception; not every sensitive operation must trap.
+RISC-V H provides HS/VS/VU execution and guest trap state.</p>
 <p>Memory needs the trick twice: the guest OS translates guest-virtual
 to guest-physical, and the hypervisor translates guest-physical to
 host-physical. <strong>Nested (two-stage) page tables</strong> (RISC-V
@@ -378,62 +245,22 @@ cost is walk length: a guest walk of
 levels over a host walk of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
 levels touches up to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">(m+1)(n+1)-1</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>m</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">(m+1)(n+1)-1</annotation></semantics></math>
 memory accesses, which is why virtualized TLB misses hurt and TLBs cache
 the intermediate translations.</p>
 <hr />
 <p>Author: Sai Govardhan (saigov14@gmail.com)</p>
 <h2 id="references">References</h2>
-<p><strong>Courses</strong></p>
 <ul>
-<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lectures 11, 25</li>
+<li>Patterson &amp; Hennessy, Computer Organization and Design: RISC-V
+Edition — ch. 4.</li>
+<li>RISC-V ISA Manual, local 20260618 intermediate release —
+machine/supervisor traps and H extension.</li>
 </ul>
-<p><strong>Textbooks</strong></p>
-<ul>
-<li>D. Patterson &amp; J. Hennessy, <em>Computer Organization and
-Design, RISC-V Edition</em>, ch. 4</li>
-</ul>
-<p><strong>Standards, Papers, and Wikipedia</strong></p>
-<ul>
-<li><em>The RISC-V Instruction Set Manual, Volume II: Privileged
-Architecture</em></li>
-<li>J. E. Smith &amp; A. R. Pleszkun, <em>Implementing Precise
-Interrupts in Pipelined Processors</em> (1988)</li>
-<li>G. Popek &amp; R. Goldberg, <em>Formal Requirements for
-Virtualizable Third Generation Architectures</em> (1974)</li>
-</ul>
-<p><strong>Microarchitecture References</strong></p>
-<ul>
-<li>lowRISC, <em>Ibex Documentation</em> (exceptions/interrupts,
-security features)</li>
-<li>OpenHW Group, <em>CV32E40P User Manual</em> (exceptions and
-interrupts)</li>
-</ul>
-<pre class="license"><code>MIT License
-
-Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</code></pre>
-<div class="note-nav">
-<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">&larr; Out of Order Execution and Register Renaming</a>
-<a class="nav-next" href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V ISA &rarr;</a>
-</div>
+<p>License: <a href="LICENSE.txt">MIT</a>.</p>
+<nav class="note-nav" aria-label="Adjacent notes">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">← Memory Model</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Main%20Memory%20and%20Storage" target="_top">Main Memory and Storage →</a>
+</nav>
 </body>
 </html>

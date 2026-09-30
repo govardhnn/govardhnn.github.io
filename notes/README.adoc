@@ -1,7 +1,33 @@
-build.sh using mathjax, gawk and pandoc
+= Building the notes
 
-./build.sh <note-in-md> -o <directory-name>
+Requires Python 3 and Pandoc 3.x. From this directory:
 
-then watch: gh workflow view pages-build-deployment
- 
-govardhan
+----
+./build.sh --source-root /mnt/c/Users/saigo/Documents/Life/Notes
+----
+
+With no arguments, `build.sh` uses that source root. Override it with
+`NOTES_SOURCE_ROOT` or `--source-root`; set `PANDOC` to select another executable.
+Website paths are resolved relative to the script, so it can also be called from elsewhere.
+
+The two source `Index.md` files define the published notes and reading order.
+A full build renders both collections, copies figures and licenses, and updates
+`notes.html`, cross-links, previous/next navigation, and index subtopics.
+Equations use native MathML. Existing page URLs and section styles are preserved.
+
+Local book links become citation text. Book PDFs and archive/planning files
+are not copied to the website. Generated HTML is tracked in Git; GitHub Pages
+serves it through the existing publishing process.
+
+To build one indexed note into a chosen directory:
+
+----
+./build.sh "/mnt/c/Users/saigo/Documents/Life/Notes/Digital_Design/Boolean Algebra.md" -o digital-design
+----
+
+Single-note builds update the selected pages and assets; run a full build after
+changing an index or reading order. `--site-root /path/to/site-copy` selects a
+preview checkout. `-o` is relative to the current working directory.
+
+The command builds files locally. Commit and publish the generated changes
+through the normal Git workflow when ready.

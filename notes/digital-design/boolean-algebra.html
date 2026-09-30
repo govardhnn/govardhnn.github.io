@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
@@ -51,48 +51,43 @@
       }
     pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
     div.sourceCode
-      {  background-color: #f8f8f8; }
+      {   }
     @media screen {
     pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
     }
-    code span.al { color: #ef2929; } /* Alert */
-    code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #204a87; } /* Attribute */
-    code span.bn { color: #0000cf; } /* BaseN */
-    code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4e9a06; } /* Char */
-    code span.cn { color: #8f5902; } /* Constant */
-    code span.co { color: #8f5902; font-style: italic; } /* Comment */
-    code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
-    code span.dt { color: #204a87; } /* DataType */
-    code span.dv { color: #0000cf; } /* DecVal */
-    code span.er { color: #a40000; font-weight: bold; } /* Error */
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
     code span.ex { } /* Extension */
-    code span.fl { color: #0000cf; } /* Float */
-    code span.fu { color: #204a87; font-weight: bold; } /* Function */
-    code span.im { } /* Import */
-    code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
-    code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
-    code span.ot { color: #8f5902; } /* Other */
-    code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
-    code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
-    code span.ss { color: #4e9a06; } /* SpecialString */
-    code span.st { color: #4e9a06; } /* String */
-    code span.va { color: #000000; } /* Variable */
-    code span.vs { color: #4e9a06; } /* VerbatimString */
-    code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="../note-style.css" />
-  <script
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-  type="text/javascript"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">Boolean Algebra</h1>
-</header>
 <nav id="TOC" role="doc-toc">
 <ul>
 <li><a href="#boolean-algebra" id="toc-boolean-algebra">Boolean
@@ -115,51 +110,30 @@ Systems</a></li>
 </nav>
 <h1 id="boolean-algebra">Boolean Algebra</h1>
 <h2 id="introduction">Introduction</h2>
-<p><strong>Boolean algebra</strong> describes the logic functions from
-which we build digital systems. It is a branch of algebra over where the
-variables can only take True or False values: <span
-class="math inline">\(\{1, 0\}\)</span> with three fundamental
-operators:</p>
-<ul>
-<li><span class="math inline">\(\text{AND}(x, y)\)</span>, also called
-conjunction, denoted as <span class="math inline">\(x \land y\)</span>
-(also <span class="math inline">\(x \cdot y\)</span> or <span
-class="math inline">\(xy\)</span>), <span
-class="math inline">\(1\)</span> only if <strong><em>both</em></strong>
-inputs are <span class="math inline">\(1\)</span>.</li>
-<li><span class="math inline">\(\text{OR}(x, y)\)</span>, denoted <span
-class="math inline">\(x \lor y\)</span> (also <span
-class="math inline">\(x + y\)</span>), <span
-class="math inline">\(1\)</span> if <strong>either</strong> input is
-<span class="math inline">\(1\)</span>.</li>
-<li><span class="math inline">\(\text{NOT}(x)\)</span>, denoted <span
-class="math inline">\(\bar{x}\)</span> (also <span
-class="math inline">\(x&#39;\)</span>), <span
-class="math inline">\(1\)</span> only if <span
-class="math inline">\(x\)</span> is <span
-class="math inline">\(0\)</span>.</li>
-</ul>
-<p>Three common compound gates derive from these:</p>
-<ul>
-<li><span class="math inline">\(\text{XOR}(x, y)\)</span>, aka Exclusive
-<span class="math inline">\(\text{OR}\)</span> denoted <span
-class="math inline">\(x \oplus y\)</span>, <span
-class="math inline">\(1\)</span> if <strong>exactly one</strong> input
-is <span class="math inline">\(1\)</span>.</li>
-<li><span class="math inline">\(\text{NAND}(x, y)\)</span>, denoted
-<span class="math inline">\(\overline{x \land y}\)</span></li>
-<li><span class="math inline">\(\text{NOR}(x, y)\)</span>, denoted <span
-class="math inline">\(\overline{x \lor y}\)</span></li>
-</ul>
-<p>Below is a Truth Table for the above operators:</p>
+<p><strong>Boolean algebra</strong> describes logic over
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{0,1\}</annotation></semantics></math>.
+AND is written
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mi>y</mi></mrow><annotation encoding="application/x-tex">xy</annotation></semantics></math>
+or
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x\land y</annotation></semantics></math>;
+OR,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>+</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x+y</annotation></semantics></math>
+or
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x\lor y</annotation></semantics></math>;
+NOT,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><annotation encoding="application/x-tex">\bar{x}</annotation></semantics></math>
+or
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mi>′</mi></mrow><annotation encoding="application/x-tex">x&#39;</annotation></semantics></math>.
+A variable or its complement is a <strong>literal</strong>.</p>
 <table>
 <thead>
 <tr class="header">
-<th>x</th>
-<th>y</th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math></th>
 <th>AND</th>
 <th>OR</th>
-<th>NOT(x)</th>
+<th>NOT(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>)</th>
+<th>XOR</th>
 <th>NAND</th>
 <th>NOR</th>
 <th>XNOR</th>
@@ -172,6 +146,7 @@ class="math inline">\(\overline{x \lor y}\)</span></li>
 <td>0</td>
 <td>0</td>
 <td>1</td>
+<td>0</td>
 <td>1</td>
 <td>1</td>
 <td>1</td>
@@ -180,6 +155,7 @@ class="math inline">\(\overline{x \lor y}\)</span></li>
 <td>0</td>
 <td>1</td>
 <td>0</td>
+<td>1</td>
 <td>1</td>
 <td>1</td>
 <td>1</td>
@@ -193,6 +169,7 @@ class="math inline">\(\overline{x \lor y}\)</span></li>
 <td>1</td>
 <td>0</td>
 <td>1</td>
+<td>1</td>
 <td>0</td>
 <td>0</td>
 </tr>
@@ -204,37 +181,14 @@ class="math inline">\(\overline{x \lor y}\)</span></li>
 <td>0</td>
 <td>0</td>
 <td>0</td>
+<td>0</td>
 <td>1</td>
 </tr>
 </tbody>
 </table>
-<p>XNOR (<span class="math inline">\(\overline{x \oplus y}\)</span>, aka
-<strong>equivalence</strong>) completes the compound set, 1 if both
-inputs are the same.</p>
-<blockquote>
-<p>George Boole introduced the algebra in <em>The Mathematical Analysis
-of Logic</em> (1847) and <em>An Investigation of the Laws of
-Thought</em> (1854). In the 1930s Claude Shannon showed the two-element
-algebra models switching circuits, making it the working mathematics of
-digital hardware (“switching algebra” and “Boolean algebra” are used
-interchangeably in circuit design).</p>
-</blockquote>
-<p>A variable or its complement in an expression is a
-<strong>literal</strong> (e.g. <span class="math inline">\(a \land
-\bar{b}\)</span> has two: <span class="math inline">\(a\)</span> and
-<span class="math inline">\(\bar{b}\)</span>). The algebra lets us
-<strong>simplify</strong> expressions, put them in <strong>normal
-form</strong>, and test two expressions for
-<strong>equivalence</strong>.</p>
 <h2 id="properties">Properties</h2>
-<p>Everything in the algebra follows from a small axiomatic core, the
-null, identity, and negation laws:</p>
-<p><span class="math display">\[
-0 \land x = 0 \qquad 1 \lor x = 1 \qquad 1 \land x = x \qquad 0 \lor x =
-x \qquad \bar{0} = 1
-\]</span></p>
-<p>The working set of identities derived from them (AND-form | OR-form),
-for all <span class="math inline">\(x, y, z \in \{0, 1\}\)</span>:</p>
+<p>These identities hold for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">x,y,z\in\{0,1\}</annotation></semantics></math>:</p>
 <table>
 <colgroup>
 <col style="width: 9%" />
@@ -251,207 +205,133 @@ for all <span class="math inline">\(x, y, z \in \{0, 1\}\)</span>:</p>
 <tbody>
 <tr class="odd">
 <td>Identity</td>
-<td><span class="math inline">\(x \land 1 = x\)</span></td>
-<td><span class="math inline">\(x \lor 0 = x\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mn>1</mn><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">x \land 1 = x</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mn>0</mn><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">x \lor 0 = x</annotation></semantics></math></td>
 </tr>
 <tr class="even">
 <td>Null</td>
-<td><span class="math inline">\(x \land 0 = 0\)</span></td>
-<td><span class="math inline">\(x \lor 1 = 1\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mn>0</mn><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x \land 0 = 0</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mn>1</mn><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">x \lor 1 = 1</annotation></semantics></math></td>
 </tr>
 <tr class="odd">
 <td>Idempotence</td>
-<td><span class="math inline">\(x \land x = x\)</span></td>
-<td><span class="math inline">\(x \lor x = x\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mi>x</mi><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">x \land x = x</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mi>x</mi><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">x \lor x = x</annotation></semantics></math></td>
 </tr>
 <tr class="even">
 <td>Complement</td>
-<td><span class="math inline">\(x \land \bar{x} = 0\)</span></td>
-<td><span class="math inline">\(x \lor \bar{x} = 1\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x \land \bar{x} = 0</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">x \lor \bar{x} = 1</annotation></semantics></math></td>
 </tr>
 <tr class="odd">
 <td>Involution</td>
-<td><span class="math inline">\(\overline{\bar{x}} = x\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow></mrow><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">\overline{\bar{x}} = x</annotation></semantics></math></td>
 <td><em>(self-dual)</em></td>
 </tr>
 <tr class="even">
 <td>Commutative</td>
-<td><span class="math inline">\(x \land y = y \land x\)</span></td>
-<td><span class="math inline">\(x \lor y = y \lor x\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mi>y</mi><mo>=</mo><mi>y</mi><mo>∧</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">x \land y = y \land x</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mi>y</mi><mo>=</mo><mi>y</mi><mo>∨</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">x \lor y = y \lor x</annotation></semantics></math></td>
 </tr>
 <tr class="odd">
 <td>Associative</td>
-<td><span class="math inline">\(x \land (y \land z) = (x \land y) \land
-z\)</span></td>
-<td><span class="math inline">\(x \lor (y \lor z) = (x \lor y) \lor
-z\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo>∧</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∧</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∧</mo><mi>z</mi></mrow><annotation encoding="application/x-tex">x \land (y \land z) = (x \land y) \land z</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo>∨</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∨</mo><mi>z</mi></mrow><annotation encoding="application/x-tex">x \lor (y \lor z) = (x \lor y) \lor z</annotation></semantics></math></td>
 </tr>
 <tr class="even">
 <td>Distributive</td>
-<td><span class="math inline">\(x \land (y \lor z) = (x \land y) \lor (x
-\land z)\)</span></td>
-<td><span class="math inline">\(x \lor (y \land z) = (x \lor y) \land (x
-\lor z)\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo>∨</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∧</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∨</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∧</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">x \land (y \lor z) = (x \land y) \lor (x \land z)</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo>∧</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∧</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">x \lor (y \land z) = (x \lor y) \land (x \lor z)</annotation></semantics></math></td>
 </tr>
 <tr class="odd">
 <td>Absorption</td>
-<td><span class="math inline">\(x \land (x \lor y) = x\)</span></td>
-<td><span class="math inline">\(x \lor (x \land y) = x\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∧</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">x \land (x \lor y) = x</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∨</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∧</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">x \lor (x \land y) = x</annotation></semantics></math></td>
 </tr>
 <tr class="even">
 <td>Combining</td>
-<td><span class="math inline">\((x \land y) \lor (x \land \bar{y}) =
-x\)</span></td>
-<td><span class="math inline">\((x \lor y) \land (x \lor \bar{y}) =
-x\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∧</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∨</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">(x \land y) \lor (x \land \bar{y}) = x</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∧</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">(x \lor y) \land (x \lor \bar{y}) = x</annotation></semantics></math></td>
 </tr>
 <tr class="odd">
 <td>Consensus</td>
-<td><span class="math inline">\(xy \lor \bar{x}z \lor yz = xy \lor
-\bar{x}z\)</span></td>
-<td><span class="math inline">\((x{\lor}y)(\bar{x}{\lor}z)(y{\lor}z) =
-(x{\lor}y)(\bar{x}{\lor}z)\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mi>y</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mi>z</mi><mo>∨</mo><mi>y</mi><mi>z</mi><mo>=</mo><mi>x</mi><mi>y</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mi>z</mi></mrow><annotation encoding="application/x-tex">xy \lor \bar{x}z \lor yz = xy \lor \bar{x}z</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo>∨</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∨</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">(x{\lor}y)(\bar{x}{\lor}z)(y{\lor}z) = (x{\lor}y)(\bar{x}{\lor}z)</annotation></semantics></math></td>
 </tr>
 <tr class="even">
 <td>DeMorgan’s</td>
-<td><span class="math inline">\(\overline{x \land y} = \bar{x} \lor
-\bar{y}\)</span></td>
-<td><span class="math inline">\(\overline{x \lor y} = \bar{x} \land
-\bar{y}\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi><mo>∧</mo><mi>y</mi></mrow><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow></mrow><annotation encoding="application/x-tex">\overline{x \land y} = \bar{x} \lor \bar{y}</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi><mo>∨</mo><mi>y</mi></mrow><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>y</mi></mrow></mrow><annotation encoding="application/x-tex">\overline{x \lor y} = \bar{x} \land \bar{y}</annotation></semantics></math></td>
 </tr>
 </tbody>
 </table>
-<p>Notes:</p>
-<ul>
-<li><strong>Idempotence</strong> is an important property where applying
-the same operation multiple times yields the same exact result as
-applying them just once - making it safe to retry the same
-operation</li>
-<li><strong>Complement</strong> and <strong>involution</strong> have no
-counterpart in ordinary algebra, they are what make the algebra
-<em>complemented</em>.</li>
-<li><span class="math inline">\(\land\)</span> and <span
-class="math inline">\(\lor\)</span> are <strong>monotone</strong>:
-changing an input from <span class="math inline">\(0\)</span> to <span
-class="math inline">\(1\)</span> can never flip the output from <span
-class="math inline">\(1\)</span> to <span
-class="math inline">\(0\)</span>. All nonmonotonicity enters through
-negation, which the two complement laws define completely.</li>
-<li><strong>Consensus</strong>: in <span class="math inline">\(xy \lor
-\bar{x}z \lor yz\)</span>, the term <span
-class="math inline">\(yz\)</span> is <strong>redundant</strong>
-(whenever <span class="math inline">\(yz=1\)</span>, either <span
-class="math inline">\(xy\)</span> or <span
-class="math inline">\(\bar{x}z\)</span> is already <span
-class="math inline">\(1\)</span>), so it drops out.</li>
-<li>Any identity can be proved by <strong>perfect induction</strong>,
-checking all <span class="math inline">\(2^n\)</span> input
-combinations. DeMorgan, for instance:</li>
-</ul>
-<table>
-<thead>
-<tr class="header">
-<th>x</th>
-<th>y</th>
-<th><span class="math inline">\(\overline{x \land y}\)</span></th>
-<th><span class="math inline">\(\bar{x} \lor \bar{y}\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td>1</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-</tr>
-</tbody>
-</table>
-<p>Venn diagrams give a second visual check: <span
-class="math inline">\(\land\)</span> is intersection, <span
-class="math inline">\(\lor\)</span> is union, <span
-class="math inline">\(\bar{x}\)</span> is the outside. Absorption,
-DeMorgan, and the complement laws can all be read off the shaded
-regions.</p>
+<p><strong>Consensus</strong> removes a logically redundant term: when
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mi>z</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">yz=1</annotation></semantics></math>,
+either
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mi>y</mi></mrow><annotation encoding="application/x-tex">xy</annotation></semantics></math>
+or
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mi>z</mi></mrow><annotation encoding="application/x-tex">\bar{x}z</annotation></semantics></math>
+is already 1. Retaining that term can prevent a hazard (see
+<a href="../../notes.html#Digital%20Design/Combinational%20Circuits" target="_top">Combinational
+Circuits</a>).</p>
+<p>Prove an identity by checking all
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><mi>n</mi></msup><annotation encoding="application/x-tex">2^n</annotation></semantics></math>
+input combinations. In set notation, AND is intersection, OR is union,
+and NOT is complement.</p>
 <figure>
 <img src="figs/venn.svg" alt="Venn diagrams for AND, OR, NOT" />
 <figcaption aria-hidden="true">Venn diagrams for AND, OR,
 NOT</figcaption>
 </figure>
 <h2 id="duality">Duality</h2>
-<p>Every identity above comes as a matched AND/OR pair, and that is no
-accident. The <strong>principle of duality</strong>: if an expression is
-true, so is the one obtained by swapping every <span
-class="math inline">\(\land \leftrightarrow \lor\)</span> and every
-<span class="math inline">\(0 \leftrightarrow 1\)</span>. Duality holds
-for the axioms, so it holds for everything derived from them: prove one
-form and its dual comes free.</p>
-<p>An operation unchanged by this swap is <strong>self-dual</strong>:
-NOT and the identity are, and so is majority <span
-class="math inline">\((x \land y) \lor (y \land z) \lor (z \land
-x)\)</span>. No binary operation depending on both inputs is self-dual,
-and compositions of self-dual operations stay self-dual.</p>
-<p>The idea extends from identities to whole functions. The
-<strong>dual</strong> <span class="math inline">\(f^D\)</span> swaps
-every <span class="math inline">\(\land \leftrightarrow \lor\)</span>
-and <span class="math inline">\(0 \leftrightarrow 1\)</span>: <span
-class="math display">\[
-f = (a \land b) \lor (b \land c) \;\implies\; f^D = (a \lor b) \land (b
-\lor c).
-\]</span></p>
-<p>The dual applied to complemented inputs equals the complement of the
-function, the generalized DeMorgan’s theorem, and the basis for building
-a CMOS pull-up network as the dual of its pull-down: <span
-class="math display">\[
-f^D(\bar{a}, \bar{b}, \ldots) = \overline{f(a, b, \ldots)}.
-\]</span></p>
+<p><strong>Duality</strong>: swapping
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∧</mo><mo>↔</mo><mo>∨</mo></mrow><annotation encoding="application/x-tex">\land\leftrightarrow\lor</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>↔</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">0\leftrightarrow1</annotation></semantics></math>
+in a valid identity produces another valid identity.</p>
+<p>The <strong>dual function</strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>f</mi><mi>D</mi></msup><annotation encoding="application/x-tex">f^D</annotation></semantics></math>
+uses the same swap. For example, the dual of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>b</mi><mo>∨</mo><mi>b</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">ab\lor bc</annotation></semantics></math>
+is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>∨</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>b</mi><mo>∨</mo><mi>c</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">(a\lor b)(b\lor c)</annotation></semantics></math>.</p>
+<p>Generalized De Morgan’s theorem relates the dual to complementation
+(and CMOS pull-up/pull-down networks):
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>f</mi><mi>D</mi></msup><mrow><mo stretchy="true" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>,</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo>,</mo><mi>…</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo>,</mo><mi>…</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">f^D(\bar{a},\bar{b},\ldots)=\overline{f(a,b,\ldots)}.</annotation></semantics></math></p>
 <p>To <strong>complement</strong> an expression directly: take the dual,
-then complement each literal. E.g. <span
-class="math inline">\(\overline{(a \land b) \lor (\bar{a} \land c)} =
-(\bar{a} \lor \bar{b}) \land (a \lor \bar{c})\)</span>.</p>
+then complement each literal. E.g.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>∧</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∨</mo><mrow><mo stretchy="true" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>∧</mo><mi>c</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>∧</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>c</mi></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\overline{(a \land b) \lor (\bar{a} \land c)} = (\bar{a} \lor \bar{b}) \land (a \lor \bar{c})</annotation></semantics></math>.</p>
 <h2 id="normal-form">Normal Form</h2>
-<p>To compare two expressions, put both in <strong>normal form</strong>,
-a <em>sum of products</em> (ORed AND-terms). Each product term matches
-one truth-table row where the output is <span
-class="math inline">\(1\)</span>. For the 3-input
-<strong>majority</strong> function (true when ≥2 inputs are high): <span
-class="math display">\[
+<p>A <strong>sum of products (SOP)</strong> ORs together AND-terms. In
+<strong>canonical SOP</strong>, every term includes every variable and
+matches exactly one truth-table row where the output is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>.
+For the 3-input <strong>majority</strong> function (true when ≥2 inputs
+are high):
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo>,</mo><mi>c</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mi>b</mi><mi>c</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∨</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mi>c</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∨</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mi>b</mi><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>c</mi></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>∨</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mi>b</mi><mi>c</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
 f(a, b, c) = (\bar{a}bc) \lor (a\bar{b}c) \lor (ab\bar{c}) \lor (abc)
-\]</span></p>
+</annotation></semantics></math></p>
 <p>Any expression reaches normal form by <strong>Shannon
-expansion</strong> about each variable: <span class="math display">\[
-f(\ldots, x_i, \ldots) = \big(x_i \land f(\ldots, 1, \ldots)\big) \lor
-\big(\bar{x_i} \land f(\ldots, 0, \ldots)\big).
-\]</span></p>
+expansion</strong> about each variable:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>i</mi></msub><mo>,</mo><mi>…</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>∧</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>…</mi><mo>,</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mo>∨</mo><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><msub><mi>x</mi><mi>i</mi></msub></mrow><mo>∧</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>…</mi><mo>,</mo><mn>0</mn><mo>,</mo><mi>…</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+f(\ldots, x_i, \ldots) = \big(x_i \land f(\ldots, 1, \ldots)\big) \lor \big(\bar{x_i} \land f(\ldots, 0, \ldots)\big).
+</annotation></semantics></math></p>
 <h3 id="minterms-maxterms-canonical-forms">Minterms, maxterms, canonical
 forms</h3>
-<p>A <strong>minterm</strong> <span class="math inline">\(m_j\)</span>
+<p>A <strong>minterm</strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>m</mi><mi>j</mi></msub><annotation encoding="application/x-tex">m_j</annotation></semantics></math>
 is a product using every variable once (true or complemented), true on
-exactly row <span class="math inline">\(j\)</span>. There are <span
-class="math inline">\(2^n\)</span> of them:</p>
+exactly row
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>.
+There are
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><mi>n</mi></msup><annotation encoding="application/x-tex">2^n</annotation></semantics></math>
+of them:</p>
 <table>
 <thead>
 <tr class="header">
-<th><span class="math inline">\(a\)</span></th>
-<th><span class="math inline">\(b\)</span></th>
-<th><span class="math inline">\(c\)</span></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math></th>
 <th>minterm</th>
 <th></th>
 </tr>
@@ -461,116 +341,75 @@ class="math inline">\(2^n\)</span> of them:</p>
 <td>0</td>
 <td>0</td>
 <td>0</td>
-<td><span class="math inline">\(\bar{a}\,\bar{b}\,\bar{c}\)</span></td>
-<td><span class="math inline">\(m_0\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mspace width="0.167em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mspace width="0.167em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>c</mi></mrow></mrow><annotation encoding="application/x-tex">\bar{a}\,\bar{b}\,\bar{c}</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>m</mi><mn>0</mn></msub><annotation encoding="application/x-tex">m_0</annotation></semantics></math></td>
 </tr>
 <tr class="even">
 <td>1</td>
 <td>0</td>
 <td>1</td>
-<td><span class="math inline">\(a\,\bar{b}\,c\)</span></td>
-<td><span class="math inline">\(m_5\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mspace width="0.167em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mspace width="0.167em"></mspace><mi>c</mi></mrow><annotation encoding="application/x-tex">a\,\bar{b}\,c</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>m</mi><mn>5</mn></msub><annotation encoding="application/x-tex">m_5</annotation></semantics></math></td>
 </tr>
 <tr class="odd">
 <td>1</td>
 <td>1</td>
 <td>1</td>
-<td><span class="math inline">\(a\,b\,c\)</span></td>
-<td><span class="math inline">\(m_7\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mspace width="0.167em"></mspace><mi>b</mi><mspace width="0.167em"></mspace><mi>c</mi></mrow><annotation encoding="application/x-tex">a\,b\,c</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>m</mi><mn>7</mn></msub><annotation encoding="application/x-tex">m_7</annotation></semantics></math></td>
 </tr>
 </tbody>
 </table>
 <ul>
 <li><strong>Canonical SOP</strong> = OR of minterms for rows where
-output is <span class="math inline">\(1\)</span>. Majority is true on
-rows 3,5,6,7: <span class="math inline">\(\;f = \sum
-m(3,5,6,7)\)</span>.</li>
+output is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>.
+Majority is true on rows 3,5,6,7:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mspace width="0.278em"></mspace><mi>f</mi><mo>=</mo><mo>∑</mo><mi>m</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>3</mn><mo>,</mo><mn>5</mn><mo>,</mo><mn>6</mn><mo>,</mo><mn>7</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\;f = \sum m(3,5,6,7)</annotation></semantics></math>.</li>
 <li><strong>Canonical POS</strong> = AND of <strong>maxterms</strong>
-<span class="math inline">\(M_j = \overline{m_j}\)</span> for rows where
-output is <span class="math inline">\(0\)</span>: <span
-class="math inline">\(\;f = \prod M(0,1,2,4)\)</span>.</li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>M</mi><mi>j</mi></msub><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><msub><mi>m</mi><mi>j</mi></msub></mrow></mrow><annotation encoding="application/x-tex">M_j = \overline{m_j}</annotation></semantics></math>
+for rows where output is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mspace width="0.278em"></mspace><mi>f</mi><mo>=</mo><mo>∏</mo><mi>M</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>4</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\;f = \prod M(0,1,2,4)</annotation></semantics></math>.</li>
 </ul>
 <p>Each truth table has exactly one canonical SOP and one canonical POS,
-the basis for equivalence checking. There are <span
-class="math inline">\(2^{2^n}\)</span> functions of <span
-class="math inline">\(n\)</span> variables (16 for <span
-class="math inline">\(n=2\)</span>, 256 for <span
-class="math inline">\(n=3\)</span>).</p>
+the basis for equivalence checking. There are
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><msup><mn>2</mn><mi>n</mi></msup></msup><annotation encoding="application/x-tex">2^{2^n}</annotation></semantics></math>
+functions of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+variables (16 for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">n=2</annotation></semantics></math>,
+256 for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">n=3</annotation></semantics></math>).</p>
 <p>Canonical forms are rarely minimal. Reducing to a <em>minimal</em>
 SOP/POS (fewest terms, fewest literals) is <strong>logic
 minimization</strong>.</p>
-<h3 id="worked-example-simplifying-implication">Worked Example:
-Simplifying Implication</h3>
-<p>Material implication <span class="math inline">\(x \rightarrow y =
-\bar{x} \lor y\)</span> (it reappears in SVA assertions as
-<code>|-&gt;</code>, false only when <span class="math inline">\(x=1,
-y=0\)</span>). Deriving that form from its truth table is the whole
-workflow in miniature: write the canonical SOP, then let the identities
-shrink it.</p>
-<table>
-<thead>
-<tr class="header">
-<th><span class="math inline">\(x\)</span></th>
-<th><span class="math inline">\(y\)</span></th>
-<th><span class="math inline">\(x \rightarrow y\)</span></th>
-<th>minterm</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td><span class="math inline">\(\bar{x}\,\bar{y}\)</span></td>
-</tr>
-<tr class="even">
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td><span class="math inline">\(\bar{x}\,y\)</span></td>
-</tr>
-<tr class="odd">
-<td>1</td>
-<td>0</td>
-<td>0</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td>1</td>
-<td>1</td>
-<td><span class="math inline">\(x\,y\)</span></td>
-</tr>
-</tbody>
-</table>
-<p><span class="math display">\[
-x \rightarrow y = \bar{x}\bar{y} \lor \bar{x}y \lor xy
-= \bar{x}(\bar{y} \lor y) \lor xy
-= \bar{x} \lor xy
-= (\bar{x} \lor x)(\bar{x} \lor y)
-= \bar{x} \lor y
-\]</span></p>
-<p>(distribute, complement, distribute again; the last two steps are the
-identity <span class="math inline">\(a \lor \bar{a}b = a \lor
-b\)</span>).</p>
+<p>Material implication is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow><mo>∨</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x\rightarrow y=\bar{x}\lor y</annotation></semantics></math>:
+false only for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>y</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x=1,y=0</annotation></semantics></math>.
+SystemVerilog assertion implication additionally has temporal sampling
+semantics.</p>
 <h2 id="logic-minimization">Logic Minimization</h2>
-<p>The core move is the combining theorem applied repeatedly: <span
-class="math inline">\(PQ \lor P\bar{Q} = P\)</span>. Each application
-drops a literal. An <strong>implicant</strong> is a product term that
-implies the function; a <strong>prime implicant</strong> is one that
-cannot lose any further literal. A minimal SOP is a sum of prime
-implicants covering every <span class="math inline">\(1\)</span>.</p>
+<p>The core move is the combining theorem applied repeatedly:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi>Q</mi><mo>∨</mo><mi>P</mi><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>Q</mi></mrow><mo>=</mo><mi>P</mi></mrow><annotation encoding="application/x-tex">PQ \lor P\bar{Q} = P</annotation></semantics></math>.
+Each application drops a literal. An <strong>implicant</strong> is a
+product term that implies the function; a <strong>prime
+implicant</strong> is one that cannot lose any further literal. A
+minimal SOP is a sum of prime implicants covering every
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>.</p>
 <h3 id="karnaugh-maps">Karnaugh maps</h3>
 <p>A K-map arranges the truth table so cells differing in one variable
 are adjacent, including wraparound. Combining adjacent minterms becomes
-“circle adjacent <span class="math inline">\(1\)</span>s and drop the
-variable that changes”. Columns and rows follow Gray-code order. For
-<span class="math inline">\(f = abc \lor \bar{a}bc \lor
-ab\bar{c}\)</span>:</p>
+“circle adjacent
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>s
+and drop the variable that changes”. Columns and rows follow Gray-code
+order. For
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>=</mo><mi>a</mi><mi>b</mi><mi>c</mi><mo>∨</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mi>b</mi><mi>c</mi><mo>∨</mo><mi>a</mi><mi>b</mi><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>c</mi></mrow></mrow><annotation encoding="application/x-tex">f = abc \lor \bar{a}bc \lor ab\bar{c}</annotation></semantics></math>:</p>
 <table>
 <thead>
 <tr class="header">
-<th><span class="math inline">\(a \backslash bc\)</span></th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>∖</mo><mi>b</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">a \backslash bc</annotation></semantics></math></th>
 <th>00</th>
 <th>01</th>
 <th>11</th>
@@ -588,58 +427,72 @@ ab\bar{c}\)</span>:</p>
 <tr class="even">
 <td><strong>1</strong></td>
 <td>0</td>
-<td>1</td>
+<td>0</td>
 <td>1</td>
 <td>1</td>
 </tr>
 </tbody>
 </table>
-<p>Two groups of two cover all the <span
-class="math inline">\(1\)</span>s: column <span
-class="math inline">\(bc\)</span> (varies <span
-class="math inline">\(a\)</span>) gives <span
-class="math inline">\(bc\)</span>; the <span
-class="math inline">\(a{=}1\)</span> pair in columns <span
-class="math inline">\(11,10\)</span> (varies <span
-class="math inline">\(c\)</span>) gives <span
-class="math inline">\(ab\)</span>. So <span class="math inline">\(f = bc
-\lor ab\)</span>.</p>
+<p>Two groups of two cover all the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>s:
+column
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">bc</annotation></semantics></math>
+(varies
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>)
+gives
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">bc</annotation></semantics></math>;
+the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">a{=}1</annotation></semantics></math>
+pair in columns
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>11</mn><mo>,</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">11,10</annotation></semantics></math>
+(varies
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math>)
+gives
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>b</mi></mrow><annotation encoding="application/x-tex">ab</annotation></semantics></math>.
+So
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>=</mo><mi>b</mi><mi>c</mi><mo>∨</mo><mi>a</mi><mi>b</mi></mrow><annotation encoding="application/x-tex">f = bc \lor ab</annotation></semantics></math>.</p>
 <p>Grouping rules:</p>
 <ul>
-<li>Circle groups of <span class="math inline">\(1, 2, 4, 8,
-\ldots\)</span> (<span class="math inline">\(2^k\)</span>) adjacent
-<span class="math inline">\(1\)</span>s, never other sizes.</li>
+<li>Use rectangular groups of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><mi>k</mi></msup><annotation encoding="application/x-tex">2^k</annotation></semantics></math>
+cells, each containing only
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>s
+or chosen don’t-cares.</li>
 <li>The map wraps: left/right columns and top/bottom rows are
 adjacent.</li>
 <li>Make each group as large as possible. A larger group has fewer
 literals.</li>
-<li>Cover every <span class="math inline">\(1\)</span> with at least one
-group. A <span class="math inline">\(1\)</span> that only one group can
-cover forces that group, an <strong>essential prime
-implicant</strong>.</li>
+<li>Cover every
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>
+with at least one group. A
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>
+covered by only one prime implicant forces that implicant, an
+<strong>essential prime implicant</strong>.</li>
 <li>Groups may overlap.</li>
 </ul>
 <h3 id="dont-cares">Don’t-cares</h3>
 <p>Input combinations that cannot occur (or whose output is irrelevant)
-are marked <span class="math inline">\(X\)</span> and may be grouped as
-either <span class="math inline">\(0\)</span> or <span
-class="math inline">\(1\)</span>, whichever enlarges a group. They cost
-nothing if left uncovered.</p>
+are marked
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>
+and may be grouped as either
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>
+or
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>,
+whichever enlarges a group. They cost nothing if left uncovered.</p>
 <h3 id="beyond-k-maps">Beyond K-maps</h3>
 <p>K-maps are practical to about 4 variables. Synthesis tools instead
 use algorithms: <strong>Quine-McCluskey</strong> (exhaustive tabular
 prime-implicant generation), <strong>Espresso</strong> (heuristic SOP
-minimizer), or <strong>Binary Decision Diagrams</strong> (a canonical
-graph form manipulated directly).</p>
+minimizer), or <strong>reduced ordered Binary Decision Diagrams</strong>
+(canonical for a fixed variable order).</p>
 <p>Deciding whether <em>any</em> input makes a formula true is
 <strong>Boolean satisfiability (SAT)</strong>, the first problem proved
 NP-complete. Modern equivalence checkers and formal verification tools
 are built on SAT solvers alongside BDDs.</p>
 <h2 id="from-equations-to-gates">From Equations to Gates</h2>
-<p>A logic function is drawn as a <strong>logic diagram</strong> of gate
-symbols. To convert an expression to a diagram, pick the top-level
-operator, draw that gate, and recurse on its arguments; to read a
-diagram back, label each gate’s output working from the inputs out.</p>
+<p>A <strong>logic diagram</strong> represents an expression as gates.
+Build from the outermost operator inward; analyze by labeling gate
+outputs from inputs outward.</p>
 <figure>
 <img src="figs/gates.svg" alt="Logic gate symbols" />
 <figcaption aria-hidden="true">Logic gate symbols</figcaption>
@@ -649,12 +502,12 @@ bubbles</h3>
 <p>An <strong>inversion bubble</strong> on a gate input or output
 replaces an explicit inverter.</p>
 <ul>
-<li><strong>NAND</strong> = AND + inverter, <span
-class="math inline">\(\overline{a \land b}\)</span>; by DeMorgan, an OR
-with bubbled inputs.</li>
-<li><strong>NOR</strong> = OR + inverter, <span
-class="math inline">\(\overline{a \lor b}\)</span>; by DeMorgan, an AND
-with bubbled inputs.</li>
+<li><strong>NAND</strong> = AND + inverter,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi><mo>∧</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">\overline{a \land b}</annotation></semantics></math>;
+by DeMorgan, an OR with bubbled inputs.</li>
+<li><strong>NOR</strong> = OR + inverter,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi><mo>∨</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">\overline{a \lor b}</annotation></semantics></math>;
+by DeMorgan, an AND with bubbled inputs.</li>
 </ul>
 <figure>
 <img src="figs/bubblepush.svg"
@@ -665,75 +518,60 @@ OR, NOR is a bubbled-input AND</figcaption>
 <p><strong>Bubble pushing</strong> is DeMorgan in gate form:
 complementing all ports of an AND yields an OR and vice versa. Sliding
 bubbles through a network this way converts AND/OR logic into all-NAND
-or all-NOR form. CMOS only provides <em>inverting</em> gates, so NAND
-and NOR are the natural primitives.</p>
+or all-NOR form. Single-stage complementary static CMOS naturally
+implements inverting functions; noninverting gates use additional stages
+or other circuit styles.</p>
 <h3 id="functional-completeness">Functional completeness</h3>
 <p>A set of operators is <strong>functionally complete</strong> if it
-can build any function. <span class="math inline">\(\{\land, \lor,
-\lnot\}\)</span> is complete (canonical SOP uses only these). Crucially,
-<strong>NAND alone and NOR alone are each universal</strong>, which is
-why a single gate type can implement any logic in silicon. <img
-src="figs/nandgates.svg" style="width:75.0%"
+can build any function.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mo>∧</mo><mo>,</mo><mo>∨</mo><mo>,</mo><mi>¬</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{\land, \lor, \lnot\}</annotation></semantics></math>
+is complete (canonical SOP uses only these). Crucially, <strong>NAND
+alone and NOR alone are each universal</strong>, which is why a single
+gate type can implement any logic in silicon. <img
+src="figs/nandgates.svg"
 alt="NOT, AND, and OR built from NAND alone" /></p>
 <h3 id="xor-xnor">XOR / XNOR</h3>
-<p><span class="math display">\[
-a \oplus b = (a \land \bar{b}) \lor (\bar{a} \land b), \qquad
-\overline{a \oplus b} = (a \land b) \lor (\bar{a} \land \bar{b}).
-\]</span></p>
-<p>XOR is commutative and associative, with <span
-class="math inline">\(x \oplus 0 = x\)</span>, <span
-class="math inline">\(\;x \oplus 1 = \bar{x}\)</span>, <span
-class="math inline">\(\;x \oplus x = 0\)</span>. A chain <span
-class="math inline">\(x_1 \oplus \cdots \oplus x_n\)</span> gives
-<strong>parity</strong> (<span class="math inline">\(1\)</span> iff an
-odd number of inputs are <span class="math inline">\(1\)</span>). XNOR
-is <strong>equivalence</strong>, true iff the inputs match.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>⊕</mo><mi>b</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>∨</mo><mrow><mo stretchy="true" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>∧</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi><mo>⊕</mo><mi>b</mi></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>∧</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∨</mo><mrow><mo stretchy="true" form="prefix">(</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>a</mi></mrow><mo>∧</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>b</mi></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+a \oplus b = (a \land \bar{b}) \lor (\bar{a} \land b), \qquad \overline{a \oplus b} = (a \land b) \lor (\bar{a} \land \bar{b}).
+</annotation></semantics></math></p>
+<p>XOR is commutative and associative, with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>⊕</mo><mn>0</mn><mo>=</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">x \oplus 0 = x</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mspace width="0.278em"></mspace><mi>x</mi><mo>⊕</mo><mn>1</mn><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mi>x</mi></mrow></mrow><annotation encoding="application/x-tex">\;x \oplus 1 = \bar{x}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mspace width="0.278em"></mspace><mi>x</mi><mo>⊕</mo><mi>x</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\;x \oplus x = 0</annotation></semantics></math>.
+A chain
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>⊕</mo><mi>⋯</mi><mo>⊕</mo><msub><mi>x</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">x_1 \oplus \cdots \oplus x_n</annotation></semantics></math>
+gives <strong>parity</strong>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>
+iff an odd number of inputs are
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>).
+XNOR is <strong>equivalence</strong>, true iff the inputs match.</p>
 <h2 id="bits-as-a-field-gf2">Bits as a Field: GF(2)</h2>
-<p>Reading <span class="math inline">\(0, 1\)</span> as integers gives
-arithmetic equivalents, useful in proofs and in software without native
-bit operations: <span class="math display">\[
-x \land y = xy = \min(x,y) \qquad x \lor y = x + y - xy = \max(x,y)
-\qquad \bar{x} = 1 - x
-\]</span> XOR is addition modulo 2: add the bits as integers and keep
-the remainder mod 2, so <span class="math inline">\(1 \oplus 1 =
-0\)</span>. Taking <span class="math inline">\(\oplus\)</span> as
-addition and <span class="math inline">\(\land\)</span> as
-multiplication, the set <span class="math inline">\(\{0, 1\}\)</span>
-satisfies every field axiom, giving the two-element <strong>Galois
-Field</strong> <span class="math inline">\(GF(2)\)</span>, the smallest
-field there is.</p>
-<p>Since <span class="math inline">\(x \oplus x = 0\)</span>, every
-element is its own negative: addition and subtraction are the same
-operation. Because bits form a field, all of linear algebra (vectors,
-matrices, polynomials) works over bits, which hardware exploits
-directly:</p>
+<p>XOR is addition modulo 2; AND is multiplication. Together they form
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">GF(2)</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>⊕</mo><mi>x</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x\oplus x=0</annotation></semantics></math>,
+so addition and subtraction coincide.</p>
 <ul>
-<li><strong>Parity</strong> is the XOR-sum of all the bits of a word,
-literally its “sum” in <span class="math inline">\(GF(2)\)</span>. That
-is why an XOR chain/tree computes parity, and why flipping any single
-bit always flips the parity (single-bit error detection).</li>
-<li><strong>CRCs</strong> treat a bit stream as the coefficients of a
-<span class="math inline">\(GF(2)\)</span> polynomial (<span
-class="math inline">\(1011 \to x^3 + x + 1\)</span>) and take its
-remainder after dividing by a fixed <em>generator polynomial</em>.
-Polynomial division in <span class="math inline">\(GF(2)\)</span> needs
-only shift-and-XOR, so a CRC engine is just a shift register with XOR
-taps at the generator’s terms (an LFSR).</li>
-<li><strong>Linear error-correcting codes</strong> (Hamming, memory ECC)
-compute check bits as a matrix-vector product over <span
-class="math inline">\(GF(2)\)</span>: each check bit is the AND of the
-data word with a row mask, accumulated by XOR. Decoding recomputes the
-product; a nonzero result (<em>syndrome</em>) points at the flipped
-bit.</li>
+<li><strong>Parity</strong> XORs the data bits; it detects every odd
+number of bit flips, but misses even numbers.</li>
+<li><strong>CRC</strong> treats a bit stream as a polynomial and
+computes a remainder using shift-and-XOR. The polynomial and message
+length determine which error patterns are detected.</li>
+<li><strong>Linear ECC</strong> computes parity checks with XOR
+networks. A syndrome identifies errors within the code’s correction
+capability; it does not locate arbitrary corruption.</li>
 </ul>
+<p><a href="../../notes.html#Digital%20Design/Sequential%20Circuits" target="_top">Sequential
+Circuits</a> gives LFSR and CRC implementations.</p>
 <h2 id="number-systems">Number Systems</h2>
-<p>Logic manipulates truth values; datapaths interpret whole bit vectors
-as numbers, so the encodings deserve the same care as the operators. A
-radix-<span class="math inline">\(r\)</span> positional number weights
-digit <span class="math inline">\(i\)</span> by <span
-class="math inline">\(r^i\)</span>; hardware uses <span
-class="math inline">\(r=2\)</span>, with octal and hexadecimal as
-human-readable shorthand:</p>
+<p>A
+radix-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>
+positional number weights digit
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>r</mi><mi>i</mi></msup><annotation encoding="application/x-tex">r^i</annotation></semantics></math>.
+Binary encodes hardware values; octal and hexadecimal abbreviate bit
+groups:</p>
 <table>
 <colgroup>
 <col style="width: 25%" />
@@ -776,41 +614,53 @@ human-readable shorthand:</p>
 </tr>
 </tbody>
 </table>
-<p>An <span class="math inline">\(N\)</span>-bit unsigned number covers
-<span class="math inline">\(0\)</span> to <span
-class="math inline">\(2^N-1\)</span>: <span class="math display">\[
+<p>An
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>-bit
+unsigned number covers
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mi>N</mi></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^N-1</annotation></semantics></math>:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mn>1011</mn><mn>2</mn></msub><mo>=</mo><mn>1</mn><mo>⋅</mo><msup><mn>2</mn><mn>3</mn></msup><mo>+</mo><mn>0</mn><mo>⋅</mo><msup><mn>2</mn><mn>2</mn></msup><mo>+</mo><mn>1</mn><mo>⋅</mo><msup><mn>2</mn><mn>1</mn></msup><mo>+</mo><mn>1</mn><mo>⋅</mo><msup><mn>2</mn><mn>0</mn></msup><mo>=</mo><msub><mn>11</mn><mn>10</mn></msub></mrow><annotation encoding="application/x-tex">
 1011_2 = 1{\cdot}2^3 + 0{\cdot}2^2 + 1{\cdot}2^1 + 1{\cdot}2^0 = 11_{10}
-\]</span> Because <span class="math inline">\(8 = 2^3\)</span> and <span
-class="math inline">\(16 = 2^4\)</span>, conversion to octal or hex is
-pure regrouping of bits from the right, no arithmetic: <span
-class="math display">\[
-11011101_2 =
-\underbrace{011}_{3}\underbrace{011}_{3}\underbrace{101}_{5} = 335_8 =
-\underbrace{1101}_{D}\underbrace{1101}_{D} = \mathrm{DD}_{16} = 221_{10}
-\]</span> Hex won because word sizes settled on multiples of 4 bits;
-octal survives where fields are 3 bits wide
-(<code>chmod 755</code>).</p>
-<h3 id="signed-twos-complement">Signed: two’s complement</h3>
+</annotation></semantics></math> Because
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>8</mn><mo>=</mo><msup><mn>2</mn><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">8 = 2^3</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>16</mn><mo>=</mo><msup><mn>2</mn><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">16 = 2^4</annotation></semantics></math>,
+conversion to octal or hex is pure regrouping of bits from the right, no
+arithmetic:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mn>11011101</mn><mn>2</mn></msub><mo>=</mo><munder><munder><mn>011</mn><mo accent="true">⏟</mo></munder><mn>3</mn></munder><munder><munder><mn>011</mn><mo accent="true">⏟</mo></munder><mn>3</mn></munder><munder><munder><mn>101</mn><mo accent="true">⏟</mo></munder><mn>5</mn></munder><mo>=</mo><msub><mn>335</mn><mn>8</mn></msub><mo>=</mo><munder><munder><mn>1101</mn><mo accent="true">⏟</mo></munder><mi>D</mi></munder><munder><munder><mn>1101</mn><mo accent="true">⏟</mo></munder><mi>D</mi></munder><mo>=</mo><msub><mrow><mi mathvariant="normal">D</mi><mi mathvariant="normal">D</mi></mrow><mn>16</mn></msub><mo>=</mo><msub><mn>221</mn><mn>10</mn></msub></mrow><annotation encoding="application/x-tex">
+11011101_2 = \underbrace{011}_{3}\underbrace{011}_{3}\underbrace{101}_{5} = 335_8 = \underbrace{1101}_{D}\underbrace{1101}_{D} = \mathrm{DD}_{16} = 221_{10}
+</annotation></semantics></math> ### Signed: two’s complement</p>
 <p>The standard signed encoding gives the most significant bit weight
-<span class="math inline">\(-2^{N-1}\)</span> instead of <span
-class="math inline">\(+2^{N-1}\)</span>. Its decisive property is that
-ordinary binary addition works for any signs, with no special
-casing.</p>
-<p><span class="math display">\[
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><msup><mn>2</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">-2^{N-1}</annotation></semantics></math>
+instead of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo><msup><mn>2</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">+2^{N-1}</annotation></semantics></math>.
+Its decisive property is that ordinary binary addition works for any
+signs, with no special casing.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mo>=</mo><mn>0101</mn><mo>,</mo><mspace width="2.0em"></mspace><mo>−</mo><mn>5</mn><mo>=</mo><mrow style="border-top:0.065em solid;padding-top:0.1em"><mn>0101</mn></mrow><mo>+</mo><mn>1</mn><mo>=</mo><mn>1010</mn><mo>+</mo><mn>1</mn><mo>=</mo><mn>1011</mn></mrow><annotation encoding="application/x-tex">
 5 = 0101, \qquad -5 = \overline{0101} + 1 = 1010 + 1 = 1011
-\]</span> <span class="math display">\[
+</annotation></semantics></math>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mo>+</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mn>5</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0101</mn><mo>+</mo><mn>1011</mn><mo>=</mo><mn>10000</mn><mo>→</mo><mtext mathvariant="normal">drop carry</mtext><mo>→</mo><mn>0000</mn><mi>✓</mi></mrow><annotation encoding="application/x-tex">
 5 + (-5) = 0101 + 1011 = 10000 \to \text{drop carry} \to 0000 \checkmark
-\]</span></p>
+</annotation></semantics></math></p>
 <ul>
 <li><strong>Negate</strong>: invert all bits, add 1.
 <code>assign neg = ~a + 1'b1;</code></li>
-<li><strong>Range</strong> (<span class="math inline">\(N\)</span>
-bits): <span class="math inline">\([-2^{N-1},\, 2^{N-1}-1]\)</span>, one
-extra negative value (no <span class="math inline">\(-0\)</span>). The
-value <span class="math inline">\(10{\ldots}0\)</span> negates to
-itself.</li>
+<li><strong>Range</strong>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+bits):
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mo>−</mo><msup><mn>2</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>,</mo><mspace width="0.167em"></mspace><msup><mn>2</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[-2^{N-1},\, 2^{N-1}-1]</annotation></semantics></math>,
+one extra negative value (no
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">-0</annotation></semantics></math>).
+The value
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>10</mn><mi>…</mi><mn>0</mn></mrow><annotation encoding="application/x-tex">10{\ldots}0</annotation></semantics></math>
+negates to itself.</li>
 <li><strong>Sign extend</strong>: copy the sign bit into new upper bits,
-never zero-fill. <code>assign out = {{(M){in[N-1]}}, in};</code></li>
+never zero-fill. <code>assign out = {{(M-N){in[N-1]}}, in};</code> for
+an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>M</mi><annotation encoding="application/x-tex">M</annotation></semantics></math>-bit
+output,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>≥</mo><mi>N</mi></mrow><annotation encoding="application/x-tex">M\ge N</annotation></semantics></math>.</li>
 </ul>
 <p>Comparison with the alternatives:</p>
 <table>
@@ -823,7 +673,9 @@ never zero-fill. <code>assign out = {{(M){in[N-1]}}, in};</code></li>
 <thead>
 <tr class="header">
 <th>System</th>
-<th>Range (<span class="math inline">\(N\)</span> bits)</th>
+<th>Range
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+bits)</th>
 <th>Zeros</th>
 <th>Addition</th>
 </tr>
@@ -831,20 +683,19 @@ never zero-fill. <code>assign out = {{(M){in[N-1]}}, in};</code></li>
 <tbody>
 <tr class="odd">
 <td>Unsigned</td>
-<td><span class="math inline">\([0,\, 2^N-1]\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mspace width="0.167em"></mspace><msup><mn>2</mn><mi>N</mi></msup><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0,\, 2^N-1]</annotation></semantics></math></td>
 <td>1</td>
 <td>direct</td>
 </tr>
 <tr class="even">
 <td>Two’s complement</td>
-<td><span class="math inline">\([-2^{N-1},\, 2^{N-1}-1]\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mo>−</mo><msup><mn>2</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>,</mo><mspace width="0.167em"></mspace><msup><mn>2</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[-2^{N-1},\, 2^{N-1}-1]</annotation></semantics></math></td>
 <td>1</td>
 <td>direct, same hardware as unsigned</td>
 </tr>
 <tr class="odd">
 <td>Sign/magnitude</td>
-<td><span class="math inline">\([-(2^{N-1}-1),\,
-2^{N-1}-1]\)</span></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mo>−</mo><mrow><mo stretchy="true" form="prefix">(</mo><msup><mn>2</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="0.167em"></mspace><msup><mn>2</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[-(2^{N-1}-1),\, 2^{N-1}-1]</annotation></semantics></math></td>
 <td>2</td>
 <td>needs sign-comparison logic</td>
 </tr>
@@ -856,30 +707,32 @@ the result sign differs. Carry-out of the MSB is not a reliable
 signed-overflow indicator.</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode verilog"><code class="sourceCode verilog"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">assign</span> overflow <span class="op">=</span> <span class="op">(</span>a<span class="op">[</span>W<span class="dv">-1</span><span class="op">]</span> <span class="op">==</span> b<span class="op">[</span>W<span class="dv">-1</span><span class="op">])</span> <span class="op">&amp;&amp;</span> <span class="op">(</span>sum<span class="op">[</span>W<span class="dv">-1</span><span class="op">]</span> <span class="op">!=</span> a<span class="op">[</span>W<span class="dv">-1</span><span class="op">]);</span></span></code></pre></div>
-<ul>
-<li>We can use XNOR to indicate two inputs are equivalent</li>
-<li>We can use XOR to incidate that the two inputs are not
-equivalent</li>
-</ul>
 <figure>
 <img src="figs/overflow.svg"
-alt="signed-overflow detector: XNOR the operand signs, XOR the result sign, AND|576" />
+alt="signed-overflow detector: XNOR the operand signs, XOR the result sign, AND" />
 <figcaption aria-hidden="true">signed-overflow detector: XNOR the
-operand signs, XOR the result sign, AND|576</figcaption>
+operand signs, XOR the result sign, AND</figcaption>
 </figure>
 <h3 id="fixed-point">Fixed-point</h3>
 <p>An implied binary point splits integer and fractional bits.
-<code>Ua.b</code> is unsigned with <span
-class="math inline">\(a\)</span> integer and <span
-class="math inline">\(b\)</span> fractional bits; <code>Qa.b</code> is
-the signed (two’s complement) form. <span class="math display">\[
+<code>Ua.b</code> is unsigned with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+integer and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
+fractional bits; <code>Qa.b</code> is signed two’s complement; here
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+includes the sign bit (conventions vary).
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0110.1100</mn><mspace width="0.222em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mi>Q</mi><mn>4.4</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msup><mn>2</mn><mn>2</mn></msup><mo>+</mo><msup><mn>2</mn><mn>1</mn></msup><mo>+</mo><msup><mn>2</mn><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>+</mo><msup><mn>2</mn><mrow><mo>−</mo><mn>2</mn></mrow></msup><mo>=</mo><mn>6.75</mn></mrow><annotation encoding="application/x-tex">
 0110.1100\ (Q4.4) = 2^2 + 2^1 + 2^{-1} + 2^{-2} = 6.75
-\]</span> Negatives reuse two’s complement, so a plain integer adder
-works unchanged; the point position is interpretation only. Resolution
-is the grid spacing (<span class="math inline">\(2^{-b}\)</span>);
-accuracy is the worst-case error, <span
-class="math inline">\(\Delta/2\)</span> for round-to-nearest versus
-<span class="math inline">\(\Delta\)</span> for truncation.</p>
+</annotation></semantics></math> Negatives reuse two’s complement, so a
+plain integer adder works unchanged; the point position is
+interpretation only. Resolution is the grid spacing
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><mrow><mo>−</mo><mi>b</mi></mrow></msup><annotation encoding="application/x-tex">2^{-b}</annotation></semantics></math>);
+quantization error is at most
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">\Delta/2</annotation></semantics></math>
+for round-to-nearest and less than
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Δ</mi><annotation encoding="application/x-tex">\Delta</annotation></semantics></math>
+for truncation, assuming no overflow.</p>
 <h3 id="binary-codes">Binary codes</h3>
 <table>
 <colgroup>
@@ -897,22 +750,19 @@ class="math inline">\(\Delta/2\)</span> for round-to-nearest versus
 <tbody>
 <tr class="odd">
 <td>BCD</td>
-<td>each decimal digit in its own 4 bits (<span class="math inline">\(59
-\to 0101\,1001\)</span>)</td>
-<td>exact decimal, wastes codes <span
-class="math inline">\(1010\)</span> to <span
-class="math inline">\(1111\)</span></td>
+<td>each decimal digit in its own 4 bits
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>59</mn><mo>→</mo><mn>0101</mn><mspace width="0.167em"></mspace><mn>1001</mn></mrow><annotation encoding="application/x-tex">59 \to 0101\,1001</annotation></semantics></math>)</td>
+<td>exact decimal, wastes codes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1010</mn><annotation encoding="application/x-tex">1010</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1111</mn><annotation encoding="application/x-tex">1111</annotation></semantics></math></td>
 </tr>
 <tr class="even">
-<td>Excess-3</td>
-<td>BCD digit <span class="math inline">\(+3\)</span></td>
-<td>self-complementing (9’s complement is bitwise NOT)</td>
-</tr>
-<tr class="odd">
 <td>Gray</td>
-<td>successive values differ in one bit (<span
-class="math inline">\(00,01,11,10\)</span>)</td>
-<td>no multi-bit transitions, safe for pointers and encoders</td>
+<td>successive values differ in one bit
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>00</mn><mo>,</mo><mn>01</mn><mo>,</mo><mn>11</mn><mo>,</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">00,01,11,10</annotation></semantics></math>)</td>
+<td>one-bit adjacent transitions; CDC still needs synchronizers and
+timing constraints</td>
 </tr>
 </tbody>
 </table>
@@ -922,32 +772,16 @@ class="math inline">\(00,01,11,10\)</span>)</td>
 <p>Author: Sai Govardhan (saigov14@gmail.com) ## References</p>
 <p><strong>Textbooks</strong></p>
 <ul>
-<li>W. J. Dally &amp; R. C. Harting, <em>Digital Design: A Systems
-Approach</em></li>
-<li>D. Harris &amp; S. Harris, <em>Digital Design and Computer
-Architecture</em></li>
-<li>M. Morris Mano, <em>Digital Design</em></li>
+<li>W. J. Dally &amp; R. C. Harting, Digital Design: A Systems
+Approach</li>
+<li>D. Harris &amp; S. Harris, Digital Design and Computer
+Architecture</li>
+<li>M. Morris Mano, Digital Design</li>
 </ul>
-<pre class="license"><code>MIT License
-
-Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</code></pre>
+<p>License: <a href="LICENSE.txt">MIT</a>.</p>
+<nav class="note-nav" aria-label="Adjacent notes">
+<a class="nav-prev" href="../../notes.html#Digital%20Design/Index" target="_top">← Index</a>
+<a class="nav-next" href="../../notes.html#Digital%20Design/Combinational%20Circuits" target="_top">Combinational Circuits →</a>
+</nav>
 </body>
 </html>

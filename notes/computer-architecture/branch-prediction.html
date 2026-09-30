@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Branch Prediction</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -27,9 +21,8 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
-    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span { line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -121,25 +114,19 @@ id="toc-living-in-the-pipeline">Living in the Pipeline</a></li>
 </ul>
 </nav>
 <h1 id="branch-prediction">Branch Prediction</h1>
-<p>Roughly one instruction in five is a branch, and the fetch stage of
-the
-<a href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">Simple
-Instruction Pipeline</a> must produce a next PC every cycle, long before
-the branch resolves. A branch predictor guesses the outcome so fetch
-never waits; a wrong guess flushes speculative work. Prediction is the
-enabling technology for deep pipelines and for all speculation in
-<a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">Out
-of Order Execution and Register Renaming</a>.</p>
+<p>Branch prediction supplies a likely next PC before control flow
+resolves. Correct predictions keep fetch busy; wrong predictions require
+recovery. The benefit depends on branch frequency, accuracy, and
+penalty.</p>
 <p>The cost of control flow in CPI terms:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>P</mi><msub><mi>I</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>n</mi><mi>c</mi><mi>h</mi></mrow></msub><mo>=</mo><msub><mi>f</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>n</mi><mi>c</mi><mi>h</mi></mrow></msub><mo>×</mo><msub><mi>p</mi><mrow><mi>m</mi><mi>i</mi><mi>s</mi><mi>p</mi><mi>r</mi><mi>e</mi><mi>d</mi><mi>i</mi><mi>c</mi><mi>t</mi></mrow></msub><mo>×</mo><mtext mathvariant="normal">penalty</mtext></mrow><annotation encoding="application/x-tex">CPI_{branch} = f_{branch} \times p_{mispredict} \times \text{penalty}</annotation></semantics></math></p>
 <p>At
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>=</mo><mn>0.2</mn></mrow><annotation encoding="application/x-tex">f=0.2</annotation></semantics></math>,
-a 20-cycle penalty (typical modern pipeline depth to resolution), and
-95% accuracy:
+a 20-cycle assumed recovery penalty, and 95% accuracy:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.2</mn><mo>×</mo><mn>0.05</mn><mo>×</mo><mn>20</mn><mo>=</mo><mn>0.2</mn></mrow><annotation encoding="application/x-tex">0.2 \times 0.05 \times 20 = 0.2</annotation></semantics></math>
-extra CPI, a ~20% slowdown from just 5% of branches. Accuracy must scale
-with depth and width, which is why predictors grew from 2-bit counters
-to TAGE.</p>
+extra CPI, a 20% slowdown if baseline CPI is 1 and penalties do not
+overlap. Accuracy must scale with depth and width, which is why
+predictors grew from 2-bit counters to TAGE.</p>
 <h2 id="what-must-be-predicted">What Must Be Predicted</h2>
 <p>Fetch needs three answers about the bytes it just fetched, before
 decoding them:</p>
@@ -153,37 +140,19 @@ jumps.</li>
 </ol>
 <h2 id="static-prediction">Static Prediction</h2>
 <ul>
-<li><strong>Always not-taken</strong>: trivial (keep fetching
-sequentially); ~30-40% accurate on typical code since loops branch
-backward-taken.</li>
-<li><strong>BTFN</strong> (backward taken, forward not-taken): backward
-branches are loop bottoms, so predict them taken; ~65% accurate with
-zero state.</li>
-<li><strong>Compiler hints / profiling</strong>: ISA bits suggesting a
-direction from profile runs; static limits are ~75-80% because
-data-dependent branches cannot be predicted at compile time.</li>
+<li><strong>Always not-taken</strong>: continue sequential fetch.</li>
+<li><strong>BTFNT</strong>: predict backward branches taken and forward
+branches not taken.</li>
+<li><strong>Compiler hints/profiling</strong>: use static information;
+accuracy depends on the workload.</li>
 </ul>
-<div class="callout callout-note">
-<div class="callout-title">
-When the best predictor is none at all
-</div>
-<p>The CPI equation prices prediction honestly: benefit = penalty
-avoided, cost = tables, verification, and recovery logic. At shallow
-depth the deal goes bad. <strong>CV32E40P</strong> (4 stages) ships
-<em>no predictor at all</em> (no BTB, no counters) and simply pays a
-fixed 3-4 cycles per taken branch, cheaper in area and power than the
-hardware that would remove it. <strong>Ibex</strong> (2 stages) offers
-exactly two upgrades as build options: static BTFN (predict taken iff
-the offset is negative) and a dedicated target adder in IF that cuts the
-taken penalty from 2 cycles to 1. Everything below this point (counters,
-gshare, TAGE) is machinery that only earns its keep as pipelines get
-deeper and wider.</p>
-</div>
+<p>Small cores may omit dynamic prediction when its area and power
+outweigh the avoided stalls.</p>
 <h2 id="dynamic-direction-prediction">Dynamic Direction Prediction</h2>
-<p><strong>1-bit</strong>: remember the last outcome per branch. A loop
-branch mispredicts twice per loop execution (once at entry, once at
-exit): a 100-iteration loop gets 98%, a 4-iteration inner loop only
-50%.</p>
+<p><strong>1-bit</strong>: remember the last outcome per branch. After
+warm-up, a repeated loop with taken iterations and one not-taken exit
+can mispredict twice per invocation (once at entry, once at exit): a
+100-iteration loop gets 98%, a 4-iteration inner loop only 50%.</p>
 <p><strong>2-bit saturating counter</strong>: add hysteresis so a single
 anomaly does not flip the prediction. Increment on taken, decrement on
 not-taken, saturate at both ends; predict from the high bit:</p>
@@ -192,8 +161,9 @@ not-taken, saturate at both ends; predict from the high bit:</p>
 <figcaption aria-hidden="true">2-bit saturating counter
 predictor</figcaption>
 </figure>
-<p>The loop-exit misprediction no longer flips the state, so the next
-entry predicts correctly: one misprediction per loop execution.</p>
+<p>For a loop with several taken iterations, a strongly taken counter
+survives one not-taken exit, so the next entry predicts correctly.
+Aliasing and very short loops can change this behavior.</p>
 <p><strong>Branch history table (BHT)</strong>: an array of 2-bit
 counters indexed by low PC bits (e.g. 4K entries). Untagged, so two
 branches mapping to the same entry interfere (aliasing); usually
@@ -219,61 +189,45 @@ instead (captures patterns like taken-taken-not repeating);
 <strong>tournament</strong> predictors (Alpha 21264) run global and
 local side by side with a chooser table of 2-bit counters learning which
 to trust per branch.</p>
-<p><strong>Modern predictors</strong> in one paragraph:
-<strong>TAGE</strong> uses multiple tagged tables indexed with
-geometrically increasing history lengths (5, 10, 20, … hundreds of bits)
-and predicts from the longest history that hits, backed by a base
-bimodal table; <strong>perceptron</strong> predictors compute a weighted
-sum of history bits. Both reach ~99%+ on SPEC-like codes and are
-combined in shipping cores.</p>
+<p><strong>TAGE</strong> uses tagged tables with geometrically
+increasing history lengths and a base predictor; the longest matching
+history usually supplies the prediction, with alternate-provider logic.
+<strong>Perceptrons</strong> use weighted history sums. Accuracy depends
+on workload, table capacity, and training.</p>
 <h2 id="target-prediction">Target Prediction</h2>
 <p><strong>Branch target buffer (BTB)</strong>: a small tagged cache,
 indexed by fetch PC, holding the predicted target and branch type. A BTB
 hit simultaneously answers “this is a branch” and “fetch from here
-next”, redirecting fetch with zero bubbles:</p>
+next”, potentially redirecting fetch without a bubble, given a timely
+direction and target prediction:</p>
 <figure>
 <img src="figs/btb.svg" alt="BTB and return address stack in fetch" />
 <figcaption aria-hidden="true">BTB and return address stack in
 fetch</figcaption>
 </figure>
-<p><strong>Return address stack (RAS)</strong>: returns jump wherever
-the caller was, so a BTB entry is useless. A small hardware stack (8-32
-entries) pushes PC+4 on every call and pops on every return;
-near-perfect until call depth overflows it. Speculative pushes/pops must
-be repaired on misprediction.</p>
+<p><strong>Return address stack (RAS)</strong>: returns can have
+different targets at the same return instruction, so a single BTB target
+is often insufficient. A small hardware stack (8-32 entries) pushes the
+address after a recognized call (PC+4, or PC+2 for a 16-bit call) and
+pops on every return; near-perfect until call depth overflows it.
+Speculative pushes/pops must be repaired on misprediction.</p>
 <p><strong>Indirect branches</strong> (virtual calls, switch tables,
 interpreter dispatch) have many targets per site; predicted with
 history-indexed target tables (ITTAGE), historically the worst-behaved
 class.</p>
 <h2 id="stacking-predictors-a-real-frontend">Stacking Predictors: A Real
 Frontend</h2>
-<p>A large TAGE cannot be read in one cycle, and a one-cycle predictor
-cannot be large. Real frontends stack them, and BOOM (the Berkeley
-Out-of-Order Machine) is a documented example:</p>
-<ul>
-<li>The <strong>next-line predictor</strong> answers in a single cycle
-from tiny structures: a fully associative BTB, a bimodal table for
-direction, and a 32-entry RAS. It redirects fetch with zero bubbles but
-knows “only a few dozen branches”.</li>
-<li>The <strong>backing predictor</strong> (gshare or TAGE over a 64-bit
-global history) lives in SRAM and is read in parallel with the I-cache
-across several cycles. When it disagrees with the next-line prediction,
-it redirects fetch for a small early penalty, overriding a cheap guess
-with a better one before the branch even executes.</li>
-<li>A <strong>fetch target queue</strong> holds each fetch’s prediction
-metadata until commit, when the tables are trained with the true
-outcome; mispredictions repair it along the way.</li>
-</ul>
-<p>The design generalizes: every high-performance frontend is a latency
-hierarchy of predictors, exactly as the memory system is a latency
-hierarchy of
-<a href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">caches</a>.</p>
+<p>A frontend can combine a small, fast next-PC predictor with a larger,
+slower direction predictor. The slower predictor may redirect fetch
+before execution detects an error. A fetch-target queue retains PCs and
+prediction metadata for training and recovery. Sizes and update policies
+are implementation-specific.</p>
 <h2 id="living-in-the-pipeline">Living in the Pipeline</h2>
 <ul>
 <li><strong>Predict</strong> in IF: BTB/direction lookup happens in
 parallel with the I-cache access, producing the next fetch PC.</li>
-<li><strong>Verify</strong> when the branch executes (EX, or at commit):
-compare actual outcome/target with prediction.</li>
+<li><strong>Verify</strong> when the branch executes: compare actual
+outcome/target with prediction.</li>
 <li><strong>Recover</strong> on mismatch: squash all younger
 instructions, restore fetch to the correct path, and repair predictor
 state (GHR, RAS). In-order pipes flush stages; out-of-order machines
@@ -285,7 +239,7 @@ they are.</li>
 </ul>
 <div class="callout callout-note">
 <div class="callout-title">
-How selective squash really works
+<p>How selective squash really works</p>
 </div>
 <p>BOOM refines the epoch idea into a <strong>branch mask</strong>:
 every in-flight instruction carries one bit per unresolved branch it
@@ -297,65 +251,28 @@ walking and no over-kill.</p>
 <li><strong>Update</strong> the tables at resolve/commit with the true
 outcome.</li>
 </ul>
-<p><strong>Measuring</strong>: accuracy alone misleads across programs
-with different branch densities; <strong>MPKI</strong> (mispredictions
-per kilo-instruction) composes directly with penalty into CPI. And why
-95% is not enough: at depth 20 and width 4, one misprediction wastes up
-to 80 issue slots, so the gap between 95% and 99% is roughly a 4x
-reduction in speculation waste, which is also energy
-(<a href="../../notes.html#Digital%20Design/Synthesis,%20Timing%20and%20Power" target="_top">Synthesis,
-Timing and Power</a>).</p>
-<p><strong>Security aside</strong>: predictor state is shared
-microarchitectural state trained by one context and consumed by another;
-Spectre showed mistrained speculation leaks data through cache side
-channels, and modern cores add predictor isolation/flush controls on
-privilege switches.</p>
+<p><strong>MPKI</strong> measures mispredictions per 1,000 instructions.
+Approximate added CPI is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mi>P</mi><mi>K</mi><mi>I</mi><mo>×</mo><mi>p</mi><mi>e</mi><mi>n</mi><mi>a</mi><mi>l</mi><mi>t</mi><mi>y</mi><mi>/</mi><mn>1000</mn></mrow><annotation encoding="application/x-tex">MPKI\times penalty/1000</annotation></semantics></math>.
+Wider machines can discard more work per misprediction; accuracy alone
+does not capture this cost.</p>
+<p>Predictor sharing and transient execution can expose information
+through timing; see
+<a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">speculation
+and security</a>.</p>
 <hr />
 <p>Author: Sai Govardhan (saigov14@gmail.com)</p>
 <h2 id="references">References</h2>
-<p><strong>Courses</strong></p>
 <ul>
-<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lecture 13</li>
+<li>Hennessy &amp; Patterson, Computer Architecture: A Quantitative
+Approach, 5th ed. — ch. 3.</li>
+<li>González, Latorre &amp; Magklis, Processor Microarchitecture —
+instruction fetch.</li>
 </ul>
-<p><strong>Textbooks</strong></p>
-<ul>
-<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
-Quantitative Approach</em>, ch. 3</li>
-<li>A. Seznec, <em>A New Case for the TAGE Branch Predictor</em> (MICRO
-2011)</li>
-</ul>
-<p><strong>Microarchitecture References</strong></p>
-<ul>
-<li>RISC-V BOOM documentation (branch prediction),
-docs.boom-core.org</li>
-<li>lowRISC, <em>Ibex Documentation</em>; OpenHW Group, <em>CV32E40P
-User Manual</em></li>
-</ul>
-<pre class="license"><code>MIT License
-
-Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</code></pre>
-<div class="note-nav">
-<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">&larr; Simple Instruction Pipeline</a>
-<a class="nav-next" href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches and Virtual Memory &rarr;</a>
-</div>
+<p>License: <a href="LICENSE.txt">MIT</a>.</p>
+<nav class="note-nav" aria-label="Adjacent notes">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Simple%20Instruction%20Pipeline" target="_top">← Simple Instruction Pipeline</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Caches%20and%20Virtual%20Memory" target="_top">Caches and Virtual Memory →</a>
+</nav>
 </body>
 </html>

@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Advanced Superscalar Architectures</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -47,8 +41,8 @@ ILP</a></li>
 <li><a href="#simultaneous-multithreading"
 id="toc-simultaneous-multithreading">Simultaneous
 Multithreading</a></li>
-<li><a href="#evolution-case-study"
-id="toc-evolution-case-study">Evolution Case Study</a></li>
+<li><a href="#historical-examples"
+id="toc-historical-examples">Historical Examples</a></li>
 <li><a href="#reliability" id="toc-reliability">Reliability</a></li>
 <li><a href="#references" id="toc-references">References</a></li>
 </ul></li>
@@ -56,19 +50,15 @@ id="toc-evolution-case-study">Evolution Case Study</a></li>
 </nav>
 <h1 id="advanced-superscalar-architectures">Advanced Superscalar
 Architectures</h1>
-<p>A superscalar processor sustains more than one instruction per cycle:
-it fetches, decodes, renames, issues, executes, and commits several at
-once. Where
+<p>A <strong>superscalar</strong> processor can execute multiple
+instructions per cycle. Fetch, decode, issue, and commit may have
+different widths.
 <a href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">Out
-of Order Execution and Register Renaming</a> supplies the
-<em>algorithms</em>, this note is about the <em>machine</em>: what issue
-width does to every structure, and why width stopped at ~4-8 even as
-transistor budgets exploded.</p>
-<p>The Iron Law view: pipelining attacks cycle time, superscalar attacks
-CPI, pushing IPC above 1 toward the machine width
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math>.
-Achieved IPC is limited by the program’s instruction-level parallelism
-(ILP), not the datapath.</p>
+of Order Execution and Register Renaming</a> explains scheduling; this
+note covers the structures needed to support width.</p>
+<p>Superscalar execution can reduce CPI below 1. Achieved IPC depends on
+instruction-level parallelism, dependencies, frontend supply, execution
+resources, and memory behavior.</p>
 <figure>
 <img src="figs/superscalar.svg"
 alt="out-of-order superscalar organization" />
@@ -76,13 +66,10 @@ alt="out-of-order superscalar organization" />
 organization</figcaption>
 </figure>
 <h2 id="in-order-superscalar-first">In-Order Superscalar First</h2>
-<p>The original Pentium (1993) issued 2 instructions per cycle in order,
-with <strong>pairing rules</strong> (both simple, no dependence, one
-memory op) checked at decode; unpaired instructions issued alone. Cheap,
-but in-order issue means one stalled instruction blocks its pair: real
-IPC ~1.1-1.4. In-order superscalar survives where energy dominates
-(little cores, many embedded designs); everything else went out of
-order.</p>
+<p>In-order superscalar issue selects several consecutive independent
+instructions, subject to resource and pairing rules. A blocked
+instruction limits progress past it; OOO issue can select later ready
+work at greater hardware cost.</p>
 <h2 id="frontend-at-width">Frontend at Width</h2>
 <p><strong>Fetch</strong> must deliver
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math>
@@ -98,21 +85,21 @@ branches per cycle
 (<a href="../../notes.html#Computer%20Architecture/Branch%20Prediction" target="_top">Branch
 Prediction</a> BTB indexed by fetch group), and a decoupled fetch queue
 so the frontend runs ahead.</li>
-<li>The <strong>trace cache</strong> (Pentium 4) stored instructions in
-predicted dynamic order to fix this; its modern descendant, the
-<strong>µop cache</strong>, caches decoded µops and doubles as a
-decode-power saver.</li>
+<li>A <strong>trace cache</strong> stores decoded operations in dynamic
+path order. A <strong>µop cache</strong> reuses decoded operations to
+reduce decode work; it need not store dynamic traces.</li>
 </ul>
 <p><strong>Decode</strong> at width is where ISA encoding matters
 (<a href="../../notes.html#Computer%20Architecture/RISC-V%20ISA" target="_top">RISC-V
-ISA</a> comparison table): fixed 32-bit instructions decode in parallel
-trivially; x86’s 1-15 byte instructions need speculative length
+ISA</a> comparison table): fixed 32-bit instruction boundaries simplify
+parallel decode; x86’s 1-15 byte instructions need speculative length
 decoding, so x86 cores split decoders into complex+simple sets and lean
 on the µop cache. CISC instructions crack into µops; some RISC-like
 pairs <em>fuse</em> (compare+branch) into one µop.</p>
 <h2 id="backend-at-width">Backend at Width</h2>
-<p>Everything scales worse than linearly in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math>:</p>
+<p>Several structures become expensive as width
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math>
+grows:</p>
 <ul>
 <li><strong>Register file ports</strong>:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>w</mi></mrow><annotation encoding="application/x-tex">2w</annotation></semantics></math>
@@ -124,8 +111,8 @@ access time, so wide cores bank or replicate the PRF
 Circuits</a> register file, multiplied).</li>
 <li><strong>Bypass network</strong>: every FU output to every FU input
 is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>w</mi><mn>2</mn></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(w^2)</annotation></semantics></math>
-wires and muxes, and wire delay dominates below 100 nm; wide machines
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>w</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">O(w^2)</annotation></semantics></math>
+wires and muxes, and long-wire delay can limit timing; wide machines
 stage bypasses (same-cycle only within a cluster).</li>
 <li><strong>Issue queue wakeup-select</strong>: each broadcast tag must
 CAM against every waiting operand, then select must arbitrate among all
@@ -150,13 +137,14 @@ partner of ROB/rename-buffer renaming, where a value may otherwise have
 to be chased from buffer to architectural file mid-flight.</li>
 <li><strong>Read after issue</strong>: the queue holds only operand
 <em>identifiers</em>; the physical file is read after select. More
-ports, but each value is read once from one place. The natural partner
-of the merged register file, and the modern default.</li>
+ports, but each value is read when needed from the PRF or bypass
+network. The natural partner of the merged register file, and the modern
+default.</li>
 </ul>
 <h3 id="bypass-and-the-clustering-ladder">Bypass and the Clustering
 Ladder</h3>
 <p>Deep pipelines make the bypass worse than
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>w</mi><mn>2</mn></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(w^2)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>w</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">O(w^2)</annotation></semantics></math>
 suggests: a result must be forwardable from <em>several</em> pipeline
 stages (ALU output, result drive, writeback) to catch consumers issued
 1, 2, or 3 cycles behind, so each of the
@@ -164,16 +152,9 @@ stages (ALU output, result drive, writeback) to catch consumers issued
 paths is really several. Two standing simplifications: the FP/SIMD units
 get a bypass network of their own (integer results almost never feed FP
 directly), and the memory unit hangs off both.</p>
-<div class="callout callout-note">
-<div class="callout-title">
-The bypass you can refuse
-</div>
-<p>IBM’s POWER4 and POWER5 shipped with <em>no bypass network at
-all</em>: dependent integer ops pay a 1-cycle bubble, dependent FP ops
-six. The designers bought frequency and simplicity, and let out-of-order
-execution fill the bubbles with independent work, a reminder that every
-“mandatory” structure is actually a trade.</p>
-</div>
+<p>Bypass depth and coverage are implementation choices. Removing a path
+saves wiring but increases dependent-operation latency; independent work
+may hide part of that cost.</p>
 <p>When the bypass or the register file does threaten the clock,
 designers climb the <strong>clustering ladder</strong>, each rung
 cutting more wire at more IPC cost:</p>
@@ -201,37 +182,25 @@ hardest scheduling problem: steering must keep dependent instructions
 together while keeping the load balanced.</li>
 </ol>
 <h3 id="commit-at-width">Commit at Width</h3>
-<p>Commit is the pipeline’s other in-order regime: a
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math>-wide
-machine scans a whole ROB row and retires it greedily. The interesting
-design is recovery, because its two triggers have opposite frequencies.
-Branch mispredictions are common, so they get the fast path: a
-rename-map checkpoint per branch, restored in one cycle. Exceptions are
-rare, so they may take the slow path: wait until the faulting
-instruction reaches the head, then unwind. BOOM implements both ends
-configurably: rollback walking the ROB one row per cycle (R10000 style),
-or an extra committed map table that resets rename state in a single
-cycle. Its issue queues are equally concrete: separate memory/integer/FP
-queues (16 entries each at 1/2/1 issue ports in the base configuration),
-age-ordered by default because the cheaper position-based policy can
-starve old branches.</p>
+<p>Retire a consecutive prefix of completed, non-faulting instructions
+at the ROB head, up to the commit width. A stalled head can block
+younger completed work. Frequent branch recovery may use checkpoints;
+rare exception recovery may instead walk the ROB or restore a committed
+map.</p>
 <h2 id="limits-of-ilp">Limits of ILP</h2>
-<p>Classic limit studies (Wall 1991; H&amp;P) give a perfect-machine ILP
-of dozens to hundreds, but every realism cut is brutal: finite window,
-real branch prediction, finite registers, and real memory latency bring
-sustainable IPC on integer code to ~2-4. Dependence chains are the
-floor: a pointer chase executes at 1 instruction per load latency no
-matter the width.</p>
-<p>That, plus the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>w</mi><mn>2</mn></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(w^2)</annotation></semantics></math>
-structures and the ~1.5-2x energy per instruction of aggressive
-speculation, is why width plateaued and the transistor budget went to
-caches and cores instead
-(<a href="../../notes.html#Computer%20Architecture/History%20of%20Computing" target="_top">History
-of Computing</a> power wall). Recent cores widened again (Apple M-series
-~8-10 wide) by spending enormous µop caches, predictors, and windows to
-keep a low clock and low voltage: width as an <em>energy</em> play, the
-inverse of the GHz race.</p>
+<p>A finite window, imperfect prediction, register capacity, and memory
+latency limit useful ILP. A serial pointer chain cannot start its next
+load until the previous address arrives. Increasing width helps only
+when the machine can supply independent operations; energy and wiring
+costs eventually outweigh the gain.</p>
+<h3 id="compiler-scheduling">Compiler Scheduling</h3>
+<p><strong>Loop unrolling</strong> exposes independent iterations and
+amortizes branch overhead; multiple accumulators can break a reduction’s
+dependency chain when the language’s arithmetic rules permit
+reassociation. <strong>Software pipelining</strong> overlaps iterations
+in a repeated schedule. Both increase live values and may cause register
+spills or code growth. OOO hardware adapts to runtime latency; compiler
+transformations change the work and dependencies available to it.</p>
 <h2 id="simultaneous-multithreading">Simultaneous Multithreading</h2>
 <p>A single thread cannot fill a wide machine: <strong>vertical
 waste</strong> (whole cycles idle, e.g. cache miss) and
@@ -247,102 +216,55 @@ fine-grain MT vs SMT</figcaption>
 <ul>
 <li><strong>Coarse-grain</strong>: switch threads on a long stall; fills
 only vertical waste, costs a switch penalty.</li>
-<li><strong>Fine-grain</strong>: rotate threads every cycle (barrel
-processors, GPU warps); fills vertical waste, kills single-thread
-latency.</li>
-<li><strong>SMT</strong>: issue from <em>multiple threads in the same
-cycle</em>; the only scheme that fills horizontal waste. In an OOO core
-it is remarkably cheap: duplicate the PC, rename map, and architectural
-state; share the IQ, PRF, FUs, and caches; tag every µop with a thread
-ID. Intel’s Hyper-Threading is 2-way SMT for ~5% area and typically
-15-30% throughput.</li>
+<li><strong>Fine-grain</strong>: interleave threads frequently, often
+every cycle; hides stalls but gives each thread fewer issue
+opportunities.</li>
+<li><strong>SMT</strong>: select instructions from multiple threads in
+the same cycle. Replicate architectural/thread state and track
+per-thread recovery while sharing execution units, caches, and some
+queues. Resource partitioning and throughput gains depend on the
+design.</li>
 </ul>
 <p>Costs: threads compete for caches and predictor state (a
-cache-thrashing sibling can <em>slow</em> the machine), fairness needs
-explicit fetch policies (ICOUNT: fetch for the thread with fewest µops
-in flight), and shared-resource leakage created a family of SMT side
-channels; security-sensitive deployments disable it.</p>
-<h2 id="evolution-case-study">Evolution Case Study</h2>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+cache-thrashing sibling can reduce performance), fairness needs explicit
+policies, and shared structures can leak information through timing.</p>
+<h2 id="historical-examples">Historical Examples</h2>
+<table>
 <thead>
-<tr>
-<th>Core</th>
-<th>Year</th>
-<th>Width</th>
-<th>Depth</th>
-<th>Window</th>
-<th>Note</th>
+<tr class="header">
+<th>Design</th>
+<th>Illustrates</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Pentium</td>
-<td>1993</td>
-<td>2 in-order</td>
-<td>5</td>
-<td>-</td>
-<td>pairing rules</td>
+<td>in-order dual issue and pairing restrictions</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Pentium Pro</td>
-<td>1995</td>
-<td>3</td>
-<td>~12</td>
-<td>40</td>
-<td>µops + OOO + PRF-in-ROB</td>
+<td>speculative OOO execution and in-order retirement</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Pentium 4</td>
-<td>2000</td>
-<td>3</td>
-<td>20-31</td>
-<td>126</td>
-<td>trace cache, GHz race, power wall</td>
+<td>deep pipelines and a trace cache</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Core 2</td>
-<td>2006</td>
-<td>4</td>
-<td>14</td>
-<td>96</td>
-<td>retreat to efficiency</td>
-</tr>
-<tr>
-<td>Skylake</td>
-<td>2015</td>
-<td>4-5</td>
-<td>~14</td>
-<td>224</td>
-<td>µop cache, SMT</td>
-</tr>
-<tr>
-<td>Apple M1</td>
-<td>2020</td>
-<td>~8</td>
-<td>~13</td>
-<td>~630</td>
-<td>width at low clock</td>
+<td>a different balance of width, depth, and power</td>
 </tr>
 </tbody>
 </table>
-<p>The P4 → Core 2 reversal is the syllabus in one row: deeper+faster
-lost to wider+cooler once power became the constraint.</p>
+<p>When comparing widths, distinguish ISA instructions from µops and
+decode width from issue or retire width.</p>
 <h2 id="reliability">Reliability</h2>
 <p>Shrinking transistors made a new failure class architectural:
 <strong>soft errors</strong>, bit flips from cosmic-ray neutrons and
 alpha particles that corrupt state without damaging hardware (rate
 measured in FIT, failures per
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mn>9</mn></msup><annotation encoding="application/x-tex">10^9</annotation></semantics></math>
-hours; it grows with transistor count, so big machines see them daily).
-The defenses are layered by cost:</p>
+hours; system rate depends on device technology, state size,
+environment, and protection). The defenses are layered by cost:</p>
 <ul>
 <li><strong>Parity</strong> on structures whose contents can be
 refetched: an I-cache or clean D-cache line that fails parity is simply
@@ -368,52 +290,16 @@ retry.</p>
 <hr />
 <p>Author: Sai Govardhan (saigov14@gmail.com)</p>
 <h2 id="references">References</h2>
-<p><strong>Courses</strong></p>
 <ul>
-<li>MIT 6.823 Computer System Architecture (Arvind, Emer), Fall 2005,
-Lectures 14-15, 23-24</li>
+<li>Hennessy &amp; Patterson, Computer Architecture: A Quantitative
+Approach, 5th ed. — ch. 3.</li>
+<li>González, Latorre &amp; Magklis, Processor Microarchitecture —
+issue, bypass, commit, and clustering.</li>
 </ul>
-<p><strong>Textbooks</strong></p>
-<ul>
-<li>J. Hennessy &amp; D. Patterson, <em>Computer Architecture: A
-Quantitative Approach</em>, ch. 3</li>
-</ul>
-<p><strong>Standards, Papers, and Wikipedia</strong></p>
-<ul>
-<li>A. González, F. Latorre &amp; G. Magklis, <em>Processor
-Microarchitecture: An Implementation Perspective</em>, ch. 5-8</li>
-<li>D. Tullsen, S. Eggers &amp; H. Levy, <em>Simultaneous
-Multithreading: Maximizing On-Chip Parallelism</em> (ISCA 1995)</li>
-</ul>
-<p><strong>Microarchitecture References</strong></p>
-<ul>
-<li>RISC-V BOOM documentation (issue units, reorder buffer),
-docs.boom-core.org</li>
-</ul>
-<pre class="license"><code>MIT License
-
-Copyright (c) 2025 Sai Govardhan (saigov14@gmail.com)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</code></pre>
-<div class="note-nav">
-<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Memory%20Model" target="_top">&larr; Memory Model</a>
-<a class="nav-next" href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">Out of Order Execution and Register Renaming &rarr;</a>
-</div>
+<p>License: <a href="LICENSE.txt">MIT</a>.</p>
+<nav class="note-nav" aria-label="Adjacent notes">
+<a class="nav-prev" href="../../notes.html#Computer%20Architecture/Out%20of%20Order%20Execution%20and%20Register%20Renaming" target="_top">← Out of Order Execution and Register Renaming</a>
+<a class="nav-next" href="../../notes.html#Computer%20Architecture/Flynn%27s%20Taxonomy" target="_top">Flynn&#x27;s Taxonomy →</a>
+</nav>
 </body>
 </html>
